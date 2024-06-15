@@ -1,0 +1,17 @@
+---
+# GitHub Actions workflow for commits pushed to the KK Physics repo - all branches
+
+name: CI at GitHub
+on: [push]
+
+jobs:
+  Java19-Linux:
+    if: contains(toJson(github.event.commits), '[ci skip] ') == false
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: 19
+      - uses: actions/checkout@v4
+      - run: ./gradlew build javadoc --console=plain --no-daemon --stacktrace
