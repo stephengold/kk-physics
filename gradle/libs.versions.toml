@@ -15,6 +15,7 @@ jme3-lwjgl3 = { module = "org.jmonkeyengine:jme3-lwjgl3", version.ref = "jme" }
 
 jolt-java = { module = "com.github.stephengold:jolt-java", version.ref = "jolt-java" }
 jolt-java-linux = { module = "com.github.stephengold:jolt-java-natives-linux-x86", version.ref = "jolt-java" }
+sim-math = "com.simsilica:sim-math:1.6.0"
 
 [bundles]
 

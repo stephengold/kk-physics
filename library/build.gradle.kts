@@ -20,8 +20,9 @@ java {
 }
 
 dependencies {
+    api(libs.jme3.core)
     api(libs.jolt.java)
-    implementation(libs.jme3.core)
+    api(libs.sim.math)
     implementation(libs.heart)
 }
 
