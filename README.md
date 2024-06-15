@@ -89,7 +89,7 @@ Like most projects, the KK Physics Project builds on the work of many who
 have gone before.  I therefore acknowledge the following
 software developers:
 
-+ "aecsocket" for creating the [joltjava] bindings to the Jolt Physics Engine
++ "aecsocket" for creating the [jolt-java] bindings to the Jolt Physics Engine
 + Normen Hansen (aka "normen") for creating most of the `jme3-bullet` library
   (from which the KK Physics API is derived)
 + plus the creators of (and contributors to) the following software:
@@ -128,7 +128,7 @@ correct the situation: sgold@sonic.net
 [java]: https://en.wikipedia.org/wiki/Java_(programming_language) "Java programming language"
 [jme]: https://jmonkeyengine.org "jMonkeyEngine Project"
 [jolt]: https://jrouwe.github.io/JoltPhysics/index.html "the Jolt Physics Engine"
-[joltjava]: https://github.com/aecsocket/jolt-java/blob/main/LICENSE "the Jolt-java Project"
+[jolt-java]: https://github.com/aecsocket/jolt-java?tab=readme-ov-file#readme "Jolt-java Project"
 [jvm]: https://en.wikipedia.org/wiki/Java_virtual_machine "Java virtual machine"
 [license]: https://github.com/stephengold/kk-physics/blob/master/LICENSE "KK Physics license"
 [lwjgl]: https://www.lwjgl.org "Lightweight Java Game Library"
