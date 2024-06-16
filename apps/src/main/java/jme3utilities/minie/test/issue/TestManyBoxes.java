@@ -129,8 +129,8 @@ public class TestManyBoxes extends SimpleApplication {
         physicsSpace = bulletAppState.getPhysicsSpace();
         physicsSpace.setGravity(new Vector3f(0f, -99f, 0f));
         physicsSpace.setMaxSubSteps(1); // IMPORTANT! default = 4
-        //System.out.printf("maxSubSteps = %d, numSolvers = %d%n",
-        //        physicsSpace.maxSubSteps(), physicsSpace.countSolvers());
+        System.out.printf("maxSubSteps = %d, numSolvers = %d%n",
+                physicsSpace.maxSubSteps(), physicsSpace.countSolvers());
 
         // Add a big blue box to serve as a platform:
         float size = 99f; // half extent in world units
