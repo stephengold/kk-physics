@@ -248,7 +248,11 @@ public class PhysicsSpace extends CollisionSpace {
      * @param rbc the collision object to remove (not null, modified)
      */
     public void removeCollisionObject(PhysicsRigidBody rbc) {
-        // TODO
+        BodyInterface bodyInterface = getBodyInterface();
+        int bodyId = (int) rbc.nativeId();
+        bodyInterface.removeBody(bodyId);
+
+        rbc.setAddedToSpaceInternal(null);
     }
 
     /**
