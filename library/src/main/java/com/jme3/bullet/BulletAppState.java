@@ -34,6 +34,7 @@ package com.jme3.bullet;
 import com.jme3.app.Application;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.app.state.BaseAppState;
+import java.util.logging.Logger;
 
 /**
  * An AppState to manage a single PhysicsSpace.
@@ -41,6 +42,16 @@ import com.jme3.app.state.BaseAppState;
  * @author normenhansen
  */
 public class BulletAppState extends BaseAppState {
+    // *************************************************************************
+    // constants and loggers
+
+    /**
+     * message logger for this class
+     */
+    final public static Logger logger
+            = Logger.getLogger(BulletAppState.class.getName());
+    // *************************************************************************
+    // fields
 
     private int numSolvers = Runtime.getRuntime().availableProcessors();
     private PhysicsSpace physicsSpace;

@@ -56,11 +56,16 @@ import jolt.physics.collision.broadphase.ObjectVsBroadPhaseLayerFilterFn;
  */
 public class PhysicsSpace extends CollisionSpace {
     // *************************************************************************
-    // constants
+    // constants and loggers
 
     public static final byte BP_LAYER_NON_MOVING = 0;
     public static final byte BP_LAYER_MOVING = 1;
 
+    /**
+     * message logger for this class
+     */
+    final public static Logger logger
+            = Logger.getLogger(PhysicsSpace.class.getName());
     public static final short OBJ_LAYER_NON_MOVING = 0;
     public static final short OBJ_LAYER_MOVING = 1;
     // *************************************************************************
