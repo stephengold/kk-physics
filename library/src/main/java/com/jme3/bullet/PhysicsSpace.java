@@ -60,7 +60,18 @@ public class PhysicsSpace extends CollisionSpace {
 
     public static final byte BP_LAYER_NON_MOVING = 0;
     public static final byte BP_LAYER_MOVING = 1;
-
+    /**
+     * index of the X axis
+     */
+    final public static int AXIS_X = 0;
+    /**
+     * index of the Y axis
+     */
+    final public static int AXIS_Y = 1;
+    /**
+     * index of the Z axis
+     */
+    final public static int AXIS_Z = 2;
     /**
      * message logger for this class
      */
