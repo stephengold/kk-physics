@@ -32,36 +32,55 @@
 package com.jme3.bullet.control;
 
 import com.jme3.bullet.PhysicsSpace;
-import com.jme3.bullet.collision.shapes.BoxCollisionShape;
+import com.jme3.bullet.collision.shapes.CollisionShape;
+import com.jme3.bullet.objects.PhysicsRigidBody;
+import com.jme3.export.JmeExporter;
+import com.jme3.export.JmeImporter;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
-import com.jme3.scene.control.AbstractControl;
-import java.lang.foreign.MemorySession;
+import com.jme3.scene.Spatial;
+import com.jme3.scene.control.Control;
+import java.io.IOException;
+import java.util.logging.Logger;
 import jme3utilities.MySpatial;
-import jolt.Jolt;
-import jolt.math.FVec3;
-import jolt.math.Quat;
-import jolt.physics.Activation;
-import jolt.physics.body.BodyCreationSettings;
-import jolt.physics.body.BodyInterface;
-import jolt.physics.body.MotionType;
-import jolt.physics.body.MutableBody;
 
 /**
- * An AbstractControl to link a rigid body to a Spatial.
+ * A PhysicsControl to link a PhysicsRigidBody to a Spatial.
  *
  * @author normenhansen
  */
-public class RigidBodyControl extends AbstractControl {
+public class RigidBodyControl
+        extends PhysicsRigidBody
+        implements PhysicsControl {
+    // *************************************************************************
+    // constants and loggers
+
+    /**
+     * message logger for this class
+     */
+    final public static Logger logger3
+            = Logger.getLogger(RigidBodyControl.class.getName());
     // *************************************************************************
     // fields
 
-    final private BoxCollisionShape shape;
-    final private float mass;
-    private MutableBody body;
-    private PhysicsSpace physicsSpace;
+    /**
+     * true&rarr;body is added to a PhysicsSpace, false&rarr;not added
+     */
+    private boolean added = false;
+    /**
+     * true&rarr;Control is enabled, false&rarr;Control is disabled
+     */
+    private boolean enabled = true;
+    /**
+     * PhysicsSpace to which the body is (or would be) added
+     */
+    private PhysicsSpace space = null;
+    /**
+     * Spatial to which this Control is added, or null if none
+     */
+    private Spatial spatial;
     // *************************************************************************
     // constructors
 
@@ -72,82 +91,192 @@ public class RigidBodyControl extends AbstractControl {
      * @param shape the desired shape (not null, alias created)
      * @param mass the desired mass (&ge;0)
      */
-    public RigidBodyControl(BoxCollisionShape shape, float mass) {
-        this.shape = shape;
-        this.mass = mass;
+    public RigidBodyControl(CollisionShape shape, float mass) {
+        super(shape, mass);
     }
     // *************************************************************************
     // new methods exposed
 
-    public int getId() {
-        int result = body.getId();
-        return result;
-    }
-
-    public void setPhysicsSpace(PhysicsSpace physicsSpace) {
-        this.physicsSpace = physicsSpace;
+    /**
+     * Access the controlled spatial.
+     *
+     * @return the Spatial, or null if none
+     */
+    public Spatial getSpatial() {
+        return spatial;
     }
     // *************************************************************************
-    // AbstractControl methods
+    // PhysicsControl methods
 
+    /**
+     * Clone this Control for a different Spatial. No longer used as of JME 3.1.
+     *
+     * @param spatial (unused)
+     * @return never
+     * @throws UnsupportedOperationException always
+     */
     @Override
-    protected void controlUpdate(float f) {
-        MemorySession arena = PhysicsSpace.getArena();
-        if (body == null && spatial != null && physicsSpace != null) {
+    public Control cloneForSpatial(Spatial spatial) {
+        throw new UnsupportedOperationException(
+                "cloneForSpatial() isn't implemented.");
+    }
 
-            Vector3f wt = spatial.getWorldTranslation(); // alias
-            FVec3 location = FVec3.of(arena, wt.x, wt.y, wt.z);
+    /**
+     * Access the PhysicsSpace to which the body is (or would be) added.
+     *
+     * @return the pre-existing space, or null for none
+     */
+    @Override
+    public PhysicsSpace getPhysicsSpace() {
+        return space;
+    }
 
-            Quaternion wr = spatial.getWorldRotation(); // alias
-            Quat orientation = Quat.of(
-                    arena, wr.getX(), wr.getY(), wr.getZ(), wr.getW());
+    /**
+     * Test whether this Control is enabled.
+     *
+     * @return true if enabled, otherwise false
+     */
+    @Override
+    public boolean isEnabled() {
+        return enabled;
+    }
 
-            BodyCreationSettings bcs;
-            if (mass > 0f) {
-                bcs = BodyCreationSettings.of(arena, shape.getShape(),
-                        location, orientation, MotionType.DYNAMIC,
-                        PhysicsSpace.OBJ_LAYER_MOVING);
-                bcs.setGravityFactor(1f);
-            } else {
-                assert mass == 0 : mass;
-                bcs = BodyCreationSettings.of(arena, shape.getShape(),
-                        location, orientation, MotionType.STATIC,
-                        PhysicsSpace.OBJ_LAYER_NON_MOVING);
-                bcs.setGravityFactor(0f);
+    /**
+     * De-serialize this Control from the specified importer, for example when
+     * loading from a J3O file.
+     *
+     * @param importer (not null)
+     * @throws IOException from the importer
+     */
+    @Override
+    public void read(JmeImporter importer) throws IOException {
+        throw new UnsupportedOperationException("read() isn't implemented.");
+    }
+
+    /**
+     * Render this Control. Invoked once per ViewPort per frame, provided the
+     * Control is added to a scene. Should be invoked only by a subclass or by
+     * the RenderManager.
+     *
+     * @param rm the RenderManager (unused)
+     * @param vp the ViewPort to render (unused)
+     */
+    @Override
+    public void render(RenderManager rm, ViewPort vp) {
+        // do nothing
+    }
+
+    /**
+     * Enable or disable this Control.
+     * <p>
+     * When the Control is disabled, the body is removed from PhysicsSpace. When
+     * the Control is enabled again, the body is moved to the current position
+     * of the Spatial and then added to the PhysicsSpace.
+     *
+     * @param enabled true&rarr;enable the Control, false&rarr;disable it
+     */
+    @Override
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+        if (space != null) {
+            if (enabled && !added) {
+                if (spatial != null) {
+                    Vector3f location = spatial.getWorldTranslation(); // alias
+                    Quaternion orientation
+                            = spatial.getWorldRotation(); // alias
+                    reposition(location, orientation);
+                }
+                space.addCollisionObject(this);
+                this.added = true;
+            } else if (!enabled && added) {
+                space.removeCollisionObject(this);
+                this.added = false;
+                // TODO also remove all joints
             }
-
-            BodyInterface bodyInterface = physicsSpace.getBodyInterface();
-            this.body = bodyInterface.createBody(bcs);
-
-            int id = body.getId();
-            if (mass > 0f) {
-                FVec3 v = FVec3.of(arena, 0f, 1f, 0f);
-                body.setLinearVelocity(v);
-                bodyInterface.addBody(id, Activation.ACTIVATE);
-            } else {
-                bodyInterface.addBody(id, Activation.DONT_ACTIVATE);
-            }
-        }
-
-        if (body != null && spatial != null && physicsSpace != null) {
-            Jolt.assertSinglePrecision();
-            BodyInterface bodyInterface = physicsSpace.getBodyInterface();
-            int bodyId = body.getId();
-            FVec3 wt = FVec3.of(arena);
-            bodyInterface.getCenterOfMassPosition(bodyId, wt);
-            Vector3f loc = new Vector3f(
-                    (float) wt.getX(), (float) wt.getY(), (float) wt.getZ());
-            MySpatial.setWorldLocation(spatial, loc);
-
-            Quat wr = Quat.of(arena);
-            body.getRotation(wr);
-            Quaternion ori = new Quaternion(
-                    wr.getX(), wr.getY(), wr.getZ(), wr.getW());
-            MySpatial.setWorldOrientation(spatial, ori);
         }
     }
 
+    /**
+     * If enabled, add this control's body to the specified PhysicsSpace. If not
+     * enabled, alter where the body would be added. The body is removed from
+     * any other space it's currently in.
+     *
+     * @param newSpace where to add, or null to simply remove
+     */
     @Override
-    protected void controlRender(RenderManager rm, ViewPort vp) {
+    public void setPhysicsSpace(PhysicsSpace newSpace) {
+        if (space == newSpace) {
+            return;
+        }
+        if (added) {
+            space.removeCollisionObject(this);
+            this.added = false;
+        }
+        if (newSpace != null && isEnabled()) {
+            newSpace.addCollisionObject(this);
+            this.added = true;
+        }
+        /*
+         * If this Control isn't enabled, its body will be
+         * added to the new space when the Control becomes enabled.
+         */
+        this.space = newSpace;
+    }
+
+    /**
+     * Alter which Spatial is controlled. Invoked when the Control is added to
+     * or removed from a Spatial. Should be invoked only by a subclass or from
+     * Spatial. Do not invoke directly from user code.
+     *
+     * @param controlledSpatial the Spatial to control (or null)
+     */
+    @Override
+    public void setSpatial(Spatial controlledSpatial) {
+        if (spatial == controlledSpatial) {
+            return;
+        }
+
+        this.spatial = controlledSpatial;
+        setUserObject(controlledSpatial); // link from collision object
+
+        if (controlledSpatial != null) {
+            Vector3f location = spatial.getWorldTranslation(); // alias
+            Quaternion orientation = spatial.getWorldRotation(); // alias
+            reposition(location, orientation);
+        }
+    }
+
+    /**
+     * Update this Control. Invoked once per frame, during the logical-state
+     * update, provided the Control is added to a scene. Do not invoke directly
+     * from user code.
+     *
+     * @param tpf the time interval between frames (in seconds, &ge;0)
+     */
+    @Override
+    public void update(float tpf) {
+        if (!enabled) {
+            return;
+        }
+
+        if (!MySpatial.isIgnoringTransforms(spatial)) {
+            Vector3f location = getPhysicsLocation(null);
+            MySpatial.setWorldLocation(spatial, location);
+
+            Quaternion orientation = getPhysicsRotation(null);
+            MySpatial.setWorldOrientation(spatial, orientation);
+        }
+    }
+
+    /**
+     * Serialize this Control to the specified exporter, for example when saving
+     * to a J3O file.
+     *
+     * @param exporter (not null)
+     * @throws IOException from the exporter
+     */
+    @Override
+    public void write(JmeExporter exporter) throws IOException {
+        throw new UnsupportedOperationException("write() isn't implemented.");
     }
 }
