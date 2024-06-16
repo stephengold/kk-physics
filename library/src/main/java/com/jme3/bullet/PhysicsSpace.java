@@ -31,10 +31,10 @@
  */
 package com.jme3.bullet;
 
-import com.jme3.bullet.control.RigidBodyControl;
+import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Vector3f;
 import java.lang.foreign.MemorySession;
-import jme3utilities.math.MyMath;
+import java.util.logging.Logger;
 import jolt.Jolt;
 import jolt.core.JobSystem;
 import jolt.core.TempAllocator;
@@ -54,7 +54,7 @@ import jolt.physics.collision.broadphase.ObjectVsBroadPhaseLayerFilterFn;
  *
  * @author normenhansen
  */
-public class PhysicsSpace {
+public class PhysicsSpace extends CollisionSpace {
     // *************************************************************************
     // constants
 
@@ -66,11 +66,11 @@ public class PhysicsSpace {
     // *************************************************************************
     // fields
 
+    private int maxSubSteps = 4;
+
     private final JobSystem jobSystem;
     private final PhysicsSystem physicsSystem;
     private final TempAllocator tempAllocator;
-    private static final ThreadLocal<MemorySession> tlArenas
-            = new ThreadLocal<>();
     /**
      * copy of gravity-acceleration vector for newly-added bodies (default is
      * 9.81 in the -Y direction, corresponding to Earth-normal in MKS units)
@@ -88,16 +88,21 @@ public class PhysicsSpace {
     // *************************************************************************
     // constructors
 
-    public PhysicsSpace() {
+    /**
+     * Instantiate a PhysicsSpace.
+     *
+     * @param numSolvers
+     */
+    public PhysicsSpace(int numSolvers) {
+        super(numSolvers);
+
         this.tempAllocator = TempAllocator.of(10 * 1024 * 1024);
         MemorySession arena = getArena();
 
-        int numCpus = Runtime.getRuntime().availableProcessors();
-        int numThreads = MyMath.clamp(numCpus - 1, 1, 16);
         this.jobSystem = JobSystem.of(
                 JobSystem.MAX_PHYSICS_JOBS,
                 JobSystem.MAX_PHYSICS_BARRIERS,
-                numThreads);
+                numSolvers);
 
         BroadPhaseLayerInterfaceFn bplif = new BroadPhaseLayerInterfaceFn() {
             @Override
@@ -151,16 +156,29 @@ public class PhysicsSpace {
         this.physicsSystem = PhysicsSystem.of(maxBodies, numBodyMutexes,
                 maxBodyPairs, maxContactConstraints, bpli, ovbplf, olpf);
 
-        FVec3 defaultGravity = FVec3.of(arena, 0f, -10f, 0f);
+        FVec3 defaultGravity = FVec3.of(arena, gravity.x, gravity.y, gravity.z);
         physicsSystem.setGravity(defaultGravity);
+
+        initThread();
     }
     // *************************************************************************
     // new methods exposed
 
-    public void addBody(RigidBodyControl rbc) {
+    /**
+     * Add the specified collision object to this space.
+     *
+     * @param pco the collision object to add (not null, modified)
+     */
+    public void addCollisionObject(PhysicsRigidBody pco) {
         BodyInterface bodyInterface = getBodyInterface();
-        int id = rbc.getId();
-        bodyInterface.addBody(id, Activation.ACTIVATE);
+        int bodyId = (int) pco.nativeId();
+        float mass = pco.getMass();
+        if (mass > 0f) {
+            bodyInterface.addBody(bodyId, Activation.ACTIVATE);
+        } else {
+            bodyInterface.addBody(bodyId, Activation.DONT_ACTIVATE);
+        }
+        pco.setAddedToSpaceInternal(this);
     }
 
     public int countActiveBodies() {
@@ -168,21 +186,21 @@ public class PhysicsSpace {
         return result;
     }
 
-    final public static synchronized MemorySession getArena() {
-        MemorySession result = tlArenas.get();
-        if (result == null) {
-            //System.out.println("Lazily creating a confined memory session.");
-            result = MemorySession.openConfined();
-            assert result != null;
-            tlArenas.set(result);
-        }
-
-        return result;
-    }
-
+    /**
+     *
+     * @return
+     */
     public BodyInterface getBodyInterface() {
         BodyInterface result = physicsSystem.getBodyInterface();
         return result;
+    }
+    public int maxSubSteps() {
+        assert maxSubSteps >= 0 : maxSubSteps;
+        return maxSubSteps;
+    }
+
+    public void removeCollisionObject(PhysicsRigidBody rbc) {
+        // TODO
     }
 
     /**
@@ -200,6 +218,7 @@ public class PhysicsSpace {
     }
 
     public void setMaxSubSteps(int maxSubSteps) {
+        this.maxSubSteps = maxSubSteps;
     }
 
     public void update(float tpf) {

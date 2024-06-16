@@ -42,6 +42,7 @@ import com.jme3.app.state.BaseAppState;
  */
 public class BulletAppState extends BaseAppState {
 
+    private int numSolvers = Runtime.getRuntime().availableProcessors();
     private PhysicsSpace physicsSpace;
 
     public BulletAppState() {
@@ -52,7 +53,7 @@ public class BulletAppState extends BaseAppState {
         super.stateAttached(stateManager);
 
         assert physicsSpace == null;
-        this.physicsSpace = new PhysicsSpace();
+        this.physicsSpace = new PhysicsSpace(numSolvers);
     }
 
     public PhysicsSpace getPhysicsSpace() {
