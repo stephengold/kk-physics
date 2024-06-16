@@ -31,52 +31,67 @@
  */
 package com.jme3.bullet.collision.shapes;
 
-import com.jme3.bullet.PhysicsSpace;
-import com.jme3.math.Vector3f;
-import java.lang.foreign.MemorySession;
 import java.util.logging.Logger;
-import jolt.Jolt;
-import jolt.math.FVec3;
-import jolt.physics.collision.shape.BoxShapeSettings;
+import jme3utilities.Validate;
 import jolt.physics.collision.shape.Shape;
 
 /**
- * An axis-aligned, rectangular-solid collision shape.
+ * The abstract base class for collision shapes based on Jolt's {@code Shape}
+ * class.
  *
  * @author normenhansen
  */
-public class BoxCollisionShape extends CollisionShape {
+abstract public class CollisionShape {
     // *************************************************************************
-    // loggers
+    // constants and loggers
 
     /**
      * message logger for this class
      */
-    final public static Logger logger2
-            = Logger.getLogger(BoxCollisionShape.class.getName());
+    final public static Logger logger
+            = Logger.getLogger(CollisionShape.class.getName());
+    // *************************************************************************
+    // fields
+
+    /**
+     * underlying jolt-java object
+     */
+    private Shape joltShape = null;
     // *************************************************************************
     // constructors
 
     /**
-     * No-argument constructor needed by SavableClassUtil.
+     * Instantiate a collision shape with native object.
+     * <p>
+     * This no-arg constructor was made explicit to avoid javadoc warnings from
+     * JDK 18+.
      */
-    protected BoxCollisionShape() {
+    protected CollisionShape() {
     }
+    // *************************************************************************
+    // new methods exposed
 
     /**
-     * Instantiate a box with the specified half extents.
+     * Access the underlying jolt-java Shape.
      *
-     * @param halfExtents the desired half extents on each local axis (not null,
-     * all components &ge;0, unaffected)
+     * @return the pre-existing instance (not null)
      */
-    public BoxCollisionShape(Vector3f halfExtents) {
-        MemorySession arena = PhysicsSpace.getArena();
-        FVec3 vec3
-                = FVec3.of(arena, halfExtents.x, halfExtents.y, halfExtents.z);
-        BoxShapeSettings bss = BoxShapeSettings.of(vec3);
-        Shape shape = Jolt.use(bss, settings -> {
-            return settings.create(arena);
-        }).orThrow();
-        setNativeObject(shape);
+    public Shape getJoltShape() {
+        assert joltShape != null;
+        return joltShape;
+    }
+    // *************************************************************************
+    // new protected methods
+
+    /**
+     * Initialize the underlying jolt-java Shape.
+     *
+     * @param joltShape the jolt-java Shape to use
+     */
+    protected void setNativeObject(Shape joltShape) {
+        Validate.nonNull(joltShape, "jolt shape");
+
+        assert this.joltShape == null : joltShape;
+        this.joltShape = joltShape;
     }
 }

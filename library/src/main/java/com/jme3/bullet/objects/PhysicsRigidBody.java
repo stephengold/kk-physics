@@ -449,13 +449,13 @@ public class PhysicsRigidBody {
 
         BodyCreationSettings settings;
         if (mass > 0f) {
-            settings = BodyCreationSettings.of(arena, shape.getShape(),
+            settings = BodyCreationSettings.of(arena, shape.getJoltShape(),
                     fvec3, quat, MotionType.DYNAMIC,
                     PhysicsSpace.OBJ_LAYER_MOVING);
             settings.setGravityFactor(1f);
         } else {
             assert mass == 0f : mass;
-            settings = BodyCreationSettings.of(arena, shape.getShape(),
+            settings = BodyCreationSettings.of(arena, shape.getJoltShape(),
                     fvec3, quat, MotionType.STATIC,
                     PhysicsSpace.OBJ_LAYER_NON_MOVING);
             settings.setGravityFactor(0f);
