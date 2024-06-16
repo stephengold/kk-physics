@@ -285,9 +285,8 @@ public class PhysicsSpace extends CollisionSpace {
         physicsSystem.optimizeBroadPhase();
 
         float deltaTime = 1 / 60f;
-        int collisionSteps = 1;
         int integrationSubSteps = 1;
-        physicsSystem.update(deltaTime, collisionSteps, integrationSubSteps,
+        physicsSystem.update(deltaTime, maxSubSteps, integrationSubSteps,
                 tempAllocator, jobSystem);
     }
 }
