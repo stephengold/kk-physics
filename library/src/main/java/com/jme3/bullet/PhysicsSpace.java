@@ -58,7 +58,13 @@ public class PhysicsSpace extends CollisionSpace {
     // *************************************************************************
     // constants and loggers
 
+    /**
+     * index of the broadphase layer for non-moving objects
+     */
     public static final byte BP_LAYER_NON_MOVING = 0;
+    /**
+     * index of the broadphase layer for moving objects
+     */
     public static final byte BP_LAYER_MOVING = 1;
     /**
      * index of the X axis
@@ -77,11 +83,20 @@ public class PhysicsSpace extends CollisionSpace {
      */
     final public static Logger logger
             = Logger.getLogger(PhysicsSpace.class.getName());
+    /**
+     * index of the object layer for non-moving objects
+     */
     public static final short OBJ_LAYER_NON_MOVING = 0;
+    /**
+     * index of the object layer for moving objects
+     */
     public static final short OBJ_LAYER_MOVING = 1;
     // *************************************************************************
     // fields
 
+    /**
+     * maximum number of simulation steps per frame
+     */
     private int maxSubSteps = 4;
 
     private final JobSystem jobSystem;
@@ -89,7 +104,7 @@ public class PhysicsSpace extends CollisionSpace {
     private final TempAllocator tempAllocator;
     /**
      * copy of gravity-acceleration vector for newly-added bodies (default is
-     * 9.81 in the -Y direction, corresponding to Earth-normal in MKS units)
+     * 9.81 in the -Y direction, approximating Earth-normal in MKS units)
      */
     final private Vector3f gravity = new Vector3f(0, -9.81f, 0);
 
@@ -197,24 +212,41 @@ public class PhysicsSpace extends CollisionSpace {
         pco.setAddedToSpaceInternal(this);
     }
 
+    /**
+     * Return the number of active bodies.
+     *
+     * @return the count (&ge;0)
+     */
     public int countActiveBodies() {
         int result = physicsSystem.getNumActiveBodies();
         return result;
     }
 
     /**
+     * Access the jolt-java BodyInterface.
      *
-     * @return
+     * @return an instance (not null)
      */
     public BodyInterface getBodyInterface() {
         BodyInterface result = physicsSystem.getBodyInterface();
         return result;
     }
+
+    /**
+     * Read the maximum number of simulation steps per frame.
+     *
+     * @return number of steps (&gt;0) or 0 for a variable time step
+     */
     public int maxSubSteps() {
         assert maxSubSteps >= 0 : maxSubSteps;
         return maxSubSteps;
     }
 
+    /**
+     * Remove the specified collision object from this space.
+     *
+     * @param rbc the collision object to remove (not null, modified)
+     */
     public void removeCollisionObject(PhysicsRigidBody rbc) {
         // TODO
     }
@@ -233,10 +265,22 @@ public class PhysicsSpace extends CollisionSpace {
         this.gravity.set(gravity);
     }
 
+    /**
+     * Alter the maximum number of simulation steps per frame.
+     *
+     * @param maxSubSteps the desired maximum number of steps
+     */
     public void setMaxSubSteps(int maxSubSteps) {
         this.maxSubSteps = maxSubSteps;
     }
 
+    /**
+     * Update this space. This method should be invoked from the thread that
+     * created the space.
+     *
+     * @see #setMaxSubSteps(int)
+     * @param tpf the time interval to simulate (in seconds, &ge;0)
+     */
     public void update(float tpf) {
         physicsSystem.optimizeBroadPhase();
 

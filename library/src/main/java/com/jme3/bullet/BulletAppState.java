@@ -53,12 +53,35 @@ public class BulletAppState extends BaseAppState {
     // *************************************************************************
     // fields
 
+    /**
+     * number of threads to create in the thread-safe pool
+     */
     private int numSolvers = Runtime.getRuntime().availableProcessors();
+    /**
+     * created {@code PhysicsSpace}
+     */
     private PhysicsSpace physicsSpace;
+    // *************************************************************************
+    // constructors
 
+    /**
+     * Instantiate an enabled app state to manage a new space.
+     * <p>
+     * Use {@code getStateManager().addState(bulletAppState)} to start
+     * simulating physics.
+     */
     public BulletAppState() {
+        // do nothing
     }
 
+    // *************************************************************************
+    // BaseAppState methods
+
+    /**
+     * Callback invoked when a request is made to attach the AppState.
+     *
+     * @param stateManager the manager instance (not null)
+     */
     @Override
     public void stateAttached(AppStateManager stateManager) {
         super.stateAttached(stateManager);
@@ -67,18 +90,40 @@ public class BulletAppState extends BaseAppState {
         this.physicsSpace = new PhysicsSpace(numSolvers);
     }
 
+    /**
+     * Access the PhysicsSpace managed by this state. Normally there is none
+     * until the state is attached. TODO re-order
+     *
+     * @return the pre-existing instance, or null if no simulation running
+     */
     public PhysicsSpace getPhysicsSpace() {
         return physicsSpace;
     }
 
+    /**
+     * Initialize this state prior to its first update. Should be invoked only
+     * by a subclass or by the AppStateManager.
+     *
+     * @param app the application which owns this state (not null)
+     */
     @Override
     protected void initialize(Application app) {
     }
 
+    /**
+     * Transition this state from disabled to enabled.
+     */
     @Override
     protected void onEnable() {
     }
 
+    /**
+     * Update this state prior to rendering. Should be invoked only by a
+     * subclass or by the AppStateManager. Invoked once per frame, provided the
+     * state is attached and enabled.
+     *
+     * @param tpf the time interval between frames (in seconds, &ge;0)
+     */
     @Override
     public void update(float tpf) {
         super.update(tpf);
@@ -86,10 +131,20 @@ public class BulletAppState extends BaseAppState {
         physicsSpace.update(tpf);
     }
 
+    /**
+     * Transition this state from enabled to disabled.
+     */
     @Override
     protected void onDisable() {
     }
 
+    /**
+     * Invoked after the app state is detached or during application shutdown if
+     * the state is still attached. onDisable() is called before this cleanup()
+     * method if the state is enabled at the time of cleanup.
+     *
+     * @param app the application (not null)
+     */
     @Override
     protected void cleanup(Application app) {
     }
