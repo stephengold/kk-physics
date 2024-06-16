@@ -73,9 +73,55 @@ public class BulletAppState extends BaseAppState {
     public BulletAppState() {
         // do nothing
     }
+    // *************************************************************************
+    // new methods exposed
 
+    /**
+     * Access the PhysicsSpace managed by this state. Normally there is none
+     * until the state is attached.
+     *
+     * @return the pre-existing instance, or null if no simulation running
+     */
+    public PhysicsSpace getPhysicsSpace() {
+        return physicsSpace;
+    }
     // *************************************************************************
     // BaseAppState methods
+
+    /**
+     * Invoked after the app state is detached or during application shutdown if
+     * the state is still attached. onDisable() is called before this cleanup()
+     * method if the state is enabled at the time of cleanup.
+     *
+     * @param app the application (not null)
+     */
+    @Override
+    protected void cleanup(Application app) {
+    }
+
+    /**
+     * Initialize this state prior to its first update. Should be invoked only
+     * by a subclass or by the AppStateManager.
+     *
+     * @param app the application which owns this state (not null)
+     */
+    @Override
+    protected void initialize(Application app) {
+    }
+
+    /**
+     * Transition this state from enabled to disabled.
+     */
+    @Override
+    protected void onDisable() {
+    }
+
+    /**
+     * Transition this state from disabled to enabled.
+     */
+    @Override
+    protected void onEnable() {
+    }
 
     /**
      * Callback invoked when a request is made to attach the AppState.
@@ -91,33 +137,6 @@ public class BulletAppState extends BaseAppState {
     }
 
     /**
-     * Access the PhysicsSpace managed by this state. Normally there is none
-     * until the state is attached. TODO re-order
-     *
-     * @return the pre-existing instance, or null if no simulation running
-     */
-    public PhysicsSpace getPhysicsSpace() {
-        return physicsSpace;
-    }
-
-    /**
-     * Initialize this state prior to its first update. Should be invoked only
-     * by a subclass or by the AppStateManager.
-     *
-     * @param app the application which owns this state (not null)
-     */
-    @Override
-    protected void initialize(Application app) {
-    }
-
-    /**
-     * Transition this state from disabled to enabled.
-     */
-    @Override
-    protected void onEnable() {
-    }
-
-    /**
      * Update this state prior to rendering. Should be invoked only by a
      * subclass or by the AppStateManager. Invoked once per frame, provided the
      * state is attached and enabled.
@@ -129,23 +148,5 @@ public class BulletAppState extends BaseAppState {
         super.update(tpf);
         assert isEnabled();
         physicsSpace.update(tpf);
-    }
-
-    /**
-     * Transition this state from enabled to disabled.
-     */
-    @Override
-    protected void onDisable() {
-    }
-
-    /**
-     * Invoked after the app state is detached or during application shutdown if
-     * the state is still attached. onDisable() is called before this cleanup()
-     * method if the state is enabled at the time of cleanup.
-     *
-     * @param app the application (not null)
-     */
-    @Override
-    protected void cleanup(Application app) {
     }
 }
