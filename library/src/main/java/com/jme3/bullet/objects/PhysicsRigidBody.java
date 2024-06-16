@@ -323,6 +323,11 @@ public class PhysicsRigidBody {
             getPhysicsLocationDp(location);
             getPhysicsRotation(orientation);
             snapshot = new RigidBodySnapshot(this);
+
+            if (removedFrom != null) {
+                removedFrom.removeCollisionObject(this);
+            }
+
             logger2.log(Level.INFO, "Clearing {0}.", this);
         }
 
@@ -360,6 +365,10 @@ public class PhysicsRigidBody {
         RigidBodySnapshot snapshot = new RigidBodySnapshot(this);
         MutableBody oldBody = joltBody;
         PhysicsSpace removedFrom = addedToSpace;
+
+        if (removedFrom != null) {
+            removedFrom.removeCollisionObject(this);
+        }
 
         Vec3d vec3d = new Vec3d(location);
         this.joltBody = createRigidBody(shape, mass, vec3d, orientation);
