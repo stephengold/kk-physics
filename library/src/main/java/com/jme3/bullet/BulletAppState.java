@@ -78,10 +78,6 @@ public class BulletAppState extends BaseAppState {
      * number of threads to create in the thread-safe pool
      */
     private int numSolvers = NativeLibrary.countThreads();
-    /**
-     * created {@code PhysicsSpace}
-     */
-    private PhysicsSpace physicsSpace;
     // *************************************************************************
     // constructors
 
@@ -113,7 +109,8 @@ public class BulletAppState extends BaseAppState {
      * @return the pre-existing instance, or null if no simulation running
      */
     public PhysicsSpace getPhysicsSpace() {
-        return physicsSpace;
+        PhysicsSpace result = debugConfig.getSpace();
+        return result;
     }
 
     /**
@@ -169,8 +166,35 @@ public class BulletAppState extends BaseAppState {
         Validate.nonNegative(speed, "speed");
         this.speed = speed;
     }
+
+    /**
+     * Allocate a PhysicsSpace and start simulating physics.
+     * <p>
+     * Simulation starts automatically after the state is attached. To start it
+     * sooner, invoke this method.
+     */
+    public void startPhysics() {
+        if (isRunning) {
+            return;
+        }
+
+        PhysicsSpace pSpace;
+        pSpace = createPhysicsSpace();
+        debugConfig.setSpace(pSpace);
+        setRunning(true);
+    }
     // *************************************************************************
     // new protected methods
+
+    /**
+     * Create the configured {@code PhysicsSpace}.
+     *
+     * @return a new instance (not null)
+     */
+    protected PhysicsSpace createPhysicsSpace() {
+        PhysicsSpace result = new PhysicsSpace(numSolvers);
+        return result;
+    }
 
     /**
      * Access the configuration for debug visualization.
@@ -249,7 +273,9 @@ public class BulletAppState extends BaseAppState {
     public void render(RenderManager rm) {
         assert isRunning;
         super.render(rm);
-        physicsSpace.update(isEnabled() ? tpf * speed : 0f);
+
+        PhysicsSpace pSpace = debugConfig.getSpace();
+        pSpace.update(isEnabled() ? tpf * speed : 0f);
     }
 
     /**
@@ -261,8 +287,9 @@ public class BulletAppState extends BaseAppState {
     public void stateAttached(AppStateManager stateManager) {
         super.stateAttached(stateManager);
 
-        assert physicsSpace == null;
-        this.physicsSpace = new PhysicsSpace(numSolvers);
+        if (!isRunning) {
+            startPhysics();
+        }
     }
 
     /**
