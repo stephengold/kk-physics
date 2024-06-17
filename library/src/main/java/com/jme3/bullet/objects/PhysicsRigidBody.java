@@ -320,13 +320,12 @@ public class PhysicsRigidBody {
         PhysicsSpace removedFrom = addedToSpace;
 
         if (oldBody != null) {
-            getPhysicsLocationDp(location);
-            getPhysicsRotation(orientation);
-            snapshot = new RigidBodySnapshot(this);
-
             if (removedFrom != null) {
+                getPhysicsLocationDp(location);
+                getPhysicsRotation(orientation);
                 removedFrom.removeCollisionObject(this);
             }
+            snapshot = new RigidBodySnapshot(this);
 
             logger2.log(Level.INFO, "Clearing {0}.", this);
         }
