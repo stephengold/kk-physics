@@ -35,6 +35,8 @@ import com.jme3.bullet.PhysicsSpace;
 import com.jme3.math.Vector3f;
 import java.lang.foreign.MemorySession;
 import java.util.logging.Logger;
+import jme3utilities.Validate;
+import jme3utilities.math.MyVector3f;
 import jolt.Jolt;
 import jolt.math.FVec3;
 import jolt.physics.collision.shape.BoxShapeSettings;
@@ -55,6 +57,13 @@ public class BoxCollisionShape extends CollisionShape {
     final public static Logger logger2
             = Logger.getLogger(BoxCollisionShape.class.getName());
     // *************************************************************************
+    // fields
+
+    /**
+     * JVM copy of the half extents (not null, no negative component)
+     */
+    private Vector3f halfExtents = new Vector3f(1f, 1f, 1f);
+    // *************************************************************************
     // constructors
 
     /**
@@ -64,12 +73,74 @@ public class BoxCollisionShape extends CollisionShape {
     }
 
     /**
+     * Instantiate a cube with the specified half extent.
+     *
+     * @param halfExtent the desired half extent on each local axis (&ge;0)
+     */
+    public BoxCollisionShape(float halfExtent) {
+        Validate.nonNegative(halfExtent, "half extent");
+
+        halfExtents.set(halfExtent, halfExtent, halfExtent);
+        createShape();
+    }
+
+    /**
+     * Instantiate a box with the specified half extents.
+     *
+     * @param xHalfExtent the desired half extent on the local X axis (&ge;0)
+     * @param yHalfExtent the desired half extent on the local Y axis (&ge;0)
+     * @param zHalfExtent the desired half extent on the local Z axis (&ge;0)
+     */
+    public BoxCollisionShape(
+            float xHalfExtent, float yHalfExtent, float zHalfExtent) {
+        Validate.nonNegative(xHalfExtent, "half extent on X");
+        Validate.nonNegative(yHalfExtent, "half extent on Y");
+        Validate.nonNegative(zHalfExtent, "half extent on Z");
+
+        halfExtents.set(xHalfExtent, yHalfExtent, zHalfExtent);
+        createShape();
+    }
+
+    /**
      * Instantiate a box with the specified half extents.
      *
      * @param halfExtents the desired half extents on each local axis (not null,
      * all components &ge;0, unaffected)
      */
     public BoxCollisionShape(Vector3f halfExtents) {
+        Validate.nonNegative(halfExtents, "half extents");
+
+        this.halfExtents.set(halfExtents);
+        createShape();
+    }
+    // *************************************************************************
+    // new methods exposed
+
+    /**
+     * Copy the half extents of the box.
+     *
+     * @param storeResult storage for the result (modified if not null)
+     * @return the half extent for each local axis (either storeResult or a new
+     * vector, not null, all components &ge;0)
+     */
+    public Vector3f getHalfExtents(Vector3f storeResult) {
+        assert MyVector3f.isAllNonNegative(halfExtents) : halfExtents;
+
+        Vector3f result;
+        if (storeResult == null) {
+            result = halfExtents.clone();
+        } else {
+            result = storeResult.set(halfExtents);
+        }
+        return result;
+    }
+    // *************************************************************************
+    // Java private methods
+
+    /**
+     * Instantiate the configured {@code Shape}.
+     */
+    private void createShape() {
         MemorySession arena = PhysicsSpace.getArena();
         FVec3 vec3
                 = FVec3.of(arena, halfExtents.x, halfExtents.y, halfExtents.z);
