@@ -67,7 +67,7 @@ public class BulletAppState extends BaseAppState {
      */
     final private DebugConfiguration debugConfig = new DebugConfiguration();
     /**
-     * simulation speed multiplier (paused=0)
+     * simulation speed multiplier (0&rarr;paused)
      */
     private float speed = 1f;
     /**
@@ -117,9 +117,9 @@ public class BulletAppState extends BaseAppState {
     }
 
     /**
-     * Determine the physics simulation speed.
+     * Return the physics-simulation speed.
      *
-     * @return the speedup factor (&ge;0, default=1)
+     * @return the speedup factor (&ge;0, default=1, 0&rarr;paused)
      */
     public float getSpeed() {
         assert speed >= 0f : speed;
@@ -163,7 +163,7 @@ public class BulletAppState extends BaseAppState {
     /**
      * Alter the physics simulation speed.
      *
-     * @param speed the desired speedup factor (&ge;0, default=1)
+     * @param speed the desired speedup factor (&ge;0, default=1, 0&rarr;paused)
      */
     public void setSpeed(float speed) {
         Validate.nonNegative(speed, "speed");
@@ -249,7 +249,7 @@ public class BulletAppState extends BaseAppState {
     public void render(RenderManager rm) {
         assert isRunning;
         super.render(rm);
-        physicsSpace.update(tpf);
+        physicsSpace.update(isEnabled() ? tpf * speed : 0f);
     }
 
     /**
