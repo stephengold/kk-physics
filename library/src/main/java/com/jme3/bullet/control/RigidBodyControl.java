@@ -32,7 +32,9 @@
 package com.jme3.bullet.control;
 
 import com.jme3.bullet.PhysicsSpace;
+import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.collision.shapes.CollisionShape;
+import com.jme3.bullet.collision.shapes.SphereCollisionShape;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.export.JmeExporter;
 import com.jme3.export.JmeImporter;
@@ -40,8 +42,12 @@ import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
+import com.jme3.scene.Geometry;
+import com.jme3.scene.Mesh;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.Control;
+import com.jme3.scene.shape.Box;
+import com.jme3.scene.shape.Sphere;
 import java.io.IOException;
 import java.util.logging.Logger;
 import jme3utilities.MySpatial;
@@ -85,8 +91,22 @@ public class RigidBodyControl
     // constructors
 
     /**
-     * Instantiate an enabled Control with an active/responsive rigid body and
-     * the specified shape and mass.
+     * Instantiate an enabled control. The new instance is incomplete because it
+     * lacks a collision shape, so it CANNOT be immediately added to a space.
+     *
+     * Its shape will be auto-generated when it is added to a Spatial. If the
+     * controlled spatial is a Geometry with a box or sphere mesh, a matching
+     * box or sphere {@code CollisionShape} will be generated.
+     *
+     * @param mass the desired mass (&ge;0)
+     */
+    public RigidBodyControl(float mass) {
+        this.mass = mass;
+    }
+
+    /**
+     * Instantiate an enabled {@code Control} with a dynamic or static rigid
+     * body and the specified shape and mass.
      *
      * @param shape the desired shape (not null, alias created)
      * @param mass the desired mass (&ge;0)
@@ -104,6 +124,34 @@ public class RigidBodyControl
      */
     public Spatial getSpatial() {
         return spatial;
+    }
+    // *************************************************************************
+    // new protected methods
+
+    /**
+     * Set the body's CollisionShape based on the controlled spatial.
+     */
+    protected void createCollisionShape() {
+        if (spatial == null) {
+            return;
+        }
+
+        CollisionShape shape = null;
+        if (spatial instanceof Geometry) {
+            Mesh mesh = ((Geometry) spatial).getMesh();
+            if (mesh instanceof Sphere) {
+                float radius = ((Sphere) mesh).getRadius();
+                shape = new SphereCollisionShape(radius);
+            } else if (mesh instanceof Box) {
+                Box box = (Box) mesh;
+                shape = new BoxCollisionShape(
+                        box.getXExtent(), box.getYExtent(), box.getZExtent());
+            }
+        }
+        if (shape == null) {
+            assert false; // TODO use CollisionShapeFactory
+        }
+        setCollisionShape(shape);
     }
     // *************************************************************************
     // PhysicsControl methods
@@ -213,6 +261,11 @@ public class RigidBodyControl
             this.added = false;
         }
         if (newSpace != null && isEnabled()) {
+            if (!hasAssignedNativeObject()) {
+                String message = "Cannot add an incomplete RigidBodyControl "
+                        + "to a PhysicsSpace.";
+                throw new IllegalStateException(message);
+            }
             newSpace.addCollisionObject(this);
             this.added = true;
         }
@@ -240,6 +293,10 @@ public class RigidBodyControl
         setUserObject(controlledSpatial); // link from collision object
 
         if (controlledSpatial != null) {
+            if (getCollisionShape() == null) {
+                createCollisionShape();
+                rebuildRigidBody();
+            }
             Vector3f location = spatial.getWorldTranslation(); // alias
             Quaternion orientation = spatial.getWorldRotation(); // alias
             reposition(location, orientation);
