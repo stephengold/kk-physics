@@ -56,14 +56,10 @@ import jolt.physics.body.MutableMotionProperties;
  *
  * @author normenhansen
  */
-public class PhysicsRigidBody {
+public class PhysicsRigidBody extends PhysicsBody {
     // *************************************************************************
     // constants and loggers
 
-    /**
-     * magic mass value used to specify a static rigid body
-     */
-    final public static float massForStatic = 0f;
     /**
      * message logger for this class
      */
@@ -225,15 +221,6 @@ public class PhysicsRigidBody {
         result.set(fvec3.getX(), fvec3.getY(), fvec3.getZ());
 
         return result;
-    }
-
-    /**
-     * Return the body's mass.
-     *
-     * @return the mass (&gt;0) or zero for a static body
-     */
-    public float getMass() {
-        return mass;
     }
 
     /**
@@ -451,17 +438,6 @@ public class PhysicsRigidBody {
     }
 
     /**
-     * Relocate the body's center of mass.
-     *
-     * @param location the desired location (in physics-space coordinates, not
-     * null, finite, unaffected)
-     */
-    public void setPhysicsLocation(Vector3f location) {
-        Quaternion orientation = getPhysicsRotation(null);
-        reposition(location, orientation);
-    }
-
-    /**
      * Associate a "user" with this collision object. Used by physics controls.
      *
      * @param user the desired scene object (alias created, default=null)
@@ -469,6 +445,30 @@ public class PhysicsRigidBody {
      */
     public void setUserObject(Object user) {
         this.userObject = user;
+    }
+    // *************************************************************************
+    // PhysicsBody methods
+
+    /**
+     * Return the body's mass.
+     *
+     * @return the mass (&gt;0) or zero for a static body
+     */
+    @Override
+    public float getMass() {
+        return mass;
+    }
+
+    /**
+     * Relocate the body's center of mass.
+     *
+     * @param location the desired location (in physics-space coordinates, not
+     * null, finite, unaffected)
+     */
+    @Override
+    public void setPhysicsLocation(Vector3f location) {
+        Quaternion orientation = getPhysicsRotation(null);
+        reposition(location, orientation);
     }
     // *************************************************************************
     // private methods
