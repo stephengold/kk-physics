@@ -31,6 +31,7 @@
  */
 package com.jme3.bullet.objects;
 
+import com.jme3.bullet.collision.PhysicsCollisionObject;
 import com.jme3.math.Vector3f;
 
 /**
@@ -38,7 +39,7 @@ import com.jme3.math.Vector3f;
  *
  * @author Stephen Gold sgold@sonic.net
  */
-abstract public class PhysicsBody {
+abstract public class PhysicsBody extends PhysicsCollisionObject {
     // *************************************************************************
     // constants and loggers
 

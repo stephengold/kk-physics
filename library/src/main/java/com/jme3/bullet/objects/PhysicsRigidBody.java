@@ -69,10 +69,6 @@ public class PhysicsRigidBody extends PhysicsBody {
     // fields
 
     /**
-     * JVM copy of the shape of the body
-     */
-    private CollisionShape shape;
-    /**
      * JVM copy of the mass (&gt;0) of a dynamic body, or 0 for a static body
      */
     protected float mass = 1f;
@@ -80,16 +76,6 @@ public class PhysicsRigidBody extends PhysicsBody {
      * underlying jolt-java object
      */
     private MutableBody joltBody;
-    /**
-     * scene object that's using this collision object. The scene object is
-     * typically a PhysicsControl, PhysicsLink, or Spatial. Used by physics
-     * controls.
-     */
-    private Object userObject = null;
-    /**
-     * where this body has been added, or null if removed or never added
-     */
-    private PhysicsSpace addedToSpace = null;
     // *************************************************************************
     // constructors
 
@@ -143,7 +129,7 @@ public class PhysicsRigidBody extends PhysicsBody {
         Validate.nonNull(location, "location");
         Validate.nonZero(orientation, "orientation");
 
-        this.shape = shape;
+        super.setCollisionShape(shape);
         this.mass = mass;
         this.joltBody = createRigidBody(shape, mass, location, orientation);
     }
@@ -185,24 +171,6 @@ public class PhysicsRigidBody extends PhysicsBody {
     }
 
     /**
-     * Access the shape of this body.
-     *
-     * @return the pre-existing instance, or null if none
-     */
-    public CollisionShape getCollisionShape() {
-        return shape;
-    }
-
-    /**
-     * Access the space where this body has been added.
-     *
-     * @return the pre-existing instance, or null if not added
-     */
-    public PhysicsSpace getCollisionSpace() {
-        return addedToSpace;
-    }
-
-    /**
      * Copy the linear velocity of this body's center of mass. The body must be
      * in dynamic mode.
      *
@@ -235,7 +203,8 @@ public class PhysicsRigidBody extends PhysicsBody {
 
         MemorySession arena = PhysicsSpace.getArena();
         FVec3 fvec3 = FVec3.of(arena);
-        BodyInterface bodyInterface = addedToSpace.getBodyInterface();
+        BodyInterface bodyInterface
+                = ((PhysicsSpace) getCollisionSpace()).getBodyInterface();
         int bodyId = joltBody.getId();
         bodyInterface.getCenterOfMassPosition(bodyId, fvec3);
         result.x = fvec3.getX();
@@ -258,7 +227,8 @@ public class PhysicsRigidBody extends PhysicsBody {
 
         MemorySession arena = PhysicsSpace.getArena();
         FVec3 fvec3 = FVec3.of(arena);
-        BodyInterface bodyInterface = addedToSpace.getBodyInterface();
+        BodyInterface bodyInterface
+                = ((PhysicsSpace) getCollisionSpace()).getBodyInterface();
         int bodyId = joltBody.getId();
         bodyInterface.getCenterOfMassPosition(bodyId, fvec3);
         result.x = fvec3.getX();
@@ -286,16 +256,6 @@ public class PhysicsRigidBody extends PhysicsBody {
         result.set(wr.getX(), wr.getY(), wr.getZ(), wr.getW());
 
         return result;
-    }
-
-    /**
-     * Access the scene object that's using this collision object, typically a
-     * PhysicsControl, PhysicsLink, or Spatial. Used by physics controls.
-     *
-     * @return the pre-existing instance, or null if none
-     */
-    public Object getUserObject() {
-        return userObject;
     }
 
     /**
@@ -340,8 +300,7 @@ public class PhysicsRigidBody extends PhysicsBody {
         Vec3d location = new Vec3d();
         Quaternion orientation = new Quaternion();
         RigidBodySnapshot snapshot = null;
-        PhysicsSpace removedFrom = addedToSpace;
-
+        PhysicsSpace removedFrom = (PhysicsSpace) getCollisionSpace();
         if (oldBody != null) {
             if (removedFrom != null) {
                 getPhysicsLocationDp(location);
@@ -353,6 +312,7 @@ public class PhysicsRigidBody extends PhysicsBody {
             logger2.log(Level.INFO, "Clearing {0}.", this);
         }
 
+        CollisionShape shape = getCollisionShape();
         this.joltBody = createRigidBody(shape, mass, location, orientation);
         if (logger2.isLoggable(Level.INFO)) {
             if (oldBody != null) {
@@ -386,12 +346,13 @@ public class PhysicsRigidBody extends PhysicsBody {
     public void reposition(Vector3f location, Quaternion orientation) {
         RigidBodySnapshot snapshot = new RigidBodySnapshot(this);
         MutableBody oldBody = joltBody;
-        PhysicsSpace removedFrom = addedToSpace;
+        PhysicsSpace removedFrom = (PhysicsSpace) getCollisionSpace();
 
         if (removedFrom != null) {
             removedFrom.removeCollisionObject(this);
         }
 
+        CollisionShape shape = getCollisionShape();
         Vec3d vec3d = new Vec3d(location);
         this.joltBody = createRigidBody(shape, mass, vec3d, orientation);
         if (logger2.isLoggable(Level.INFO)) {
@@ -416,15 +377,6 @@ public class PhysicsRigidBody extends PhysicsBody {
     }
 
     /**
-     * Alter the {@code addedToSpace} field. Internal use only.
-     *
-     * @param physicsSpace (may be null, alias created)
-     */
-    public void setAddedToSpaceInternal(PhysicsSpace physicsSpace) {
-        this.addedToSpace = physicsSpace;
-    }
-
-    /**
      * Alter this body's angular velocity.
      *
      * @param omega the desired angular velocity (in physics-space coordinates,
@@ -446,10 +398,10 @@ public class PhysicsRigidBody extends PhysicsBody {
     public void setCollisionShape(CollisionShape desiredShape) {
         Validate.nonNull(desiredShape, "collision shape");
 
-        if (desiredShape == shape) {
+        if (desiredShape == getCollisionShape()) {
             return;
         }
-        this.shape = desiredShape;
+        super.setCollisionShape(desiredShape);
         rebuildRigidBody();
     }
 
@@ -464,16 +416,6 @@ public class PhysicsRigidBody extends PhysicsBody {
         FVec3 fvec3 = FVec3.of(arena, (float) velocity.x, (float) velocity.y,
                 (float) velocity.z);
         joltBody.setLinearVelocity(fvec3);
-    }
-
-    /**
-     * Associate a "user" with this collision object. Used by physics controls.
-     *
-     * @param user the desired scene object (alias created, default=null)
-     * @see #getUserObject()
-     */
-    public void setUserObject(Object user) {
-        this.userObject = user;
     }
     // *************************************************************************
     // PhysicsBody methods
