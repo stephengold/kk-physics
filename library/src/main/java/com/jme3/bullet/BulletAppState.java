@@ -34,7 +34,9 @@ package com.jme3.bullet;
 import com.jme3.app.Application;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.app.state.BaseAppState;
+import com.jme3.bullet.debug.DebugConfiguration;
 import java.util.logging.Logger;
+import jme3utilities.Validate;
 
 /**
  * An AppState to manage a single PhysicsSpace.
@@ -53,6 +55,19 @@ public class BulletAppState extends BaseAppState {
     // *************************************************************************
     // fields
 
+    /**
+     * true if-and-only-if the physics simulation is running (started but not
+     * yet stopped)
+     */
+    private volatile boolean isRunning = false;
+    /**
+     * configuration for debug visualization
+     */
+    final private DebugConfiguration debugConfig = new DebugConfiguration();
+    /**
+     * simulation speed multiplier (paused=0)
+     */
+    private float speed = 1f;
     /**
      * number of threads to create in the thread-safe pool
      */
@@ -77,6 +92,15 @@ public class BulletAppState extends BaseAppState {
     // new methods exposed
 
     /**
+     * Count the solvers in the thread-safe pool.
+     *
+     * @return the count
+     */
+    public int countSolvers() {
+        return numSolvers;
+    }
+
+    /**
      * Access the PhysicsSpace managed by this state. Normally there is none
      * until the state is attached.
      *
@@ -84,6 +108,91 @@ public class BulletAppState extends BaseAppState {
      */
     public PhysicsSpace getPhysicsSpace() {
         return physicsSpace;
+    }
+
+    /**
+     * Determine the physics simulation speed.
+     *
+     * @return the speedup factor (&ge;0, default=1)
+     */
+    public float getSpeed() {
+        assert speed >= 0f : speed;
+        return speed;
+    }
+
+    /**
+     * Test whether the physics simulation is running (started but not yet
+     * stopped).
+     *
+     * @return true if running, otherwise false
+     */
+    public boolean isRunning() {
+        return isRunning;
+    }
+
+    /**
+     * Enable or disable debug visualization. Changes take effect on the next
+     * update.
+     *
+     * @param debugEnabled true &rarr; enable, false &rarr; disable
+     * (default=false)
+     */
+    public void setDebugEnabled(boolean debugEnabled) {
+        debugConfig.setEnabled(debugEnabled);
+    }
+
+    /**
+     * Alter the number of solvers in the thread-safe pool.
+     *
+     * @param numSolvers the desired number of solvers in the thread-safe pool
+     * (&ge;1, &le;64, default=numThreads)
+     */
+    public void setNumSolvers(int numSolvers) {
+        Validate.inRange(numSolvers, "number of solvers", 1, 64);
+        assert !isRunning();
+
+        this.numSolvers = numSolvers;
+    }
+
+    /**
+     * Alter the physics simulation speed.
+     *
+     * @param speed the desired speedup factor (&ge;0, default=1)
+     */
+    public void setSpeed(float speed) {
+        Validate.nonNegative(speed, "speed");
+        this.speed = speed;
+    }
+    // *************************************************************************
+    // new protected methods
+
+    /**
+     * Access the configuration for debug visualization.
+     *
+     * @return the pre-existing instance (not null)
+     */
+    protected DebugConfiguration getDebugConfiguration() {
+        assert debugConfig != null;
+        return debugConfig;
+    }
+
+    /**
+     * Alter which PhysicsSpace is managed by this state.
+     *
+     * @param newSpace the space to be managed (may be null)
+     */
+    protected void setPhysicsSpace(PhysicsSpace newSpace) {
+        debugConfig.setSpace(newSpace);
+    }
+
+    /**
+     * Alter whether the physics simulation is running (started but not yet
+     * stopped).
+     *
+     * @param desiredSetting true&rarr;running, false&rarr;not running
+     */
+    protected void setRunning(boolean desiredSetting) {
+        this.isRunning = desiredSetting;
     }
     // *************************************************************************
     // BaseAppState methods
