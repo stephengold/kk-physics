@@ -43,7 +43,8 @@ import jolt.physics.collision.shape.BoxShapeSettings;
 import jolt.physics.collision.shape.Shape;
 
 /**
- * An axis-aligned, rectangular-solid collision shape.
+ * An axis-aligned, rectangular-solid collision shape based on jolt-java's
+ * {@code BoxShape}.
  *
  * @author normenhansen
  */
@@ -60,7 +61,8 @@ public class BoxCollisionShape extends CollisionShape {
     // fields
 
     /**
-     * JVM copy of the half extents (not null, no negative component)
+     * copy of the half extents for each local axis (not null, no negative
+     * component)
      */
     private Vector3f halfExtents = new Vector3f(1f, 1f, 1f);
     // *************************************************************************
@@ -73,7 +75,7 @@ public class BoxCollisionShape extends CollisionShape {
     }
 
     /**
-     * Instantiate a cube with the specified half extent.
+     * Instantiate a cube shape with the specified half extent.
      *
      * @param halfExtent the desired half extent on each local axis (&ge;0)
      */
@@ -121,7 +123,7 @@ public class BoxCollisionShape extends CollisionShape {
      *
      * @param storeResult storage for the result (modified if not null)
      * @return the half extent for each local axis (either storeResult or a new
-     * vector, not null, all components &ge;0)
+     * vector, not null, no negative component)
      */
     public Vector3f getHalfExtents(Vector3f storeResult) {
         assert MyVector3f.isAllNonNegative(halfExtents) : halfExtents;
@@ -138,7 +140,7 @@ public class BoxCollisionShape extends CollisionShape {
     // Java private methods
 
     /**
-     * Instantiate the configured {@code Shape}.
+     * Instantiate the configured {@code BoxShape}.
      */
     private void createShape() {
         MemorySession arena = PhysicsSpace.getArena();

@@ -40,7 +40,7 @@ import jolt.physics.collision.shape.Shape;
 import jolt.physics.collision.shape.SphereShapeSettings;
 
 /**
- * A spherical collision shape.
+ * A spherical collision shape based on jolt-java's {@code SphereShape}.
  *
  * @author normenhansen
  */
@@ -72,7 +72,7 @@ public class SphereCollisionShape extends CollisionShape {
     /**
      * Instantiate a sphere shape with the specified radius.
      *
-     * @param radius the desired unscaled radius (in shape units, &ge;0)
+     * @param radius the desired radius (&ge;0)
      */
     public SphereCollisionShape(float radius) {
         Validate.nonNegative(radius, "radius");
@@ -86,7 +86,7 @@ public class SphereCollisionShape extends CollisionShape {
     /**
      * Return the radius of the sphere.
      *
-     * @return the unscaled radius (in shape units, &ge;0)
+     * @return the radius (&ge;0)
      */
     public float getRadius() {
         assert radius >= 0f : radius;
@@ -96,7 +96,7 @@ public class SphereCollisionShape extends CollisionShape {
     // Java private methods
 
     /**
-     * Instantiate the configured shape.
+     * Instantiate the configured {@code SphereShape}.
      */
     private void createShape() {
         assert radius >= 0f : radius;

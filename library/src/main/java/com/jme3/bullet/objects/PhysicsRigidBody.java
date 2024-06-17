@@ -69,7 +69,7 @@ public class PhysicsRigidBody extends PhysicsBody {
     // fields
 
     /**
-     * JVM copy of the mass (&gt;0) of a dynamic body, or 0 for a static body
+     * copy of the mass (&gt;0) of a dynamic body, or 0 for a static body
      */
     protected float mass = 1f;
     /**
@@ -151,7 +151,7 @@ public class PhysicsRigidBody extends PhysicsBody {
     }
 
     /**
-     * Copy this body's angular velocity. The body must be in dynamic mode.
+     * Copy the body's angular velocity. The body must be in dynamic mode.
      *
      * @param storeResult storage for the result (modified if not null)
      * @return a velocity vector (radians per second in physics-space
@@ -171,7 +171,7 @@ public class PhysicsRigidBody extends PhysicsBody {
     }
 
     /**
-     * Copy the linear velocity of this body's center of mass. The body must be
+     * Copy the linear velocity of the body's center of mass. The body must be
      * in dynamic mode.
      *
      * @param storeResult storage for the result (modified if not null)
@@ -192,7 +192,7 @@ public class PhysicsRigidBody extends PhysicsBody {
     }
 
     /**
-     * Copy the location of this object's center to a Vector3f.
+     * Copy the location of the object's center to a Vector3f.
      *
      * @param storeResult storage for the result (modified if not null)
      * @return a location vector (in physics-space coordinates, either
@@ -216,7 +216,7 @@ public class PhysicsRigidBody extends PhysicsBody {
     }
 
     /**
-     * Copy the location of this object's center to a Vec3d.
+     * Copy the location of the object's center to a Vec3d.
      *
      * @param storeResult storage for the result (modified if not null)
      * @return a location vector (in physics-space coordinates, either
@@ -240,7 +240,7 @@ public class PhysicsRigidBody extends PhysicsBody {
     }
 
     /**
-     * Copy the orientation (rotation) of this object to a Quaternion.
+     * Copy the orientation (rotation) of the object to a Quaternion.
      *
      * @param storeResult storage for the result (modified if not null)
      * @return a rotation Quaternion (in physics-space coordinates, either
@@ -293,7 +293,7 @@ public class PhysicsRigidBody extends PhysicsBody {
     }
 
     /**
-     * Rebuild this rigid body with a new jolt-java object.
+     * Rebuild the rigid body with a new jolt-java object.
      */
     public void rebuildRigidBody() {
         MutableBody oldBody = joltBody;
@@ -336,7 +336,7 @@ public class PhysicsRigidBody extends PhysicsBody {
     }
 
     /**
-     * Rebuild this rigid body in a new position.
+     * Rebuild the rigid body in a new position.
      *
      * @param location the desired location (in physics-space coordinates, not
      * null, unaffected)
@@ -377,7 +377,7 @@ public class PhysicsRigidBody extends PhysicsBody {
     }
 
     /**
-     * Alter this body's angular velocity.
+     * Alter the body's angular velocity.
      *
      * @param omega the desired angular velocity (in physics-space coordinates,
      * not null, unaffected)
@@ -390,7 +390,7 @@ public class PhysicsRigidBody extends PhysicsBody {
     }
 
     /**
-     * Apply the specified CollisionShape to this body. The body gets rebuilt on
+     * Apply the specified CollisionShape to the body. The body gets rebuilt on
      * the jolt-java side.
      *
      * @param desiredShape the shape to apply (not null, alias created)
@@ -406,7 +406,7 @@ public class PhysicsRigidBody extends PhysicsBody {
     }
 
     /**
-     * Alter the linear velocity of this body's center of mass.
+     * Alter the linear velocity of the body's center of mass.
      *
      * @param velocity the desired velocity (physics-space units per second in
      * physics-space coordinates, not null, unaffected)
