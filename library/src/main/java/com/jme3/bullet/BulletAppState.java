@@ -36,6 +36,7 @@ import com.jme3.app.state.AppStateManager;
 import com.jme3.app.state.BaseAppState;
 import com.jme3.bullet.debug.DebugConfiguration;
 import com.jme3.bullet.util.NativeLibrary;
+import com.jme3.renderer.RenderManager;
 import java.util.logging.Logger;
 import jme3utilities.Validate;
 
@@ -69,6 +70,10 @@ public class BulletAppState extends BaseAppState {
      * simulation speed multiplier (paused=0)
      */
     private float speed = 1f;
+    /**
+     * time interval between frames (in seconds) from the most recent update
+     */
+    private float tpf;
     /**
      * number of threads to create in the thread-safe pool
      */
@@ -234,6 +239,20 @@ public class BulletAppState extends BaseAppState {
     }
 
     /**
+     * Render this state. Should be invoked only by a subclass or by the
+     * AppStateManager. Invoked once per frame, provided the state is attached
+     * and enabled.
+     *
+     * @param rm the render manager (not null)
+     */
+    @Override
+    public void render(RenderManager rm) {
+        assert isRunning;
+        super.render(rm);
+        physicsSpace.update(tpf);
+    }
+
+    /**
      * Callback invoked when a request is made to attach the AppState.
      *
      * @param stateManager the manager instance (not null)
@@ -256,7 +275,6 @@ public class BulletAppState extends BaseAppState {
     @Override
     public void update(float tpf) {
         super.update(tpf);
-        assert isEnabled();
-        physicsSpace.update(tpf);
+        this.tpf = tpf;
     }
 }
