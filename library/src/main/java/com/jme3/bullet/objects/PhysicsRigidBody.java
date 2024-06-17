@@ -69,7 +69,7 @@ public class PhysicsRigidBody extends PhysicsBody {
     // fields
 
     /**
-     * current shape of this body
+     * JVM copy of the shape of the body
      */
     private CollisionShape shape;
     /**
@@ -422,6 +422,22 @@ public class PhysicsRigidBody extends PhysicsBody {
         FVec3 fvec3 = FVec3.of(arena, (float) omega.x, (float) omega.y,
                 (float) omega.z);
         joltBody.setAngularVelocity(fvec3);
+    }
+
+    /**
+     * Apply the specified CollisionShape to this body. The body gets rebuilt on
+     * the jolt-java side.
+     *
+     * @param desiredShape the shape to apply (not null, alias created)
+     */
+    public void setCollisionShape(CollisionShape desiredShape) {
+        Validate.nonNull(desiredShape, "collision shape");
+
+        if (desiredShape == shape) {
+            return;
+        }
+        this.shape = desiredShape;
+        rebuildRigidBody();
     }
 
     /**
