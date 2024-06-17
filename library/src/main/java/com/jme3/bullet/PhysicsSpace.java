@@ -122,7 +122,7 @@ public class PhysicsSpace extends CollisionSpace {
     /**
      * Instantiate a PhysicsSpace.
      *
-     * @param numSolvers
+     * @param numSolvers the desired number of worker threads (&ge;1, &le;64)
      */
     public PhysicsSpace(int numSolvers) {
         super(numSolvers);

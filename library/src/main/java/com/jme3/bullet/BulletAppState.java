@@ -279,7 +279,8 @@ public class BulletAppState extends BaseAppState {
     }
 
     /**
-     * Callback invoked when a request is made to attach the AppState.
+     * Transition this state from detached to initializing. Should be invoked
+     * only by a subclass or by the AppStateManager.
      *
      * @param stateManager the manager instance (not null)
      */

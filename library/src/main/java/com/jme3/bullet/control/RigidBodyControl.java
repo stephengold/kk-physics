@@ -120,7 +120,7 @@ public class RigidBodyControl
     /**
      * Access the controlled spatial.
      *
-     * @return the Spatial, or null if none
+     * @return the pre-existing {@code Spatial}, or null if none
      */
     public Spatial getSpatial() {
         return spatial;

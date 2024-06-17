@@ -282,10 +282,10 @@ public class PhysicsRigidBody extends PhysicsBody {
     }
 
     /**
-     * Return the ID of the assigned native object, assuming that one is
+     * Return the ID of the assigned jolt-java object, assuming that one is
      * assigned.
      *
-     * @return the native identifier
+     * @return the jolt-java identifier
      */
     public long nativeId() {
         long result = joltBody.getId();
@@ -293,7 +293,7 @@ public class PhysicsRigidBody extends PhysicsBody {
     }
 
     /**
-     * Rebuild this rigid body with a new native object.
+     * Rebuild this rigid body with a new jolt-java object.
      */
     public void rebuildRigidBody() {
         MutableBody oldBody = joltBody;
@@ -442,15 +442,19 @@ public class PhysicsRigidBody extends PhysicsBody {
         reposition(location, orientation);
     }
     // *************************************************************************
-    // private methods
+    // Java private methods
 
     /**
+     * Instantiate the specified {@code MutableBody}.
      *
-     * @param shape
-     * @param mass
-     * @param location
-     * @param orientation
-     * @return
+     * @param shape the desired shape (not null, alias created)
+     * @param mass if 0, a static body is created; otherwise a dynamic body is
+     * created (&ge;0, default=1)
+     * @param location the desired location (in physics-space coordinates, not
+     * null, unaffected)
+     * @param orientation the desired orientation (in physics-space coordinates,
+     * not null, not zero, unaffected)
+     * @return a new instance (not null)
      */
     private static MutableBody createRigidBody(CollisionShape shape, float mass,
             Vec3d location, Quaternion orientation) {
