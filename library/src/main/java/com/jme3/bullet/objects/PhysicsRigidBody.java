@@ -299,7 +299,20 @@ public class PhysicsRigidBody extends PhysicsBody {
     }
 
     /**
-     * Test whether this body is in dynamic mode.
+     * Test whether a jolt-java object is assigned to this instance.
+     *
+     * @return true if one is assigned, otherwise false
+     */
+    final public boolean hasAssignedNativeObject() {
+        if (joltBody == null) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    /**
+     * Test whether the body is in dynamic mode.
      *
      * @return true if in dynamic mode, otherwise false (static/kinematic mode)
      */
