@@ -35,6 +35,7 @@ import com.jme3.app.Application;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.app.state.BaseAppState;
 import com.jme3.bullet.debug.DebugConfiguration;
+import com.jme3.bullet.util.NativeLibrary;
 import java.util.logging.Logger;
 import jme3utilities.Validate;
 
@@ -71,7 +72,7 @@ public class BulletAppState extends BaseAppState {
     /**
      * number of threads to create in the thread-safe pool
      */
-    private int numSolvers = Runtime.getRuntime().availableProcessors();
+    private int numSolvers = NativeLibrary.countThreads();
     /**
      * created {@code PhysicsSpace}
      */
