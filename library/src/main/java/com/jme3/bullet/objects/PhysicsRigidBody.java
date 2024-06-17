@@ -155,6 +155,20 @@ public class PhysicsRigidBody {
     // new methods exposed
 
     /**
+     * Apply a central impulse to the body.
+     *
+     * @param impulse the impulse vector (mass times physics-space units per
+     * second in physics-space coordinates, not null, unaffected)
+     */
+    public void applyCentralImpulse(Vector3f impulse) {
+        Validate.finite(impulse, "impulse");
+
+        MemorySession arena = PhysicsSpace.getArena();
+        FVec3 fvec3 = FVec3.of(arena, impulse.x, impulse.y, impulse.z);
+        joltBody.addImpulse(fvec3);
+    }
+
+    /**
      * Copy this body's angular velocity. The body must be in dynamic mode.
      *
      * @param storeResult storage for the result (modified if not null)
@@ -172,6 +186,15 @@ public class PhysicsRigidBody {
         result.set(fvec3.getX(), fvec3.getY(), fvec3.getZ());
 
         return result;
+    }
+
+    /**
+     * Access the shape of this body.
+     *
+     * @return the pre-existing instance, or null if none
+     */
+    public CollisionShape getCollisionShape() {
+        return shape;
     }
 
     /**
@@ -425,6 +448,17 @@ public class PhysicsRigidBody {
         FVec3 fvec3 = FVec3.of(arena, (float) velocity.x, (float) velocity.y,
                 (float) velocity.z);
         joltBody.setLinearVelocity(fvec3);
+    }
+
+    /**
+     * Relocate the body's center of mass.
+     *
+     * @param location the desired location (in physics-space coordinates, not
+     * null, finite, unaffected)
+     */
+    public void setPhysicsLocation(Vector3f location) {
+        Quaternion orientation = getPhysicsRotation(null);
+        reposition(location, orientation);
     }
 
     /**
