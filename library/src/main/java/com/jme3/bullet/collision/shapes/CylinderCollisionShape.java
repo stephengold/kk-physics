@@ -148,6 +148,28 @@ public class CylinderCollisionShape extends CollisionShape {
         return result;
     }
     // *************************************************************************
+    // CollisionShape methods
+
+    /**
+     * Test whether the specified scale factors can be applied to this shape.
+     * For cylinder shapes, radial scaling must be uniform.
+     *
+     * @param scale the desired scale factor for each local axis (may be null,
+     * unaffected)
+     * @return true if applicable, otherwise false
+     */
+    @Override
+    public boolean canScale(Vector3f scale) {
+        boolean canScale = super.canScale(scale);
+        if (canScale) {
+            if (scale.x != scale.z) {
+                canScale = false;
+            }
+        }
+
+        return canScale;
+    }
+    // *************************************************************************
     // Java private methods
 
     /**

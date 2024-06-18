@@ -72,6 +72,25 @@ abstract public class CollisionShape {
     // new methods exposed
 
     /**
+     * Test whether the specified scale factors can be applied to the shape.
+     * Subclasses that restrict scaling should override this method.
+     *
+     * @param scale the desired scale factor for each local axis (may be null,
+     * unaffected)
+     * @return true if applicable, otherwise false
+     */
+    public boolean canScale(Vector3f scale) {
+        boolean result;
+        if (scale == null) {
+            result = false;
+        } else {
+            result = MyVector3f.isAllPositive(scale);
+        }
+
+        return result;
+    }
+
+    /**
      * Access the underlying jolt-java Shape.
      *
      * @return the pre-existing instance (not null)

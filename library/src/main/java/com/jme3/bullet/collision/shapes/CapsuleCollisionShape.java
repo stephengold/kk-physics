@@ -119,6 +119,23 @@ public class CapsuleCollisionShape extends CollisionShape {
         return radius;
     }
     // *************************************************************************
+    // CollisionShape methods
+
+    /**
+     * Test whether the specified scale factors can be applied to the shape. For
+     * capsule shapes, scaling must be uniform.
+     *
+     * @param scale the desired scale factor for each local axis (may be null,
+     * unaffected)
+     * @return true if applicable, otherwise false
+     */
+    @Override
+    public boolean canScale(Vector3f scale) {
+        boolean canScale
+                = super.canScale(scale) && MyVector3f.isScaleUniform(scale);
+        return canScale;
+    }
+    // *************************************************************************
     // Java private methods
 
     /**
