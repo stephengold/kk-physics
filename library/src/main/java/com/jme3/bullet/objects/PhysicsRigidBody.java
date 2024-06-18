@@ -438,6 +438,8 @@ public class PhysicsRigidBody extends PhysicsBody {
      */
     @Override
     public void setPhysicsLocation(Vector3f location) {
+        Validate.finite(location, "location");
+
         Quaternion orientation = getPhysicsRotation(null);
         reposition(location, orientation);
     }

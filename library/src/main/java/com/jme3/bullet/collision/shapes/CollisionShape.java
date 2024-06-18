@@ -31,8 +31,10 @@
  */
 package com.jme3.bullet.collision.shapes;
 
+import com.jme3.math.Vector3f;
 import java.util.logging.Logger;
 import jme3utilities.Validate;
+import jme3utilities.math.MyVector3f;
 import jolt.physics.collision.shape.Shape;
 
 /**
@@ -110,7 +112,7 @@ abstract public class CollisionShape {
     protected void setNativeObject(Shape joltShape) {
         Validate.nonNull(joltShape, "jolt shape");
 
-        assert this.joltShape == null : joltShape;
+        assert this.joltShape == null : this.joltShape;
         this.joltShape = joltShape;
     }
 }

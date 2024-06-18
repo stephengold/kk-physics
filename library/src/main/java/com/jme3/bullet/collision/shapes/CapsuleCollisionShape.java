@@ -32,9 +32,11 @@
 package com.jme3.bullet.collision.shapes;
 
 import com.jme3.bullet.PhysicsSpace;
+import com.jme3.math.Vector3f;
 import java.lang.foreign.MemorySession;
 import java.util.logging.Logger;
 import jme3utilities.Validate;
+import jme3utilities.math.MyVector3f;
 import jolt.Jolt;
 import jolt.physics.collision.shape.CapsuleShapeSettings;
 import jolt.physics.collision.shape.Shape;

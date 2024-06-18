@@ -143,6 +143,8 @@ public class BoxCollisionShape extends CollisionShape {
      * Instantiate the configured {@code BoxShape}.
      */
     private void createShape() {
+        assert MyVector3f.isAllNonNegative(halfExtents) : halfExtents;
+
         MemorySession arena = PhysicsSpace.getArena();
         FVec3 vec3
                 = FVec3.of(arena, halfExtents.x, halfExtents.y, halfExtents.z);
