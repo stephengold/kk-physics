@@ -63,7 +63,7 @@ abstract public class CollisionShape {
     // constructors
 
     /**
-     * Instantiate a collision shape with native object.
+     * Instantiate a collision shape with no jolt-java object.
      * <p>
      * This no-arg constructor was made explicit to avoid javadoc warnings from
      * JDK 18+.

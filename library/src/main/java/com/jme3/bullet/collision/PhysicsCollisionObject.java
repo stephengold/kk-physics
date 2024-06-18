@@ -77,8 +77,7 @@ abstract public class PhysicsCollisionObject {
     // constructors
 
     /**
-     * Instantiate a collision object with no tracker and no assigned native
-     * object.
+     * Instantiate a collision object with no shape or user object.
      * <p>
      * This no-arg constructor was made explicit to avoid javadoc warnings from
      * JDK 18+.

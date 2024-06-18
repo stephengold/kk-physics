@@ -59,7 +59,7 @@ public class SphereCollisionShape extends CollisionShape {
     // fields
 
     /**
-     * copy of the radius (&ge;0)
+     * copy of the unscaled radius (in shape units, &ge;0)
      */
     private float radius;
     // *************************************************************************
@@ -74,7 +74,7 @@ public class SphereCollisionShape extends CollisionShape {
     /**
      * Instantiate a sphere shape with the specified radius.
      *
-     * @param radius the desired radius (&ge;0)
+     * @param radius the desired unscaled radius (in shape units, &ge;0)
      */
     public SphereCollisionShape(float radius) {
         Validate.nonNegative(radius, "radius");
@@ -88,7 +88,7 @@ public class SphereCollisionShape extends CollisionShape {
     /**
      * Return the radius of the sphere.
      *
-     * @return the radius (&ge;0)
+     * @return the unscaled radius (in shape units, &ge;0)
      */
     public float getRadius() {
         assert radius >= 0f : radius;

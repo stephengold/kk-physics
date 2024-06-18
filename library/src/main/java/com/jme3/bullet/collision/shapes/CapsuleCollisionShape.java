@@ -59,11 +59,12 @@ public class CapsuleCollisionShape extends CollisionShape {
     // fields
 
     /**
-     * copy of the height of the cylindrical portion (&ge;0)
+     * copy of the unscaled height of the cylindrical portion (in shape units,
+     * &ge;0)
      */
     private float height;
     /**
-     * copy of the radius (&ge;0)
+     * copy of the unscaled radius (in shape units, &ge;0)
      */
     private float radius;
     // *************************************************************************
@@ -78,8 +79,9 @@ public class CapsuleCollisionShape extends CollisionShape {
     /**
      * Instantiate a Y-axis capsule shape with the specified radius and height.
      *
-     * @param radius the desired radius (&ge;0)
-     * @param height the desired height of the cylindrical portion (&ge;0)
+     * @param radius the desired unscaled radius (in shape units, &ge;0)
+     * @param height the desired unscaled height of the cylindrical portion (in
+     * shape units, &ge;0)
      */
     public CapsuleCollisionShape(float radius, float height) {
         Validate.nonNegative(radius, "radius");
@@ -104,7 +106,7 @@ public class CapsuleCollisionShape extends CollisionShape {
     /**
      * Return the height of the cylindrical portion.
      *
-     * @return the height (&ge;0)
+     * @return the unscaled height (in shape units, &ge;0)
      */
     public float getHeight() {
         assert height >= 0f : height;
@@ -114,7 +116,7 @@ public class CapsuleCollisionShape extends CollisionShape {
     /**
      * Return the radius of the capsule.
      *
-     * @return the radius (&ge;0)
+     * @return the unscaled radius (in shape units, &ge;0)
      */
     public float getRadius() {
         assert radius >= 0f : radius;
@@ -141,7 +143,7 @@ public class CapsuleCollisionShape extends CollisionShape {
     // Java private methods
 
     /**
-     * Instantiate the configured shape.
+     * Instantiate the configured {@code CapsuleShape}.
      */
     private void createShape() {
         assert radius >= 0f : radius;
