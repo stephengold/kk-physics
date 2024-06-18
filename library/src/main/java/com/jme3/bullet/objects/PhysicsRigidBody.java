@@ -277,7 +277,15 @@ public class PhysicsRigidBody extends PhysicsBody {
      * @return true if in dynamic mode, otherwise false (static/kinematic mode)
      */
     public boolean isDynamic() {
-        boolean result = (joltBody.getMotionProperties() != null);
+        boolean result;
+        if (joltBody == null) {
+            result = (mass != massForStatic);
+        } else if (joltBody.getMotionProperties() == null) {
+            result = false;
+        } else {
+            result = true;
+        }
+
         return result;
     }
 
