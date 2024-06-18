@@ -101,6 +101,16 @@ abstract public class CollisionShape {
         assert joltShape != null;
         return joltShape;
     }
+
+    /**
+     * Test whether the shape can be applied to a dynamic rigid body.
+     *
+     * @return true if non-moving, false otherwise
+     */
+    public boolean isNonMoving() {
+        boolean result = joltShape.mustBeStatic();
+        return result;
+    }
     // *************************************************************************
     // new protected methods
 

@@ -129,6 +129,9 @@ public class PhysicsRigidBody extends PhysicsBody {
         Validate.nonNull(location, "location");
         Validate.nonZero(orientation, "orientation");
 
+        if (mass != massForStatic) {
+            validateDynamicShape(shape);
+        }
         super.setCollisionShape(shape);
         this.mass = mass;
         this.joltBody = createRigidBody(shape, mass, location, orientation);
@@ -409,6 +412,9 @@ public class PhysicsRigidBody extends PhysicsBody {
         if (desiredShape == getCollisionShape()) {
             return;
         }
+        if (isDynamic()) {
+            validateDynamicShape(desiredShape);
+        }
         super.setCollisionShape(desiredShape);
         rebuildRigidBody();
     }
@@ -494,5 +500,19 @@ public class PhysicsRigidBody extends PhysicsBody {
         MutableBody result = bodyInterface.createBody(settings);
 
         return result;
+    }
+
+    /**
+     * Validate a shape as suitable for a dynamic body.
+     *
+     * @param shape (not null, unaffected)
+     */
+    private static void validateDynamicShape(CollisionShape shape) {
+        assert shape != null;
+
+        if (shape.isNonMoving()) {
+            throw new IllegalStateException(
+                    "Dynamic rigid body can't have a non-moving shape!");
+        }
     }
 }
