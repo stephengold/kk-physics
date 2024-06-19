@@ -120,6 +120,13 @@ public class PhysicsSpace extends CollisionSpace {
      */
     final private Collection<PhysicsTickListener> tickListeners
             = new SafeArrayList<>(PhysicsTickListener.class);
+    /**
+     * manage contact/collision listeners and events
+     */
+    private ContactManager manager = new DefaultContactManager(this);
+    /**
+     *
+     */
     private final JobSystem jobSystem;
     private final PhysicsSystem physicsSystem;
     private final TempAllocator tempAllocator;
@@ -293,6 +300,16 @@ public class PhysicsSpace extends CollisionSpace {
     }
 
     /**
+     * Access the current ContactManager.
+     *
+     * @return the pre-existing instance (not null)
+     */
+    public ContactManager getContactManager() {
+        assert manager != null;
+        return manager;
+    }
+
+    /**
      * Return the type of contact-and-constraint solver in use.
      *
      * @return an enum value (not null)
@@ -361,6 +378,16 @@ public class PhysicsSpace extends CollisionSpace {
     }
 
     /**
+     * Replace the current ContactManager with the specified one.
+     *
+     * @param manager the desired manager (not null)
+     */
+    public void setContactManager(ContactManager manager) {
+        Validate.nonNull(manager, "manager");
+        this.manager = manager;
+    }
+
+    /**
      * Alter the gravitational acceleration acting on newly-added bodies.
      * <p>
      * Typically, when a body is added to a space, the body's gravity gets set
@@ -423,7 +450,7 @@ public class PhysicsSpace extends CollisionSpace {
             interval = timeInterval;
             assert maxSubSteps > 0 : maxSubSteps;
         }
-        update(interval, maxSubSteps);
+        manager.update(interval, maxSubSteps);
     }
 
     /**
