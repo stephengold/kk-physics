@@ -31,6 +31,7 @@
  */
 package com.jme3.bullet;
 
+import com.jme3.bullet.collision.PhysicsCollisionObject;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
@@ -226,23 +227,6 @@ public class PhysicsSpace extends CollisionSpace {
     // new methods exposed
 
     /**
-     * Add the specified collision object to the space.
-     *
-     * @param pco the collision object to add (not null, modified)
-     */
-    public void addCollisionObject(PhysicsRigidBody pco) {
-        BodyInterface bodyInterface = getBodyInterface();
-        int bodyId = (int) pco.nativeId();
-        float mass = pco.getMass();
-        if (mass > 0f) {
-            bodyInterface.addBody(bodyId, Activation.ACTIVATE);
-        } else {
-            bodyInterface.addBody(bodyId, Activation.DONT_ACTIVATE);
-        }
-        pco.setAddedToSpaceInternal(this);
-    }
-
-    /**
      * Register the specified tick listener with the space.
      * <p>
      * Tick listeners are notified before and after each simulation step. A
@@ -336,19 +320,6 @@ public class PhysicsSpace extends CollisionSpace {
     public float maxTimeStep() {
         assert maxTimeStep > 0f : maxTimeStep;
         return maxTimeStep;
-    }
-
-    /**
-     * Remove the specified collision object from the space.
-     *
-     * @param rbc the collision object to remove (not null, modified)
-     */
-    public void removeCollisionObject(PhysicsRigidBody rbc) {
-        BodyInterface bodyInterface = getBodyInterface();
-        int bodyId = (int) rbc.nativeId();
-        bodyInterface.removeBody(bodyId);
-
-        rbc.setAddedToSpaceInternal(null);
     }
 
     /**
@@ -502,7 +473,61 @@ public class PhysicsSpace extends CollisionSpace {
         }
     }
     // *************************************************************************
+    // CollisionSpace methods
+
+    /**
+     * Add the specified collision object to the space.
+     *
+     * @param pco the collision object to add (not null)
+     */
+    @Override
+    public void addCollisionObject(PhysicsCollisionObject pco) {
+        Validate.nonNull(pco, "collision object");
+
+        if (pco instanceof PhysicsRigidBody) {
+            addRigidBody((PhysicsRigidBody) pco);
+        } else {
+            super.addCollisionObject(pco);
+        }
+    }
+
+    /**
+     * Remove the specified collision object from the space.
+     *
+     * @param pco the collision object to remove (not null)
+     */
+    @Override
+    public void removeCollisionObject(PhysicsCollisionObject pco) {
+        Validate.nonNull(pco, "collision object");
+
+        if (pco instanceof PhysicsRigidBody) {
+            removeRigidBody((PhysicsRigidBody) pco);
+        } else {
+            super.removeCollisionObject(pco);
+        }
+    }
+    // *************************************************************************
     // Java private methods
+
+    /**
+     * Add the specified PhysicsRigidBody to the space.
+     * <p>
+     * NOTE: When a rigid body is added, its gravity gets set to that of the
+     * space.
+     *
+     * @param rigidBody the body to add (not null, modified)
+     */
+    private void addRigidBody(PhysicsRigidBody rigidBody) {
+        BodyInterface bodyInterface = getBodyInterface();
+        int bodyId = (int) rigidBody.nativeId();
+        float mass = rigidBody.getMass();
+        if (mass > 0f) {
+            bodyInterface.addBody(bodyId, Activation.ACTIVATE);
+        } else {
+            bodyInterface.addBody(bodyId, Activation.DONT_ACTIVATE);
+        }
+        rigidBody.setAddedToSpaceInternal(this);
+    }
 
     /**
      * Invoked just after the physics is stepped.
@@ -524,5 +549,18 @@ public class PhysicsSpace extends CollisionSpace {
         for (PhysicsTickListener listener : tickListeners) {
             listener.prePhysicsTick(this, timeStep);
         }
+    }
+
+    /**
+     * Remove the specified PhysicsRigidBody from the space.
+     *
+     * @param rigidBody the body to remove (not null, modified)
+     */
+    private void removeRigidBody(PhysicsRigidBody rigidBody) {
+        BodyInterface bodyInterface = getBodyInterface();
+        int bodyId = (int) rigidBody.nativeId();
+        bodyInterface.removeBody(bodyId);
+
+        rigidBody.setAddedToSpaceInternal(null);
     }
 }

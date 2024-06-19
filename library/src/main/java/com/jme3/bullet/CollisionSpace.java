@@ -31,6 +31,7 @@
  */
 package com.jme3.bullet;
 
+import com.jme3.bullet.collision.PhysicsCollisionObject;
 import java.lang.foreign.MemorySession;
 import java.util.logging.Logger;
 import jme3utilities.Validate;
@@ -87,6 +88,19 @@ public class CollisionSpace {
     // new methods exposed
 
     /**
+     * Add the specified collision object to the space.
+     *
+     * @param pco the collision object to add (not null, modified)
+     */
+    public void addCollisionObject(PhysicsCollisionObject pco) {
+        Validate.nonNull(pco, "collision object");
+
+        String typeName = pco.getClass().getCanonicalName();
+        String msg = "Unknown type of collision object: " + typeName;
+        throw new IllegalArgumentException(msg);
+    }
+
+    /**
      * Count the worker threads.
      *
      * @return the count (&ge;1, &le;64)
@@ -122,6 +136,19 @@ public class CollisionSpace {
     public static CollisionSpace getCollisionSpace() {
         CollisionSpace result = physicsSpaceTL.get();
         return result;
+    }
+
+    /**
+     * Remove the specified collision object from the space.
+     *
+     * @param pco the collision object to remove (not null, modified)
+     */
+    public void removeCollisionObject(PhysicsCollisionObject pco) {
+        Validate.nonNull(pco, "collision object");
+
+        String typeName = pco.getClass().getCanonicalName();
+        String msg = "Unknown type of collision object: " + typeName;
+        throw new IllegalArgumentException(msg);
     }
     // *************************************************************************
     // new protected methods
