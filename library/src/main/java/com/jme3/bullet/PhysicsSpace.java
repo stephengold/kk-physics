@@ -124,8 +124,9 @@ public class PhysicsSpace extends CollisionSpace {
     private final PhysicsSystem physicsSystem;
     private final TempAllocator tempAllocator;
     /**
-     * copy of gravity-acceleration vector for newly-added bodies (default is
-     * 9.81 in the -Y direction, approximating Earth-normal in MKS units)
+     * copy of the gravity-acceleration vector for newly-added bodies (default
+     * is 9.81 in the -Y direction, approximating Earth-normal gravity in MKS
+     * units for a Y-up coordinate system)
      */
     final private Vector3f gravity = new Vector3f(0, -9.81f, 0);
 
@@ -141,7 +142,8 @@ public class PhysicsSpace extends CollisionSpace {
     // constructors
 
     /**
-     * Instantiate a PhysicsSpace.
+     * Instantiate a PhysicsSpace with the specified number of worker threads.
+     * Must be invoked on the designated physics thread.
      *
      * @param numSolvers the desired number of worker threads (&ge;1, &le;64)
      */
@@ -217,7 +219,7 @@ public class PhysicsSpace extends CollisionSpace {
     // new methods exposed
 
     /**
-     * Add the specified collision object to this space.
+     * Add the specified collision object to the space.
      *
      * @param pco the collision object to add (not null, modified)
      */
@@ -291,7 +293,7 @@ public class PhysicsSpace extends CollisionSpace {
     }
 
     /**
-     * Read the maximum number of simulation steps per frame.
+     * Return the maximum number of simulation steps per frame.
      *
      * @return the number of steps (&gt;1) or 0 for a variable time step
      */
@@ -311,7 +313,7 @@ public class PhysicsSpace extends CollisionSpace {
     }
 
     /**
-     * Remove the specified collision object from this space.
+     * Remove the specified collision object from the space.
      *
      * @param rbc the collision object to remove (not null, modified)
      */
@@ -395,7 +397,7 @@ public class PhysicsSpace extends CollisionSpace {
     }
 
     /**
-     * Update this space. Can be used to single-step the physics simulation, if
+     * Update the space. Can be used to single-step the physics simulation, if
      * maxSubSteps is set to 0 or 1. This method should be invoked on the thread
      * that created the space.
      *
@@ -416,7 +418,7 @@ public class PhysicsSpace extends CollisionSpace {
     }
 
     /**
-     * Update this space. This method should be invoked on the thread that
+     * Update the space. This method should be invoked on the thread that
      * created the space.
      *
      * @param timeInterval the time interval to simulate (in seconds, &ge;0)
@@ -464,7 +466,7 @@ public class PhysicsSpace extends CollisionSpace {
         }
     }
     // *************************************************************************
-    // private methods
+    // Java private methods
 
     /**
      * Invoked just after the physics is stepped.
