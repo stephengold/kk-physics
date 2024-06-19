@@ -32,9 +32,13 @@
 package com.jme3.bullet;
 
 import com.jme3.bullet.objects.PhysicsRigidBody;
+import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
+import com.jme3.util.SafeArrayList;
 import java.lang.foreign.MemorySession;
+import java.util.Collection;
 import java.util.logging.Logger;
+import jme3utilities.Validate;
 import jolt.Jolt;
 import jolt.core.JobSystem;
 import jolt.core.TempAllocator;
@@ -95,10 +99,27 @@ public class PhysicsSpace extends CollisionSpace {
     // fields
 
     /**
-     * maximum number of simulation steps per frame
+     * time step (in seconds, &gt;0) ignored when maxSubSteps=0
+     */
+    private float accuracy = 1f / 60f;
+    /**
+     * maximum time step (in seconds, &gt;0) ignored when maxSubSteps>0
+     */
+    private float maxTimeStep = 0.1f;
+    /**
+     * simulation lag (for {@code maxSubSteps>0} in seconds, &ge;0)
+     */
+    private float physicsLag = 0f;
+    /**
+     * maximum number of simulation steps per frame (&gt;0) or 0 for a variable
+     * time step
      */
     private int maxSubSteps = 4;
-
+    /**
+     * list of registered tick listeners
+     */
+    final private Collection<PhysicsTickListener> tickListeners
+            = new SafeArrayList<>(PhysicsTickListener.class);
     private final JobSystem jobSystem;
     private final PhysicsSystem physicsSystem;
     private final TempAllocator tempAllocator;
@@ -235,7 +256,7 @@ public class PhysicsSpace extends CollisionSpace {
     /**
      * Read the maximum number of simulation steps per frame.
      *
-     * @return number of steps (&gt;0) or 0 for a variable time step
+     * @return the number of steps (&gt;1) or 0 for a variable time step
      */
     public int maxSubSteps() {
         assert maxSubSteps >= 0 : maxSubSteps;
@@ -271,26 +292,112 @@ public class PhysicsSpace extends CollisionSpace {
 
     /**
      * Alter the maximum number of simulation steps per frame.
+     * <p>
+     * Extra simulation steps help maintain determinism when the render fps
+     * drops below 1/accuracy. For example a value of 2 can compensate for frame
+     * rates as low as 30fps, assuming the physics has an accuracy of 1/60 sec.
+     * <p>
+     * Setting this value too high can depress the frame rate.
      *
-     * @param maxSubSteps the desired maximum number of steps
+     * @param steps the desired maximum number of steps (&ge;1) or 0 for a
+     * variable time step (default=4)
      */
-    public void setMaxSubSteps(int maxSubSteps) {
-        this.maxSubSteps = maxSubSteps;
+    public void setMaxSubSteps(int steps) {
+        Validate.nonNegative(steps, "steps");
+        this.maxSubSteps = steps;
     }
 
     /**
-     * Update this space. This method should be invoked from the thread that
-     * created the space.
+     * Update this space. Can be used to single-step the physics simulation, if
+     * maxSubSteps is set to 0 or 1. This method should be invoked on the thread
+     * that created the space.
      *
      * @see #setMaxSubSteps(int)
-     * @param tpf the time interval to simulate (in seconds, &ge;0)
+     * @param timeInterval the time interval to simulate (in seconds, &ge;0)
      */
-    public void update(float tpf) {
+    public void update(float timeInterval) {
+        assert Validate.nonNegative(timeInterval, "time interval");
+
+        float interval;
+        if (maxSubSteps == 0) {
+            interval = Math.min(timeInterval, maxTimeStep);
+        } else {
+            interval = timeInterval;
+            assert maxSubSteps > 0 : maxSubSteps;
+        }
+        update(interval, maxSubSteps);
+    }
+
+    /**
+     * Update this space. This method should be invoked on the thread that
+     * created the space.
+     *
+     * @param timeInterval the time interval to simulate (in seconds, &ge;0)
+     * @param maxSteps the maximum number of steps of size {@code accuracy}
+     * (&ge;1) or 0 for a single step of size {@code timeInterval}
+     */
+    public void update(float timeInterval, int maxSteps) {
+        assert Validate.nonNegative(timeInterval, "time interval");
+        assert Validate.nonNegative(maxSteps, "max steps");
+
         physicsSystem.optimizeBroadPhase();
 
-        float deltaTime = 1 / 60f;
-        int integrationSubSteps = 1;
-        physicsSystem.update(deltaTime, maxSubSteps, integrationSubSteps,
-                tempAllocator, jobSystem);
+        float timePerStep;
+        int numSubSteps;
+        if (maxSubSteps == 0) {
+            timePerStep = timeInterval;
+            numSubSteps = 1;
+
+        } else {
+            assert accuracy > 0f : accuracy;
+            timePerStep = accuracy;
+
+            assert physicsLag >= 0f : physicsLag;
+            float timeSinceStep = physicsLag + timeInterval;
+            numSubSteps = (int) FastMath.floor(timeSinceStep / accuracy);
+            assert numSubSteps >= 0 : numSubSteps;
+            this.physicsLag = timeSinceStep - numSubSteps * timePerStep;
+            assert physicsLag >= 0f : physicsLag;
+
+            if (numSubSteps > maxSubSteps) {
+                numSubSteps = maxSubSteps;
+            }
+        }
+
+        for (int i = 0; i < numSubSteps; ++i) {
+            preTick(timePerStep);
+
+            // Single-step the physics system:
+            int collisionSteps = 1;
+            int integrationSubSteps = 1;
+            physicsSystem.update(timePerStep, collisionSteps,
+                    integrationSubSteps, tempAllocator, jobSystem);
+
+            postTick(timePerStep);
+        }
+    }
+    // *************************************************************************
+    // private methods
+
+    /**
+     * Invoked just after the physics is stepped.
+     *
+     * @param timeStep the duration of the simulation step (in seconds, &ge;0)
+     */
+    private void postTick(float timeStep) {
+        for (PhysicsTickListener listener : tickListeners) {
+            listener.physicsTick(this, timeStep);
+        }
+    }
+
+    /**
+     * Invoked just before the physics is stepped.
+     *
+     * @param timeStep the duration of the simulation step (in seconds, &ge;0)
+     */
+    private void preTick(float timeStep) {
+        for (PhysicsTickListener listener : tickListeners) {
+            listener.prePhysicsTick(this, timeStep);
+        }
     }
 }
