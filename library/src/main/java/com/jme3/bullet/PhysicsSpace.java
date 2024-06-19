@@ -234,6 +234,24 @@ public class PhysicsSpace extends CollisionSpace {
     }
 
     /**
+     * Register the specified tick listener with the space.
+     * <p>
+     * Tick listeners are notified before and after each simulation step. A
+     * simulation step is not necessarily the same as a frame; it is more
+     * influenced by the accuracy of the PhysicsSpace.
+     *
+     * @see #setAccuracy(float)
+     *
+     * @param listener the listener to register (not null, alias created)
+     */
+    public void addTickListener(PhysicsTickListener listener) {
+        Validate.nonNull(listener, "listener");
+        assert !tickListeners.contains(listener);
+
+        tickListeners.add(listener);
+    }
+
+    /**
      * Return the number of active bodies.
      *
      * @return the count (&ge;0)
@@ -241,6 +259,25 @@ public class PhysicsSpace extends CollisionSpace {
     public int countActiveBodies() {
         int result = physicsSystem.getNumActiveBodies();
         return result;
+    }
+
+    /**
+     * Count how many tick listeners are registered with the space.
+     *
+     * @return the count (&ge;0)
+     */
+    public int countTickListeners() {
+        int count = tickListeners.size();
+        return count;
+    }
+
+    /**
+     * Return the simulation accuracy: the time step used when maxSubSteps&gt;0.
+     *
+     * @return the time step (in seconds, &gt;0)
+     */
+    public float getAccuracy() {
+        return accuracy;
     }
 
     /**
@@ -264,6 +301,16 @@ public class PhysicsSpace extends CollisionSpace {
     }
 
     /**
+     * Return the maximum time step (imposed when maxSubSteps=0).
+     *
+     * @return the maximum time step (in seconds, &gt;0, default=0.1)
+     */
+    public float maxTimeStep() {
+        assert maxTimeStep > 0f : maxTimeStep;
+        return maxTimeStep;
+    }
+
+    /**
      * Remove the specified collision object from this space.
      *
      * @param rbc the collision object to remove (not null, modified)
@@ -274,6 +321,32 @@ public class PhysicsSpace extends CollisionSpace {
         bodyInterface.removeBody(bodyId);
 
         rbc.setAddedToSpaceInternal(null);
+    }
+
+    /**
+     * De-register the specified tick listener.
+     *
+     * @see #addTickListener(com.jme3.bullet.PhysicsTickListener)
+     * @param listener the listener to de-register (not null, unaffected)
+     */
+    public void removeTickListener(PhysicsTickListener listener) {
+        Validate.nonNull(listener, "listener");
+
+        boolean success = tickListeners.remove(listener);
+        assert success;
+    }
+
+    /**
+     * Alter the accuracy (time step used when maxSubSteps&gt;0).
+     * <p>
+     * In general, the smaller the time step, the more accurate (and
+     * compute-intensive) the simulation will be.
+     *
+     * @param accuracy the desired time step (in seconds, &gt;0, default=1/60)
+     */
+    public void setAccuracy(float accuracy) {
+        Validate.positive(accuracy, "accuracy");
+        this.accuracy = accuracy;
     }
 
     /**
@@ -305,6 +378,20 @@ public class PhysicsSpace extends CollisionSpace {
     public void setMaxSubSteps(int steps) {
         Validate.nonNegative(steps, "steps");
         this.maxSubSteps = steps;
+    }
+
+    /**
+     * Alter the maximum time step (imposed when maxSubSteps=0).
+     * <p>
+     * In general, the smaller the time step, the more accurate (and
+     * compute-intensive) the simulation will be.
+     *
+     * @param maxTimeStep the desired maximum time step (in seconds, &gt;0,
+     * default=0.1)
+     */
+    public void setMaxTimeStep(float maxTimeStep) {
+        Validate.positive(maxTimeStep, "max time step");
+        this.maxTimeStep = maxTimeStep;
     }
 
     /**
