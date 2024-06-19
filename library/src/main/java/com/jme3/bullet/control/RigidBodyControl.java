@@ -105,6 +105,16 @@ public class RigidBodyControl
     }
 
     /**
+     * Instantiate an enabled Control with an active/responsive dynamic rigid
+     * body, mass=1, and the specified shape.
+     *
+     * @param shape the desired shape (not null, alias created)
+     */
+    public RigidBodyControl(CollisionShape shape) {
+        super(shape);
+    }
+
+    /**
      * Instantiate an enabled {@code Control} with a dynamic or static rigid
      * body and the specified shape and mass.
      *
