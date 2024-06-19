@@ -293,6 +293,15 @@ public class PhysicsSpace extends CollisionSpace {
     }
 
     /**
+     * Return the type of contact-and-constraint solver in use.
+     *
+     * @return an enum value (not null)
+     */
+    public SolverType getSolverType() {
+        return SolverType.SI;
+    }
+
+    /**
      * Return the maximum number of simulation steps per frame.
      *
      * @return the number of steps (&gt;1) or 0 for a variable time step
