@@ -553,26 +553,6 @@ public class PhysicsRigidBody extends PhysicsBody {
     }
 
     /**
-     * Apply the specified CollisionShape to the body. The body gets rebuilt on
-     * the jolt-java side.
-     *
-     * @param desiredShape the shape to apply (not null, alias created)
-     */
-    public void setCollisionShape(CollisionShape desiredShape) {
-        Validate.nonNull(desiredShape, "collision shape");
-
-        if (desiredShape == getCollisionShape()) {
-            return;
-        }
-        if (isDynamic()) {
-            validateDynamicShape(desiredShape);
-        }
-
-        super.setCollisionShape(desiredShape);
-        rebuildRigidBody();
-    }
-
-    /**
      * Alter the body's friction.
      *
      * @param friction the desired friction value (&ge;0, default=0.5)
@@ -712,6 +692,27 @@ public class PhysicsRigidBody extends PhysicsBody {
     @Override
     public float getMass() {
         return mass;
+    }
+
+    /**
+     * Apply the specified CollisionShape to the body. The body gets rebuilt on
+     * the jolt-java side.
+     *
+     * @param desiredShape the shape to apply (not null, alias created)
+     */
+    @Override
+    public void setCollisionShape(CollisionShape desiredShape) {
+        Validate.nonNull(desiredShape, "collision shape");
+
+        if (desiredShape == getCollisionShape()) {
+            return;
+        }
+        if (isDynamic()) {
+            validateDynamicShape(desiredShape);
+        }
+
+        super.setCollisionShape(desiredShape);
+        rebuildRigidBody();
     }
 
     /**
