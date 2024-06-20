@@ -689,6 +689,23 @@ public class PhysicsRigidBody extends PhysicsBody {
     // PhysicsBody methods
 
     /**
+     * Alter the {@code addedToSpace} field. Internal use only.
+     *
+     * @param physicsSpace (alias created if not null)
+     */
+    @Override
+    public void setAddedToSpaceInternal(PhysicsSpace physicsSpace) {
+        super.setAddedToSpaceInternal(physicsSpace);
+
+        if (physicsSpace == null) {
+            this.bodyInterface = null;
+        } else {
+            this.bodyInterface = physicsSpace.getBodyInterface();
+            snapshot.applyTo(this);
+        }
+    }
+
+    /**
      * Return the body's mass.
      *
      * @return the mass (&gt;0) or zero for a static body
