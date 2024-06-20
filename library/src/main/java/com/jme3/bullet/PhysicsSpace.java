@@ -57,7 +57,8 @@ import jolt.physics.collision.broadphase.ObjectVsBroadPhaseLayerFilter;
 import jolt.physics.collision.broadphase.ObjectVsBroadPhaseLayerFilterFn;
 
 /**
- * A space to simulate dynamic physics.
+ * A CollisionSpace to simulate dynamic physics, with its own
+ * {@code PhysicsSystem}.
  *
  * @author normenhansen
  */
@@ -247,7 +248,7 @@ public class PhysicsSpace extends CollisionSpace {
     }
 
     /**
-     * Return the number of active bodies.
+     * Count how many active bodies are in the space.
      *
      * @return the count (&ge;0)
      */

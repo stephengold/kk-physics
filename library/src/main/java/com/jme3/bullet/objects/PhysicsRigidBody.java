@@ -295,7 +295,7 @@ public class PhysicsRigidBody extends PhysicsBody {
     }
 
     /**
-     * Copy the location of the object's center to a Vector3f.
+     * Copy the location of the body's center to a Vector3f.
      *
      * @param storeResult storage for the result (modified if not null)
      * @return a location vector (in physics-space coordinates, either
@@ -319,7 +319,7 @@ public class PhysicsRigidBody extends PhysicsBody {
     }
 
     /**
-     * Copy the location of the object's center to a Vec3d.
+     * Copy the location of the body's center to a Vec3d.
      *
      * @param storeResult storage for the result (modified if not null)
      * @return a location vector (in physics-space coordinates, either
@@ -343,7 +343,7 @@ public class PhysicsRigidBody extends PhysicsBody {
     }
 
     /**
-     * Copy the orientation (rotation) of the object to a Quaternion.
+     * Copy the orientation (rotation) of the body to a {@code Quaternion}.
      *
      * @param storeResult storage for the result (modified if not null)
      * @return a rotation Quaternion (in physics-space coordinates, either
@@ -570,6 +570,7 @@ public class PhysicsRigidBody extends PhysicsBody {
         if (isDynamic()) {
             validateDynamicShape(desiredShape);
         }
+
         super.setCollisionShape(desiredShape);
         rebuildRigidBody();
     }
