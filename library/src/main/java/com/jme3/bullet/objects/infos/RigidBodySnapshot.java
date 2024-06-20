@@ -123,6 +123,15 @@ public class RigidBodySnapshot {
     }
 
     /**
+     * Return the snapshot's friction.
+     *
+     * @return the value
+     */
+    public float getFriction() {
+        return friction;
+    }
+
+    /**
      * Copy the snapshot's linear velocity.
      *
      * @param result (not null, unaffected)
@@ -138,6 +147,15 @@ public class RigidBodySnapshot {
      */
     public void setAngularVelocity(Vec3d vec3d) {
         angularVelocity.set(vec3d);
+    }
+
+    /**
+     * Alter the snapshot's friction.
+     *
+     * @param desiredValue the desired value
+     */
+    public void setFriction(float desiredValue) {
+        this.friction = desiredValue;
     }
 
     /**

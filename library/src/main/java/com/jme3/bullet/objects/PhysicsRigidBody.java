@@ -226,7 +226,13 @@ public class PhysicsRigidBody extends PhysicsBody {
      * @return the parameter value (&ge;0)
      */
     public float getFriction() {
-        float result = joltBody.getFriction();
+        float result;
+        if (joltBody == null) {
+            result = snapshot.getFriction();
+        } else {
+            result = joltBody.getFriction();
+        }
+
         assert result >= 0f : result;
         return result;
     }
@@ -576,7 +582,12 @@ public class PhysicsRigidBody extends PhysicsBody {
      */
     public void setFriction(float friction) {
         Validate.nonNegative(friction, "friction");
-        joltBody.setFriction(friction);
+
+        if (joltBody == null) {
+            snapshot.setFriction(friction);
+        } else {
+            joltBody.setFriction(friction);
+        }
     }
 
     /**
