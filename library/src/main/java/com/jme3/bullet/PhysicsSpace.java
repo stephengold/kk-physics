@@ -277,7 +277,7 @@ public class PhysicsSpace extends CollisionSpace {
     }
 
     /**
-     * Access the jolt-java BodyInterface.
+     * Access the jolt-java BodyInterface. Internal use only.
      *
      * @return an instance (not null)
      */
@@ -580,6 +580,7 @@ public class PhysicsSpace extends CollisionSpace {
         } else {
             bodyInterface.addBody(bodyId, Activation.DONT_ACTIVATE);
         }
+
         rigidBody.setAddedToSpaceInternal(this);
     }
 

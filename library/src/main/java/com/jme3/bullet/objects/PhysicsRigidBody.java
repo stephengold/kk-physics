@@ -606,8 +606,8 @@ public class PhysicsRigidBody extends PhysicsBody {
             snapshot.setLinearVelocity(vec3d);
         } else {
             MemorySession arena = PhysicsSpace.getArena();
-            FVec3 fvec3 = FVec3.of(arena, (float) velocity.x, (float) velocity.y,
-                    (float) velocity.z);
+            FVec3 fvec3 = FVec3.of(arena, (float) velocity.x,
+                    (float) velocity.y, (float) velocity.z);
             bodyInterface.setLinearVelocity(bodyId, fvec3);
         }
     }
@@ -626,8 +626,8 @@ public class PhysicsRigidBody extends PhysicsBody {
             snapshot.setLinearVelocity(velocity);
         } else {
             MemorySession arena = PhysicsSpace.getArena();
-            FVec3 fvec3 = FVec3.of(arena, (float) velocity.x, (float) velocity.y,
-                    (float) velocity.z);
+            FVec3 fvec3 = FVec3.of(arena, (float) velocity.x,
+                    (float) velocity.y, (float) velocity.z);
             bodyInterface.setLinearVelocity(bodyId, fvec3);
         }
     }
