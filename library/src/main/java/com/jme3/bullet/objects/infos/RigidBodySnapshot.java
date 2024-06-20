@@ -68,6 +68,14 @@ public class RigidBodySnapshot {
     // constructors
 
     /**
+     * Instantiate a snapshot with default parameters.
+     */
+    public RigidBodySnapshot() {
+        this.angularVelocity = new Vec3d();
+        this.linearVelocity = new Vec3d();
+    }
+
+    /**
      * Instantiate a snapshot of the specified body.
      *
      * @param body the body to capture (not null)
