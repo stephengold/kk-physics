@@ -35,6 +35,7 @@ import com.jme3.bullet.CollisionSpace;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import java.util.logging.Logger;
+import jme3utilities.MeshNormals;
 import jme3utilities.Validate;
 
 /**
@@ -63,6 +64,10 @@ abstract public class PhysicsCollisionObject {
      */
     private CollisionShape collisionShape;
     /**
+     * which normals to generate for new debug meshes
+     */
+    private MeshNormals debugMeshNormals = MeshNormals.None;
+    /**
      * scene object that's using this collision object. The scene object is
      * typically a PhysicsControl, PhysicsLink, or Spatial. Used by physics
      * controls.
@@ -86,6 +91,16 @@ abstract public class PhysicsCollisionObject {
     }
     // *************************************************************************
     // new methods exposed
+
+    /**
+     * Determine which normals to include in new debug meshes.
+     *
+     * @return an enum value (not null)
+     */
+    public MeshNormals debugMeshNormals() {
+        assert debugMeshNormals != null;
+        return debugMeshNormals;
+    }
 
     /**
      * Access the shape of this object.
@@ -146,6 +161,16 @@ abstract public class PhysicsCollisionObject {
     public void setCollisionShape(CollisionShape collisionShape) {
         Validate.nonNull(collisionShape, "collision shape");
         this.collisionShape = collisionShape;
+    }
+
+    /**
+     * Alter which normals to include in new debug meshes.
+     *
+     * @param newSetting an enum value (not null, default=None)
+     */
+    public void setDebugMeshNormals(MeshNormals newSetting) {
+        Validate.nonNull(newSetting, "new setting");
+        this.debugMeshNormals = newSetting;
     }
 
     /**
