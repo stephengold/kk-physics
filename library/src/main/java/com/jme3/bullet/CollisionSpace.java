@@ -88,6 +88,23 @@ public class CollisionSpace {
     // new methods exposed
 
     /**
+     * Add the specified object to the space.
+     *
+     * @param object the object to add (not null)
+     */
+    public void add(Object object) {
+        Validate.nonNull(object, "object");
+
+        if (object instanceof PhysicsCollisionObject) {
+            addCollisionObject((PhysicsCollisionObject) object);
+        } else {
+            String typeName = object.getClass().getCanonicalName();
+            String msg = "Cannot add a " + typeName + " to a collision space.";
+            throw new IllegalArgumentException(msg);
+        }
+    }
+
+    /**
      * Add the specified collision object to the space.
      *
      * @param pco the collision object to add (not null, modified)
@@ -136,6 +153,24 @@ public class CollisionSpace {
     public static CollisionSpace getCollisionSpace() {
         CollisionSpace result = physicsSpaceTL.get();
         return result;
+    }
+
+    /**
+     * Remove the specified object from the space.
+     *
+     * @param object the object to remove, or null
+     */
+    public void remove(Object object) {
+        if (object == null) {
+            return;
+        } else if (object instanceof PhysicsCollisionObject) {
+            removeCollisionObject((PhysicsCollisionObject) object);
+        } else {
+            String typeName = object.getClass().getCanonicalName();
+            String msg = "Cannot remove a " + typeName
+                    + " from a collision space.";
+            throw new IllegalArgumentException(msg);
+        }
     }
 
     /**

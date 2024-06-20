@@ -32,9 +32,11 @@
 package com.jme3.bullet;
 
 import com.jme3.bullet.collision.PhysicsCollisionObject;
+import com.jme3.bullet.control.PhysicsControl;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
+import com.jme3.scene.Spatial;
 import com.jme3.util.SafeArrayList;
 import java.lang.foreign.MemorySession;
 import java.util.Collection;
@@ -476,6 +478,33 @@ public class PhysicsSpace extends CollisionSpace {
     // CollisionSpace methods
 
     /**
+     * Add the specified object to the space. For compatibility with the
+     * jme3-jbullet library.
+     * <p>
+     * The jme3-jbullet version allows the argument to be null.
+     *
+     * @param object the PhysicsControl, Spatial-with-PhysicsControl, collision
+     * object, or PhysicsJoint to add (not null)
+     */
+    @Override
+    public void add(Object object) {
+        Validate.nonNull(object, "object");
+
+        if (object instanceof PhysicsControl) {
+            ((PhysicsControl) object).setPhysicsSpace(this);
+        } else if (object instanceof Spatial) {
+            Spatial spatial = (Spatial) object;
+            for (int i = 0; i < spatial.getNumControls(); ++i) {
+                if (spatial.getControl(i) instanceof PhysicsControl) {
+                    add(spatial.getControl(i));
+                }
+            }
+        } else {
+            super.add(object);
+        }
+    }
+
+    /**
      * Add the specified collision object to the space.
      *
      * @param pco the collision object to add (not null)
@@ -488,6 +517,31 @@ public class PhysicsSpace extends CollisionSpace {
             addRigidBody((PhysicsRigidBody) pco);
         } else {
             super.addCollisionObject(pco);
+        }
+    }
+
+    /**
+     * Remove the specified object from the space. For compatibility with the
+     * jme3-jbullet library.
+     * <p>
+     * The jme3-jbullet version allows the argument to be null.
+     *
+     * @param object the PhysicsControl, Spatial-with-PhysicsControl, collision
+     * object, or PhysicsJoint to remove, or null
+     */
+    @Override
+    public void remove(Object object) {
+        if (object instanceof PhysicsControl) {
+            ((PhysicsControl) object).setPhysicsSpace(null);
+        } else if (object instanceof Spatial) {
+            Spatial spatial = (Spatial) object;
+            for (int i = 0; i < spatial.getNumControls(); ++i) {
+                if (spatial.getControl(i) instanceof PhysicsControl) {
+                    remove((spatial.getControl(i)));
+                }
+            }
+        } else {
+            super.remove(object);
         }
     }
 
