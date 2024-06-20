@@ -23,6 +23,7 @@ dependencies {
     implementation(libs.jme3.desktop)
     runtimeOnly(libs.jme3.awt.dialogs)
     runtimeOnly(libs.jme3.lwjgl3)
+    runtimeOnly(libs.jme3.testdata)
 
     implementation(libs.heart)
     runtimeOnly(libs.jolt.java.linux)
