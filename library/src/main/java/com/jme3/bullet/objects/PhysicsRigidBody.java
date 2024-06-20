@@ -376,7 +376,7 @@ public class PhysicsRigidBody extends PhysicsBody {
      * @param orientation the desired orientation (in physics-space coordinates,
      * not null, not zero, unaffected)
      */
-    public void reposition(Vector3f location, Quaternion orientation) {
+    public void reposition(Vec3d location, Quaternion orientation) {
         this.snapshot = new RigidBodySnapshot(this);
         MutableBody oldBody = joltBody;
         PhysicsSpace removedFrom = (PhysicsSpace) getCollisionSpace();
@@ -510,8 +510,9 @@ public class PhysicsRigidBody extends PhysicsBody {
     public void setPhysicsLocation(Vector3f location) {
         Validate.finite(location, "location");
 
+        Vec3d vec3d = new Vec3d(location);
         Quaternion orientation = getPhysicsRotation(null);
-        reposition(location, orientation);
+        reposition(vec3d, orientation);
     }
     // *************************************************************************
     // Java private methods

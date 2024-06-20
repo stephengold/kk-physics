@@ -48,6 +48,7 @@ import com.jme3.scene.Spatial;
 import com.jme3.scene.control.Control;
 import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Sphere;
+import com.simsilica.mathd.Vec3d;
 import java.io.IOException;
 import java.util.logging.Logger;
 import jme3utilities.MySpatial;
@@ -240,9 +241,10 @@ public class RigidBodyControl
             if (enabled && !added) {
                 if (spatial != null) {
                     Vector3f location = spatial.getWorldTranslation(); // alias
+                    Vec3d vec3d = new Vec3d(location);
                     Quaternion orientation
                             = spatial.getWorldRotation(); // alias
-                    reposition(location, orientation);
+                    reposition(vec3d, orientation);
                 }
                 space.addCollisionObject(this);
                 this.added = true;
@@ -308,8 +310,9 @@ public class RigidBodyControl
                 rebuildRigidBody();
             }
             Vector3f location = spatial.getWorldTranslation(); // alias
+            Vec3d vec3d = new Vec3d(location);
             Quaternion orientation = spatial.getWorldRotation(); // alias
-            reposition(location, orientation);
+            reposition(vec3d, orientation);
         }
     }
 
