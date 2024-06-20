@@ -35,8 +35,10 @@ import com.jme3.bullet.CollisionSpace;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.objects.infos.RigidBodySnapshot;
+import com.jme3.math.Matrix3f;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
+import com.simsilica.mathd.Quatd;
 import com.simsilica.mathd.Vec3d;
 import java.lang.foreign.MemorySession;
 import java.util.logging.Level;
@@ -158,6 +160,43 @@ public class PhysicsRigidBody extends PhysicsBody {
     }
 
     /**
+     * For compatibility with the jme3-jbullet library.
+     *
+     * @return a new velocity vector (radians per second in physics-space
+     * coordinates, not null)
+     */
+    public Vector3f getAngularVelocity() {
+        assert isDynamic();
+        return getAngularVelocity(null);
+    }
+
+    /**
+     * Copy the body's angular velocity. The body must be in dynamic mode.
+     *
+     * @param storeResult storage for the result (modified if not null)
+     * @return a velocity vector (radians per second in physics-space
+     * coordinates, either storeResult or a new vector, not null)
+     */
+    public Vector3f getAngularVelocity(Vector3f storeResult) {
+        assert isDynamic();
+        Vector3f result = (storeResult == null) ? new Vector3f() : storeResult;
+
+        MutableMotionProperties properties = joltBody.getMotionProperties();
+        if (properties == null) {
+            Vec3d vec3d = new Vec3d();
+            snapshot.getAngularVelocity(vec3d);
+            result.set((float) vec3d.x, (float) vec3d.y, (float) vec3d.z);
+        } else {
+            MemorySession arena = PhysicsSpace.getArena();
+            FVec3 fvec3 = FVec3.of(arena);
+            properties.getAngularVelocity(fvec3);
+            result.set(fvec3.getX(), fvec3.getY(), fvec3.getZ());
+        }
+
+        return result;
+    }
+
+    /**
      * Copy the body's angular velocity. The body must be in dynamic mode.
      *
      * @param storeResult storage for the result (modified if not null)
@@ -189,6 +228,44 @@ public class PhysicsRigidBody extends PhysicsBody {
     public float getFriction() {
         float result = joltBody.getFriction();
         assert result >= 0f : result;
+        return result;
+    }
+
+    /**
+     * For compatibility with the jme3-jbullet library.
+     *
+     * @return a new velocity vector (physics-space units per second in
+     * physics-space coordinates, not null)
+     */
+    public Vector3f getLinearVelocity() {
+        assert isDynamic();
+        return getLinearVelocity(null);
+    }
+
+    /**
+     * Copy the linear velocity of the body's center of mass. The body must be
+     * in dynamic mode.
+     *
+     * @param storeResult storage for the result (modified if not null)
+     * @return a velocity vector (physics-space units per second in
+     * physics-space coordinates, either storeResult or a new vector, not null)
+     */
+    public Vector3f getLinearVelocity(Vector3f storeResult) {
+        assert isDynamic();
+        Vector3f result = (storeResult == null) ? new Vector3f() : storeResult;
+
+        MutableMotionProperties properties = joltBody.getMotionProperties();
+        if (properties == null) {
+            Vec3d vec3d = new Vec3d();
+            snapshot.getLinearVelocity(vec3d);
+            result.set((float) vec3d.x, (float) vec3d.y, (float) vec3d.z);
+        } else {
+            MemorySession arena = PhysicsSpace.getArena();
+            FVec3 fvec3 = FVec3.of(arena);
+            properties.getLinearVelocity(fvec3);
+            result.set(fvec3.getX(), fvec3.getY(), fvec3.getZ());
+        }
+
         return result;
     }
 
@@ -280,6 +357,26 @@ public class PhysicsRigidBody extends PhysicsBody {
         Quat wr = Quat.of(arena);
         joltBody.getRotation(wr);
         result.set(wr.getX(), wr.getY(), wr.getZ(), wr.getW());
+
+        return result;
+    }
+
+    /**
+     * Copy the orientation (rotation) of the body to a {@code Matrix3f}.
+     *
+     * @param storeResult storage for the result (modified if not null)
+     * @return a rotation matrix (in physics-space coordinates, either
+     * storeResult or a new matrix, not null)
+     */
+    public Matrix3f getPhysicsRotationMatrix(Matrix3f storeResult) {
+        Matrix3f result = (storeResult == null) ? new Matrix3f() : storeResult;
+
+        MemorySession arena = PhysicsSpace.getArena();
+        Quat wr = Quat.of(arena);
+        joltBody.getRotation(wr);
+        Quaternion quaternion
+                = new Quaternion(wr.getX(), wr.getY(), wr.getZ(), wr.getW());
+        result.set(quaternion);
 
         return result;
     }
@@ -413,6 +510,31 @@ public class PhysicsRigidBody extends PhysicsBody {
      * Alter the body's angular velocity.
      *
      * @param omega the desired angular velocity (in physics-space coordinates,
+     * not null, finite, unaffected)
+     */
+    public void setAngularVelocity(Vector3f omega) {
+        Validate.finite(omega, "angular velocity");
+        assert isDynamic();
+
+        PhysicsSpace physicsSpace = (PhysicsSpace) getCollisionSpace();
+        if (physicsSpace == null) {
+            Vec3d vec3d = new Vec3d(omega);
+            snapshot.setAngularVelocity(vec3d);
+        } else {
+            BodyInterface bodyInterface = physicsSpace.getBodyInterface();
+            int bodyId = joltBody.getId();
+
+            MemorySession arena = PhysicsSpace.getArena();
+            FVec3 fvec3 = FVec3.of(arena, (float) omega.x, (float) omega.y,
+                    (float) omega.z);
+            bodyInterface.setAngularVelocity(bodyId, fvec3);
+        }
+    }
+
+    /**
+     * Alter the body's angular velocity.
+     *
+     * @param omega the desired angular velocity (in physics-space coordinates,
      * not null, unaffected)
      */
     public void setAngularVelocityDp(Vec3d omega) {
@@ -468,6 +590,31 @@ public class PhysicsRigidBody extends PhysicsBody {
      * Alter the linear velocity of the body's center of mass.
      *
      * @param velocity the desired velocity (physics-space units per second in
+     * physics-space coordinates, not null, finite, unaffected)
+     */
+    public void setLinearVelocity(Vector3f velocity) {
+        Validate.finite(velocity, "velocity");
+        assert isDynamic();
+
+        PhysicsSpace physicsSpace = (PhysicsSpace) getCollisionSpace();
+        if (physicsSpace == null) {
+            Vec3d vec3d = new Vec3d(velocity);
+            snapshot.setLinearVelocity(vec3d);
+        } else {
+            BodyInterface bodyInterface = physicsSpace.getBodyInterface();
+            int bodyId = joltBody.getId();
+
+            MemorySession arena = PhysicsSpace.getArena();
+            FVec3 fvec3 = FVec3.of(arena, (float) velocity.x, (float) velocity.y,
+                    (float) velocity.z);
+            bodyInterface.setLinearVelocity(bodyId, fvec3);
+        }
+    }
+
+    /**
+     * Alter the linear velocity of the body's center of mass.
+     *
+     * @param velocity the desired velocity (physics-space units per second in
      * physics-space coordinates, not null, unaffected)
      */
     public void setLinearVelocityDp(Vec3d velocity) {
@@ -486,6 +633,61 @@ public class PhysicsRigidBody extends PhysicsBody {
                     (float) velocity.z);
             bodyInterface.setLinearVelocity(bodyId, fvec3);
         }
+    }
+
+    /**
+     * Directly relocate the body's center of mass.
+     *
+     * @param location the desired location (in physics-space coordinates, not
+     * null, unaffected)
+     */
+    public void setPhysicsLocationDp(Vec3d location) {
+        Validate.nonNull(location, "location");
+
+        Quaternion orientation = getPhysicsRotation(null);
+        reposition(location, orientation);
+    }
+
+    /**
+     * Directly alter the body's orientation.
+     *
+     * @param orientation the desired orientation (rotation matrix relative to
+     * physics-space coordinates, not null, unaffected)
+     */
+    public void setPhysicsRotation(Matrix3f orientation) {
+        Validate.nonNull(orientation, "orientation");
+
+        Vec3d location = getPhysicsLocationDp(null);
+        Quaternion quaternion
+                = new Quaternion().fromRotationMatrix(orientation);
+        reposition(location, quaternion);
+    }
+
+    /**
+     * Directly reorient the body.
+     *
+     * @param orientation the desired orientation (relative to physics-space
+     * coordinates, not null, not zero, unaffected)
+     */
+    public void setPhysicsRotation(Quaternion orientation) {
+        Validate.nonZero(orientation, "orientation");
+
+        Vec3d location = getPhysicsLocationDp(null);
+        reposition(location, orientation);
+    }
+
+    /**
+     * Directly reorient the body.
+     *
+     * @param orientation the desired orientation (relative to physics-space
+     * coordinates, not null, unaffected)
+     */
+    public void setPhysicsRotationDp(Quatd orientation) {
+        Validate.nonNull(orientation, "orientation");
+
+        Vec3d location = getPhysicsLocationDp(null);
+        Quaternion quaternion = orientation.toQuaternion();
+        reposition(location, quaternion);
     }
     // *************************************************************************
     // PhysicsBody methods
