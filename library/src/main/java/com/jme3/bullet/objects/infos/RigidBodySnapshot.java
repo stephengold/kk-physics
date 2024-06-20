@@ -37,7 +37,7 @@ import java.util.logging.Logger;
 
 /**
  * Copy certain properties of a {@code PhysicsRigidBody} in order to re-apply
- * them later. Immutable.
+ * them later.
  * <p>
  * Snapshots are used for rebuilding, so they don't include the collision shape,
  * mass, physics space, or position.
@@ -94,5 +94,41 @@ public class RigidBodySnapshot {
             body.setAngularVelocityDp(angularVelocity);
             body.setLinearVelocityDp(linearVelocity);
         }
+    }
+
+    /**
+     * Copy the snapshot's angular velocity.
+     *
+     * @param result (not null, unaffected)
+     */
+    public void getAngularVelocity(Vec3d result) {
+        result.set(angularVelocity);
+    }
+
+    /**
+     * Copy the snapshot's linear velocity.
+     *
+     * @param result (not null, unaffected)
+     */
+    public void getLinearVelocity(Vec3d result) {
+        result.set(linearVelocity);
+    }
+
+    /**
+     * Alter the snapshot's angular velocity.
+     *
+     * @param vec3d (not null, modified)
+     */
+    public void setAngularVelocity(Vec3d vec3d) {
+        angularVelocity.set(vec3d);
+    }
+
+    /**
+     * Alter the snapshot's linear velocity.
+     *
+     * @param vec3d (not null, modified)
+     */
+    public void setLinearVelocity(Vec3d vec3d) {
+        linearVelocity.set(vec3d);
     }
 }
