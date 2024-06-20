@@ -71,13 +71,25 @@ public class PhysicsRigidBody extends PhysicsBody {
     // fields
 
     /**
+     * jolt-java interface for modifications, or null if not added to a space
+     */
+    private BodyInterface bodyInterface;
+    /**
      * copy of the mass (&gt;0) of a dynamic body, or 0 for a static body
      */
     protected float mass = 1f;
     /**
+     * jolt-java body ID, or -1 if not added to a space
+     */
+    private int bodyId = -1;
+    /**
      * underlying jolt-java object
      */
     private MutableBody joltBody;
+    /**
+     * jolt-java motion properties, or null if not created
+     */
+    private MutableMotionProperties motionProperties;
     /**
      * temporary storage for properties
      */
@@ -141,6 +153,9 @@ public class PhysicsRigidBody extends PhysicsBody {
         super.setCollisionShape(shape);
         this.mass = mass;
         this.joltBody = createRigidBody(shape, mass, location, orientation);
+
+        this.bodyId = joltBody.getId();
+        this.motionProperties = joltBody.getMotionProperties();
     }
     // *************************************************************************
     // new methods exposed
@@ -181,15 +196,14 @@ public class PhysicsRigidBody extends PhysicsBody {
         assert isDynamic();
         Vector3f result = (storeResult == null) ? new Vector3f() : storeResult;
 
-        MutableMotionProperties properties = joltBody.getMotionProperties();
-        if (properties == null) {
+        if (motionProperties == null) {
             Vec3d vec3d = new Vec3d();
             snapshot.getAngularVelocity(vec3d);
             result.set((float) vec3d.x, (float) vec3d.y, (float) vec3d.z);
         } else {
             MemorySession arena = PhysicsSpace.getArena();
             FVec3 fvec3 = FVec3.of(arena);
-            properties.getAngularVelocity(fvec3);
+            motionProperties.getAngularVelocity(fvec3);
             result.set(fvec3.getX(), fvec3.getY(), fvec3.getZ());
         }
 
@@ -207,13 +221,12 @@ public class PhysicsRigidBody extends PhysicsBody {
         assert isDynamic();
         Vec3d result = (storeResult == null) ? new Vec3d() : storeResult;
 
-        MutableMotionProperties properties = joltBody.getMotionProperties();
-        if (properties == null) {
+        if (motionProperties == null) {
             snapshot.getAngularVelocity(result);
         } else {
             MemorySession arena = PhysicsSpace.getArena();
             FVec3 fvec3 = FVec3.of(arena);
-            properties.getAngularVelocity(fvec3);
+            motionProperties.getAngularVelocity(fvec3);
             result.set(fvec3.getX(), fvec3.getY(), fvec3.getZ());
         }
 
@@ -260,15 +273,14 @@ public class PhysicsRigidBody extends PhysicsBody {
         assert isDynamic();
         Vector3f result = (storeResult == null) ? new Vector3f() : storeResult;
 
-        MutableMotionProperties properties = joltBody.getMotionProperties();
-        if (properties == null) {
+        if (motionProperties == null) {
             Vec3d vec3d = new Vec3d();
             snapshot.getLinearVelocity(vec3d);
             result.set((float) vec3d.x, (float) vec3d.y, (float) vec3d.z);
         } else {
             MemorySession arena = PhysicsSpace.getArena();
             FVec3 fvec3 = FVec3.of(arena);
-            properties.getLinearVelocity(fvec3);
+            motionProperties.getLinearVelocity(fvec3);
             result.set(fvec3.getX(), fvec3.getY(), fvec3.getZ());
         }
 
@@ -287,13 +299,12 @@ public class PhysicsRigidBody extends PhysicsBody {
         assert isDynamic();
         Vec3d result = (storeResult == null) ? new Vec3d() : storeResult;
 
-        MutableMotionProperties properties = joltBody.getMotionProperties();
-        if (properties == null) {
+        if (motionProperties == null) {
             snapshot.getLinearVelocity(result);
         } else {
             MemorySession arena = PhysicsSpace.getArena();
             FVec3 fvec3 = FVec3.of(arena);
-            properties.getLinearVelocity(fvec3);
+            motionProperties.getLinearVelocity(fvec3);
             result.set(fvec3.getX(), fvec3.getY(), fvec3.getZ());
         }
 
@@ -312,9 +323,6 @@ public class PhysicsRigidBody extends PhysicsBody {
 
         MemorySession arena = PhysicsSpace.getArena();
         FVec3 fvec3 = FVec3.of(arena);
-        BodyInterface bodyInterface
-                = ((PhysicsSpace) getCollisionSpace()).getBodyInterface();
-        int bodyId = joltBody.getId();
         bodyInterface.getCenterOfMassPosition(bodyId, fvec3);
         result.x = fvec3.getX();
         result.y = fvec3.getY();
@@ -336,9 +344,6 @@ public class PhysicsRigidBody extends PhysicsBody {
 
         MemorySession arena = PhysicsSpace.getArena();
         FVec3 fvec3 = FVec3.of(arena);
-        BodyInterface bodyInterface
-                = ((PhysicsSpace) getCollisionSpace()).getBodyInterface();
-        int bodyId = joltBody.getId();
         bodyInterface.getCenterOfMassPosition(bodyId, fvec3);
         result.x = fvec3.getX();
         result.y = fvec3.getY();
@@ -442,6 +447,8 @@ public class PhysicsRigidBody extends PhysicsBody {
 
         CollisionShape shape = getCollisionShape();
         this.joltBody = createRigidBody(shape, mass, location, orientation);
+        this.bodyId = joltBody.getId();
+        this.motionProperties = joltBody.getMotionProperties();
         if (logger2.isLoggable(Level.INFO)) {
             if (oldBody != null) {
                 logger2.log(
@@ -481,8 +488,9 @@ public class PhysicsRigidBody extends PhysicsBody {
         }
 
         CollisionShape shape = getCollisionShape();
-        Vec3d vec3d = new Vec3d(location);
-        this.joltBody = createRigidBody(shape, mass, vec3d, orientation);
+        this.joltBody = createRigidBody(shape, mass, location, orientation);
+        this.bodyId = joltBody.getId();
+        this.motionProperties = joltBody.getMotionProperties();
         if (logger2.isLoggable(Level.INFO)) {
             if (oldBody != null) {
                 logger2.log(
@@ -514,14 +522,10 @@ public class PhysicsRigidBody extends PhysicsBody {
         Validate.finite(omega, "angular velocity");
         assert isDynamic();
 
-        PhysicsSpace physicsSpace = (PhysicsSpace) getCollisionSpace();
-        if (physicsSpace == null) {
+        if (bodyInterface == null) {
             Vec3d vec3d = new Vec3d(omega);
             snapshot.setAngularVelocity(vec3d);
         } else {
-            BodyInterface bodyInterface = physicsSpace.getBodyInterface();
-            int bodyId = joltBody.getId();
-
             MemorySession arena = PhysicsSpace.getArena();
             FVec3 fvec3 = FVec3.of(arena, (float) omega.x, (float) omega.y,
                     (float) omega.z);
@@ -539,13 +543,9 @@ public class PhysicsRigidBody extends PhysicsBody {
         Validate.nonNull(omega, "angular velocity");
         assert isDynamic();
 
-        PhysicsSpace physicsSpace = (PhysicsSpace) getCollisionSpace();
-        if (physicsSpace == null) {
+        if (bodyInterface == null) {
             snapshot.setAngularVelocity(omega);
         } else {
-            BodyInterface bodyInterface = physicsSpace.getBodyInterface();
-            int bodyId = joltBody.getId();
-
             MemorySession arena = PhysicsSpace.getArena();
             FVec3 fvec3 = FVec3.of(arena, (float) omega.x, (float) omega.y,
                     (float) omega.z);
@@ -600,14 +600,10 @@ public class PhysicsRigidBody extends PhysicsBody {
         Validate.finite(velocity, "velocity");
         assert isDynamic();
 
-        PhysicsSpace physicsSpace = (PhysicsSpace) getCollisionSpace();
-        if (physicsSpace == null) {
+        if (bodyInterface == null) {
             Vec3d vec3d = new Vec3d(velocity);
             snapshot.setLinearVelocity(vec3d);
         } else {
-            BodyInterface bodyInterface = physicsSpace.getBodyInterface();
-            int bodyId = joltBody.getId();
-
             MemorySession arena = PhysicsSpace.getArena();
             FVec3 fvec3 = FVec3.of(arena, (float) velocity.x, (float) velocity.y,
                     (float) velocity.z);
@@ -625,13 +621,9 @@ public class PhysicsRigidBody extends PhysicsBody {
         Validate.nonNull(velocity, "velocity");
         assert isDynamic();
 
-        PhysicsSpace physicsSpace = (PhysicsSpace) getCollisionSpace();
-        if (physicsSpace == null) {
+        if (bodyInterface == null) {
             snapshot.setLinearVelocity(velocity);
         } else {
-            BodyInterface bodyInterface = physicsSpace.getBodyInterface();
-            int bodyId = joltBody.getId();
-
             MemorySession arena = PhysicsSpace.getArena();
             FVec3 fvec3 = FVec3.of(arena, (float) velocity.x, (float) velocity.y,
                     (float) velocity.z);
