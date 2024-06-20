@@ -57,6 +57,10 @@ public class RigidBodySnapshot {
     // fields
 
     /**
+     * friction parameter
+     */
+    private float friction;
+    /**
      * angular velocity (in physics-space coordinates)
      */
     final private Vec3d angularVelocity;
@@ -71,6 +75,7 @@ public class RigidBodySnapshot {
      * Instantiate a snapshot with default parameters.
      */
     public RigidBodySnapshot() {
+        this.friction = 0.5f;
         this.angularVelocity = new Vec3d();
         this.linearVelocity = new Vec3d();
     }
@@ -81,6 +86,9 @@ public class RigidBodySnapshot {
      * @param body the body to capture (not null)
      */
     public RigidBodySnapshot(PhysicsRigidBody body) {
+        this.friction = body.getFriction();
+
+        // Vec3d
         if (body.isDynamic()) {
             this.angularVelocity = body.getAngularVelocityDp(null);
             this.linearVelocity = body.getLinearVelocityDp(null);
@@ -98,6 +106,7 @@ public class RigidBodySnapshot {
      * @param body the target body (not null, modified)
      */
     public void applyTo(PhysicsRigidBody body) {
+        body.setFriction(friction);
         if (body.isDynamic()) {
             body.setAngularVelocityDp(angularVelocity);
             body.setLinearVelocityDp(linearVelocity);

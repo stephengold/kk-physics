@@ -182,6 +182,17 @@ public class PhysicsRigidBody extends PhysicsBody {
     }
 
     /**
+     * Return the body's friction parameter.
+     *
+     * @return the parameter value (&ge;0)
+     */
+    public float getFriction() {
+        float result = joltBody.getFriction();
+        assert result >= 0f : result;
+        return result;
+    }
+
+    /**
      * Copy the linear velocity of the body's center of mass. The body must be
      * in dynamic mode.
      *
@@ -439,6 +450,18 @@ public class PhysicsRigidBody extends PhysicsBody {
         }
         super.setCollisionShape(desiredShape);
         rebuildRigidBody();
+    }
+
+    /**
+     * Alter the body's friction.
+     *
+     * @param friction the desired friction value (&ge;0, default=0.5)
+     * <p>
+     * Note: the jolt-java default is 0.2 .
+     */
+    public void setFriction(float friction) {
+        Validate.nonNegative(friction, "friction");
+        joltBody.setFriction(friction);
     }
 
     /**
