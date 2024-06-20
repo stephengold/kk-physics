@@ -283,6 +283,7 @@ public class PhysicsSpace extends CollisionSpace {
      */
     public BodyInterface getBodyInterface() {
         BodyInterface result = physicsSystem.getBodyInterface();
+        assert result != null;
         return result;
     }
 
@@ -573,6 +574,8 @@ public class PhysicsSpace extends CollisionSpace {
      * @param rigidBody the body to add (not null, modified)
      */
     private void addRigidBody(PhysicsRigidBody rigidBody) {
+        assert rigidBody.getCollisionSpace() == null;
+
         BodyInterface bodyInterface = getBodyInterface();
         int bodyId = (int) rigidBody.nativeId();
         if (rigidBody.isDynamic()) {
@@ -612,6 +615,8 @@ public class PhysicsSpace extends CollisionSpace {
      * @param rigidBody the body to remove (not null, modified)
      */
     private void removeRigidBody(PhysicsRigidBody rigidBody) {
+        assert rigidBody.getCollisionSpace() == this;
+
         BodyInterface bodyInterface = getBodyInterface();
         int bodyId = (int) rigidBody.nativeId();
         bodyInterface.removeBody(bodyId);
