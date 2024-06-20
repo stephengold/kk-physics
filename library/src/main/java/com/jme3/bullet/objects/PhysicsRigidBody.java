@@ -478,13 +478,15 @@ public class PhysicsRigidBody extends PhysicsBody {
      * not null, not zero, unaffected)
      */
     public void reposition(Vec3d location, Quaternion orientation) {
-        this.snapshot = new RigidBodySnapshot(this);
         MutableBody oldBody = joltBody;
         PhysicsSpace removedFrom = (PhysicsSpace) getCollisionSpace();
+        RigidBodySnapshot nextSnapshot = new RigidBodySnapshot(this);
 
         if (removedFrom != null) {
             removedFrom.removeCollisionObject(this);
         }
+        logger2.log(Level.INFO, "Clearing {0}.", this);
+        this.snapshot = nextSnapshot;
 
         CollisionShape shape = getCollisionShape();
         this.joltBody = createRigidBody(shape, mass, location, orientation);
