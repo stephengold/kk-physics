@@ -434,16 +434,17 @@ public class PhysicsRigidBody extends PhysicsBody {
         Vec3d location = new Vec3d();
         Quaternion orientation = new Quaternion();
         PhysicsSpace removedFrom = (PhysicsSpace) getCollisionSpace();
+        RigidBodySnapshot nextSnapshot = new RigidBodySnapshot(this);
+
         if (oldBody != null) {
             if (removedFrom != null) {
                 getPhysicsLocationDp(location);
                 getPhysicsRotation(orientation);
                 removedFrom.removeCollisionObject(this);
             }
-            this.snapshot = new RigidBodySnapshot(this);
-
             logger2.log(Level.INFO, "Clearing {0}.", this);
         }
+        this.snapshot = nextSnapshot;
 
         CollisionShape shape = getCollisionShape();
         this.joltBody = createRigidBody(shape, mass, location, orientation);
