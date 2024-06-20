@@ -465,9 +465,7 @@ public class PhysicsRigidBody extends PhysicsBody {
         if (removedFrom != null) {
             removedFrom.addCollisionObject(this);
         }
-        if (snapshot != null) {
-            snapshot.applyTo(this);
-        }
+        snapshot.applyTo(this);
         // TODO kinematic flag, gravity, physics joints
     }
 
@@ -507,9 +505,7 @@ public class PhysicsRigidBody extends PhysicsBody {
         if (removedFrom != null) {
             removedFrom.addCollisionObject(this);
         }
-        if (snapshot != null) {
-            snapshot.applyTo(this);
-        }
+        snapshot.applyTo(this);
         // TODO kinematic flag, gravity, physics joints
     }
 
