@@ -575,8 +575,7 @@ public class PhysicsSpace extends CollisionSpace {
     private void addRigidBody(PhysicsRigidBody rigidBody) {
         BodyInterface bodyInterface = getBodyInterface();
         int bodyId = (int) rigidBody.nativeId();
-        float mass = rigidBody.getMass();
-        if (mass > 0f) {
+        if (rigidBody.isDynamic()) {
             bodyInterface.addBody(bodyId, Activation.ACTIVATE);
         } else {
             bodyInterface.addBody(bodyId, Activation.DONT_ACTIVATE);
