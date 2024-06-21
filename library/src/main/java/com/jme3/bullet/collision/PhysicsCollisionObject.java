@@ -155,6 +155,15 @@ abstract public class PhysicsCollisionObject {
     abstract public float getFriction();
 
     /**
+     * For compatibility with the jme3-jbullet library.
+     *
+     * @return a new location vector (in physics-space coordinates, not null)
+     */
+    public Vector3f getPhysicsLocation() {
+        return getPhysicsLocation(null);
+    }
+
+    /**
      * Copy the location of the collision object's center to a Vector3f.
      *
      * @param storeResult storage for the result (modified if not null)
