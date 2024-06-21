@@ -159,7 +159,7 @@ public class RigidBodySnapshot {
     /**
      * Alter the snapshot's angular velocity.
      *
-     * @param vec3d (not null, modified)
+     * @param vec3d (not null, unaffected, default=(0,0,0))
      */
     public void setAngularVelocity(Vec3d vec3d) {
         angularVelocity.set(vec3d);
@@ -168,7 +168,7 @@ public class RigidBodySnapshot {
     /**
      * Alter the snapshot's friction.
      *
-     * @param desiredValue the desired value
+     * @param desiredValue the desired value (default=0.5)
      */
     public void setFriction(float desiredValue) {
         this.friction = desiredValue;
@@ -177,7 +177,7 @@ public class RigidBodySnapshot {
     /**
      * Alter the snapshot's linear velocity.
      *
-     * @param vec3d (not null, modified)
+     * @param vec3d (not null, unaffected, default=(0,0,0))
      */
     public void setLinearVelocity(Vec3d vec3d) {
         linearVelocity.set(vec3d);

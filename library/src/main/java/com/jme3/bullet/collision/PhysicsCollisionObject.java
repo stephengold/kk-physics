@@ -43,11 +43,9 @@ import jme3utilities.MeshNormals;
 import jme3utilities.Validate;
 
 /**
- * The abstract base class for collision objects based on Bullet's
- * {@code btCollisionObject}.
+ * The abstract base class for collision objects.
  * <p>
- * Subclasses include MultiBodyCollider, PhysicsBody, PhysicsCharacter, and
- * PhysicsGhostObject.
+ * Subclasses include PhysicsBody.
  *
  * @author normenhansen
  */
@@ -119,7 +117,7 @@ abstract public class PhysicsCollisionObject {
     }
 
     /**
-     * Access any application-specific data associated with this collision
+     * Access any application-specific data associated with the collision
      * object.
      *
      * @return the pre-existing instance, or null if none
@@ -130,7 +128,7 @@ abstract public class PhysicsCollisionObject {
     }
 
     /**
-     * Access the shape of this object.
+     * Access the shape of the collision object.
      *
      * @return the pre-existing instance, or null if none
      */
@@ -139,7 +137,7 @@ abstract public class PhysicsCollisionObject {
     }
 
     /**
-     * Access the space where this object is added.
+     * Access the space where the collision object is added.
      *
      * @return the pre-existing instance, or null if none
      */
@@ -208,10 +206,11 @@ abstract public class PhysicsCollisionObject {
     abstract public float getRestitution();
 
     /**
-     * Access the scene object that's using this collision object, typically a
+     * Access the scene object that's using the collision object, typically a
      * PhysicsControl, PhysicsLink, or Spatial. Used by physics controls.
      *
      * @return the pre-existing instance, or null if none
+     * @see #getApplicationData()
      * @see #setUserObject(java.lang.Object)
      */
     public Object getUserObject() {
@@ -227,7 +226,7 @@ abstract public class PhysicsCollisionObject {
     abstract public boolean isActive();
 
     /**
-     * Test whether this object is added to a space.
+     * Test whether the collision object is added to a space.
      *
      * @return true&rarr;added to a space, false&rarr;not added to a space
      */
@@ -256,8 +255,8 @@ abstract public class PhysicsCollisionObject {
     }
 
     /**
-     * Associate application-specific data with this collision object. KK
-     * Physics never touches application-specific data.
+     * Associate application-specific data with the collision object. KK Physics
+     * never touches application-specific data.
      *
      * @param data the desired data object (alias created, default=null)
      * @see #getApplicationData()
@@ -267,7 +266,8 @@ abstract public class PhysicsCollisionObject {
     }
 
     /**
-     * Apply the specified shape to this object. Meant to be overridden.
+     * Apply the specified shape to the collision object. Meant to be
+     * overridden.
      *
      * @param collisionShape the shape to apply (not null, alias created)
      */
@@ -302,10 +302,11 @@ abstract public class PhysicsCollisionObject {
     abstract public void setRestitution(float restitution);
 
     /**
-     * Associate a "user" with this collision object. Used by physics controls.
+     * Associate a "user" with the collision object. Used by physics controls.
      *
      * @param user the desired scene object (alias created, default=null)
      * @see #getUserObject()
+     * @see #setApplicationData(java.lang.Object)
      */
     public void setUserObject(Object user) {
         this.userObject = user;
