@@ -144,6 +144,13 @@ abstract public class PhysicsCollisionObject {
     }
 
     /**
+     * Return the collision object's restitution (bounciness).
+     *
+     * @return restitution value
+     */
+    abstract public float getRestitution();
+
+    /**
      * Access the scene object that's using this collision object, typically a
      * PhysicsControl, PhysicsLink, or Spatial. Used by physics controls.
      *
@@ -221,6 +228,14 @@ abstract public class PhysicsCollisionObject {
         Validate.nonNull(newSetting, "new setting");
         this.debugMeshNormals = newSetting;
     }
+
+    /**
+     * Alter the collision object's restitution (bounciness). For perfect
+     * elasticity, set restitution=1.
+     *
+     * @param restitution the desired value (default=0)
+     */
+    abstract public void setRestitution(float restitution);
 
     /**
      * Associate a "user" with this collision object. Used by physics controls.

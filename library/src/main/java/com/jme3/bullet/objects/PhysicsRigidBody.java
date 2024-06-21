@@ -678,6 +678,24 @@ public class PhysicsRigidBody extends PhysicsBody {
     }
 
     /**
+     * Return the body's restitution parameter.
+     *
+     * @return the parameter value (&ge;0)
+     */
+    @Override
+    public float getRestitution() {
+        float result;
+        if (joltBody == null) {
+            result = snapshot.getRestitution();
+        } else {
+            result = joltBody.getRestitution();
+        }
+
+        assert result >= 0f : result;
+        return result;
+    }
+
+    /**
      * Test whether the body has been deactivated due to lack of motion.
      *
      * @return true if the body is still active, false if it's deactivated
@@ -760,6 +778,22 @@ public class PhysicsRigidBody extends PhysicsBody {
         Vec3d vec3d = new Vec3d(location);
         Quaternion orientation = getPhysicsRotation(null);
         reposition(vec3d, orientation);
+    }
+
+    /**
+     * Alter the body's restitution.
+     *
+     * @param restitution the desired restitution value (&ge;0)
+     */
+    @Override
+    public void setRestitution(float restitution) {
+        Validate.nonNegative(restitution, "restitution");
+
+        if (joltBody == null) {
+            snapshot.setRestitution(restitution);
+        } else {
+            joltBody.setRestitution(restitution);
+        }
     }
     // *************************************************************************
     // Java private methods

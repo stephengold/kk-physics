@@ -61,6 +61,10 @@ public class RigidBodySnapshot {
      */
     private float friction;
     /**
+     * restitution (bounciness)
+     */
+    private float restitution;
+    /**
      * angular velocity (in physics-space coordinates)
      */
     final private Vec3d angularVelocity;
@@ -76,6 +80,7 @@ public class RigidBodySnapshot {
      */
     public RigidBodySnapshot() {
         this.friction = 0.5f;
+        this.restitution = 0f;
         this.angularVelocity = new Vec3d();
         this.linearVelocity = new Vec3d();
     }
@@ -87,6 +92,7 @@ public class RigidBodySnapshot {
      */
     public RigidBodySnapshot(PhysicsRigidBody body) {
         this.friction = body.getFriction();
+        this.restitution = body.getRestitution();
 
         // Vec3d
         if (body.isDynamic()) {
@@ -107,6 +113,7 @@ public class RigidBodySnapshot {
      */
     public void applyTo(PhysicsRigidBody body) {
         body.setFriction(friction);
+        body.setRestitution(restitution);
         if (body.isDynamic()) {
             body.setAngularVelocityDp(angularVelocity);
             body.setLinearVelocityDp(linearVelocity);
@@ -141,6 +148,15 @@ public class RigidBodySnapshot {
     }
 
     /**
+     * Return the snapshot's restitution.
+     *
+     * @return the value
+     */
+    public float getRestitution() {
+        return restitution;
+    }
+
+    /**
      * Alter the snapshot's angular velocity.
      *
      * @param vec3d (not null, modified)
@@ -165,5 +181,14 @@ public class RigidBodySnapshot {
      */
     public void setLinearVelocity(Vec3d vec3d) {
         linearVelocity.set(vec3d);
+    }
+
+    /**
+     * Alter the snapshot's restitution.
+     *
+     * @param desiredValue the desired value (default=0)
+     */
+    public void setRestitution(float desiredValue) {
+        this.restitution = desiredValue;
     }
 }
