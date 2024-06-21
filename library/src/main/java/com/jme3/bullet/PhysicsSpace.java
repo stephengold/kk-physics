@@ -40,6 +40,7 @@ import com.jme3.scene.Spatial;
 import com.jme3.util.SafeArrayList;
 import java.lang.foreign.MemorySession;
 import java.util.Collection;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import jme3utilities.Validate;
 import jolt.Jolt;
@@ -295,6 +296,21 @@ public class PhysicsSpace extends CollisionSpace {
     public ContactManager getContactManager() {
         assert manager != null;
         return manager;
+    }
+
+    /**
+     * Copy the gravitational acceleration for newly-added bodies.
+     *
+     * @param storeResult storage for the result (modified if not null)
+     * @return the acceleration vector (in physics-space coordinates, either
+     * storeResult or a new instance, not null)
+     */
+    public Vector3f getGravity(Vector3f storeResult) {
+        Vector3f result = (storeResult == null) ? new Vector3f() : storeResult;
+        assert checkGravity();
+        result.set(gravity);
+
+        return result;
     }
 
     /**
@@ -585,6 +601,29 @@ public class PhysicsSpace extends CollisionSpace {
         }
 
         rigidBody.setAddedToSpaceInternal(this);
+    }
+
+    /**
+     * Compare jolt-java's gravity vector to the local copy.
+     *
+     * @param storeVector caller-allocated temporary storage (not null)
+     * @return true if scale factors are exactly equal, otherwise false
+     */
+    private boolean checkGravity() {
+        MemorySession arena = PhysicsSpace.getArena();
+        FVec3 joltGravity = FVec3.of(arena);
+        physicsSystem.getGravity(joltGravity);
+
+        boolean result = (joltGravity.getX() == gravity.x
+                && joltGravity.getY() == gravity.y
+                && joltGravity.getZ() == gravity.z);
+        if (!result) {
+            logger.log(Level.WARNING,
+                    "mismatch detected: space={0} copy={1} jolt={2}",
+                    new Object[]{this, gravity, joltGravity});
+        }
+
+        return result;
     }
 
     /**
