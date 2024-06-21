@@ -143,6 +143,16 @@ abstract public class CollisionShape {
     }
 
     /**
+     * Return the ID of the assigned jolt-java object.
+     *
+     * @return the raw long value associated with the unscaled shape
+     */
+    public long nativeId() {
+        long result = unscaledShape.address().toRawLongValue();
+        return result;
+    }
+
+    /**
      * Alter the scale of this shape to a uniform factor. CAUTION: Not all
      * shapes can be scaled.
      * <p>
