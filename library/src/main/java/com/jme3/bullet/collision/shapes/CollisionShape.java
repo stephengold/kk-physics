@@ -31,10 +31,15 @@
  */
 package com.jme3.bullet.collision.shapes;
 
+import com.jme3.bullet.PhysicsSpace;
 import com.jme3.math.Vector3f;
+import java.lang.foreign.MemorySession;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import jme3utilities.Validate;
 import jme3utilities.math.MyVector3f;
+import jolt.math.FVec3;
+import jolt.physics.collision.shape.ScaledShape;
 import jolt.physics.collision.shape.Shape;
 
 /**
@@ -56,14 +61,22 @@ abstract public class CollisionShape {
     // fields
 
     /**
-     * underlying jolt-java object
+     * underlying scaled jolt-java object
      */
-    private Shape joltShape = null;
+    private ScaledShape joltShape;
+    /**
+     * underlying unscaled jolt-java object
+     */
+    private Shape unscaledShape;
+    /**
+     * copy of the scale factors, one for each local axis
+     */
+    protected Vector3f scale = new Vector3f(1f, 1f, 1f);
     // *************************************************************************
     // constructors
 
     /**
-     * Instantiate a collision shape with no jolt-java object.
+     * Instantiate a collision shape with no underlying jolt-java objects.
      * <p>
      * This no-arg constructor was made explicit to avoid javadoc warnings from
      * JDK 18+.
@@ -103,6 +116,23 @@ abstract public class CollisionShape {
     }
 
     /**
+     * Copy the scale factors.
+     *
+     * @param storeResult storage for the result (modified if not null)
+     * @return the scale factor for each local axis (either storeResult or a new
+     * vector, not null, all components positive)
+     */
+    public Vector3f getScale(Vector3f storeResult) {
+        Vector3f result = (storeResult == null) ? new Vector3f() : storeResult;
+
+        assert checkScale();
+        result.set(scale);
+
+        assert MyVector3f.isAllPositive(result);
+        return result;
+    }
+
+    /**
      * Test whether the shape can be applied to a dynamic rigid body.
      *
      * @return true if non-moving, false otherwise
@@ -111,18 +141,91 @@ abstract public class CollisionShape {
         boolean result = joltShape.mustBeStatic();
         return result;
     }
+
+    /**
+     * Alter the scale of this shape to a uniform factor. CAUTION: Not all
+     * shapes can be scaled.
+     * <p>
+     * Note that if the shape is shared (between collision objects and/or
+     * compound shapes) changes can have unintended consequences.
+     *
+     * @param factor the desired scale factor for all axes (&gt;0, default=1)
+     */
+    public void setScale(float factor) {
+        assert Validate.positive(factor, "factor");
+
+        Vector3f scaleVector
+                = new Vector3f(factor, factor, factor); // TODO garbage
+        setScale(scaleVector);
+    }
+
+    /**
+     * Alter the scale of this shape. CAUTION: Not all shapes can be scaled
+     * arbitrarily.
+     * <p>
+     * Note that if the shape is shared (between collision objects and/or
+     * compound shapes) changes can have unintended consequences.
+     *
+     * @param scale the desired scale factor for each local axis (not null, all
+     * components positive, unaffected, default=(1,1,1))
+     */
+    public void setScale(Vector3f scale) {
+        if (!canScale(scale)) {
+            String typeName = getClass().getCanonicalName();
+            String message = String.format("%s cannot be scaled to (%s,%s,%s)",
+                    typeName, scale.x, scale.y, scale.z);
+            throw new IllegalArgumentException(message);
+        }
+
+        this.scale.set(scale);
+
+        MemorySession arena = PhysicsSpace.getArena();
+        FVec3 fvec3 = FVec3.of(arena, scale.x, scale.y, scale.z);
+        this.joltShape = ScaledShape.of(unscaledShape, fvec3);
+
+        logger.log(Level.FINE, "Scaling {0}.", this);
+    }
     // *************************************************************************
     // new protected methods
 
     /**
-     * Initialize the underlying jolt-java Shape.
+     * Initialize the underlying jolt-java objects.
      *
-     * @param joltShape the jolt-java Shape to use
+     * @param unscaled the unscaled shape to use
      */
-    protected void setNativeObject(Shape joltShape) {
-        Validate.nonNull(joltShape, "jolt shape");
-
+    protected void setNativeObject(Shape unscaled) {
+        Validate.nonNull(unscaled, "unscaled jolt shape");
         assert this.joltShape == null : this.joltShape;
-        this.joltShape = joltShape;
+        assert this.unscaledShape == null : this.unscaledShape;
+
+        this.unscaledShape = unscaled;
+
+        MemorySession arena = PhysicsSpace.getArena();
+        FVec3 fvec3 = FVec3.of(arena, scale.x, scale.y, scale.z);
+        this.joltShape = ScaledShape.of(unscaledShape, fvec3);
+    }
+    // *************************************************************************
+    // Java private methods
+
+    /**
+     * Compare jolt-java's scale factors to the local copies.
+     *
+     * @return true if the factors match exactly, otherwise false
+     */
+    private boolean checkScale() {
+        MemorySession arena = PhysicsSpace.getArena();
+        FVec3 joltScale = FVec3.of(arena);
+        joltShape.getScale(joltScale);
+
+        boolean result = (joltScale.getX() == scale.x
+                && joltScale.getY() == scale.y
+                && joltScale.getZ() == scale.z);
+        if (!result) {
+            logger.log(Level.WARNING,
+                    "mismatch detected: shape={0} copy={1} jolt={2}",
+                    new Object[]{this, scale, joltScale});
+        }
+
+        return result;
     }
 }
