@@ -295,87 +295,6 @@ public class PhysicsRigidBody extends PhysicsBody {
     }
 
     /**
-     * Copy the location of the body's center to a Vector3f.
-     *
-     * @param storeResult storage for the result (modified if not null)
-     * @return a location vector (in physics-space coordinates, either
-     * storeResult or a new vector, finite)
-     */
-    public Vector3f getPhysicsLocation(Vector3f storeResult) {
-        Vector3f result = (storeResult == null) ? new Vector3f() : storeResult;
-
-        MemorySession arena = PhysicsSpace.getArena();
-        FVec3 fvec3 = FVec3.of(arena);
-        bodyInterface.getCenterOfMassPosition(bodyId, fvec3);
-        result.x = fvec3.getX();
-        result.y = fvec3.getY();
-        result.z = fvec3.getZ();
-
-        assert Vector3f.isValidVector(result);
-        return result;
-    }
-
-    /**
-     * Copy the location of the body's center to a Vec3d.
-     *
-     * @param storeResult storage for the result (modified if not null)
-     * @return a location vector (in physics-space coordinates, either
-     * storeResult or a new vector, not null, finite)
-     */
-    public Vec3d getPhysicsLocationDp(Vec3d storeResult) {
-        Vec3d result = (storeResult == null) ? new Vec3d() : storeResult;
-
-        MemorySession arena = PhysicsSpace.getArena();
-        FVec3 fvec3 = FVec3.of(arena);
-        bodyInterface.getCenterOfMassPosition(bodyId, fvec3);
-        result.x = fvec3.getX();
-        result.y = fvec3.getY();
-        result.z = fvec3.getZ();
-
-        assert result.isFinite();
-        return result;
-    }
-
-    /**
-     * Copy the orientation (rotation) of the body to a {@code Quaternion}.
-     *
-     * @param storeResult storage for the result (modified if not null)
-     * @return a rotation Quaternion (in physics-space coordinates, either
-     * storeResult or a new instance, not null)
-     */
-    public Quaternion getPhysicsRotation(Quaternion storeResult) {
-        Quaternion result
-                = (storeResult == null) ? new Quaternion() : storeResult;
-
-        MemorySession arena = PhysicsSpace.getArena();
-        Quat wr = Quat.of(arena);
-        joltBody.getRotation(wr);
-        result.set(wr.getX(), wr.getY(), wr.getZ(), wr.getW());
-
-        return result;
-    }
-
-    /**
-     * Copy the orientation (rotation) of the body to a {@code Matrix3f}.
-     *
-     * @param storeResult storage for the result (modified if not null)
-     * @return a rotation matrix (in physics-space coordinates, either
-     * storeResult or a new matrix, not null)
-     */
-    public Matrix3f getPhysicsRotationMatrix(Matrix3f storeResult) {
-        Matrix3f result = (storeResult == null) ? new Matrix3f() : storeResult;
-
-        MemorySession arena = PhysicsSpace.getArena();
-        Quat wr = Quat.of(arena);
-        joltBody.getRotation(wr);
-        Quaternion quaternion
-                = new Quaternion(wr.getX(), wr.getY(), wr.getZ(), wr.getW());
-        result.set(quaternion);
-
-        return result;
-    }
-
-    /**
      * Test whether a jolt-java object is assigned to this instance.
      *
      * @return true if one is assigned, otherwise false
@@ -658,6 +577,90 @@ public class PhysicsRigidBody extends PhysicsBody {
         }
 
         assert result >= 0f : result;
+        return result;
+    }
+    /**
+     * Copy the location of the body's center to a Vector3f.
+     *
+     * @param storeResult storage for the result (modified if not null)
+     * @return a location vector (in physics-space coordinates, either
+     * storeResult or a new vector, finite)
+     */
+    @Override
+    public Vector3f getPhysicsLocation(Vector3f storeResult) {
+        Vector3f result = (storeResult == null) ? new Vector3f() : storeResult;
+
+        MemorySession arena = PhysicsSpace.getArena();
+        FVec3 fvec3 = FVec3.of(arena);
+        bodyInterface.getCenterOfMassPosition(bodyId, fvec3);
+        result.x = fvec3.getX();
+        result.y = fvec3.getY();
+        result.z = fvec3.getZ();
+
+        assert Vector3f.isValidVector(result);
+        return result;
+    }
+
+    /**
+     * Copy the location of the body's center to a Vec3d.
+     *
+     * @param storeResult storage for the result (modified if not null)
+     * @return a location vector (in physics-space coordinates, either
+     * storeResult or a new vector, not null, finite)
+     */
+    @Override
+    public Vec3d getPhysicsLocationDp(Vec3d storeResult) {
+        Vec3d result = (storeResult == null) ? new Vec3d() : storeResult;
+
+        MemorySession arena = PhysicsSpace.getArena();
+        FVec3 fvec3 = FVec3.of(arena);
+        bodyInterface.getCenterOfMassPosition(bodyId, fvec3);
+        result.x = fvec3.getX();
+        result.y = fvec3.getY();
+        result.z = fvec3.getZ();
+
+        assert result.isFinite();
+        return result;
+    }
+
+    /**
+     * Copy the orientation (rotation) of the body to a {@code Quaternion}.
+     *
+     * @param storeResult storage for the result (modified if not null)
+     * @return a rotation Quaternion (in physics-space coordinates, either
+     * storeResult or a new instance, not null)
+     */
+    @Override
+    public Quaternion getPhysicsRotation(Quaternion storeResult) {
+        Quaternion result
+                = (storeResult == null) ? new Quaternion() : storeResult;
+
+        MemorySession arena = PhysicsSpace.getArena();
+        Quat wr = Quat.of(arena);
+        joltBody.getRotation(wr);
+        result.set(wr.getX(), wr.getY(), wr.getZ(), wr.getW());
+
+        return result;
+    }
+
+    /**
+     * Copy the orientation (rotation) of the body to a {@code Matrix3f}.
+     *
+     * @param storeResult storage for the result (modified if not null)
+     * @return a rotation matrix (in physics-space coordinates, either
+     * storeResult or a new matrix, not null)
+     */
+    @Override
+    public Matrix3f getPhysicsRotationMatrix(Matrix3f storeResult) {
+        Matrix3f result = (storeResult == null) ? new Matrix3f() : storeResult;
+
+        MemorySession arena = PhysicsSpace.getArena();
+        Quat wr = Quat.of(arena);
+        joltBody.getRotation(wr);
+        Quaternion quaternion
+                = new Quaternion(wr.getX(), wr.getY(), wr.getZ(), wr.getW());
+        result.set(quaternion);
+
         return result;
     }
 

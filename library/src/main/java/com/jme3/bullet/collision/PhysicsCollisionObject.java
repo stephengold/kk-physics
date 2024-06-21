@@ -34,6 +34,10 @@ package com.jme3.bullet.collision;
 import com.jme3.bullet.CollisionSpace;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.collision.shapes.CollisionShape;
+import com.jme3.math.Matrix3f;
+import com.jme3.math.Quaternion;
+import com.jme3.math.Vector3f;
+import com.simsilica.mathd.Vec3d;
 import java.util.logging.Logger;
 import jme3utilities.MeshNormals;
 import jme3utilities.Validate;
@@ -149,6 +153,43 @@ abstract public class PhysicsCollisionObject {
      * @return the parameter value (&ge;0)
      */
     abstract public float getFriction();
+
+    /**
+     * Copy the location of the collision object's center to a Vector3f.
+     *
+     * @param storeResult storage for the result (modified if not null)
+     * @return a location vector (in physics-space coordinates, either
+     * storeResult or a new vector, finite)
+     */
+    abstract public Vector3f getPhysicsLocation(Vector3f storeResult);
+
+    /**
+     * Copy the location of the collision object's center to a Vec3d.
+     *
+     * @param storeResult storage for the result (modified if not null)
+     * @return a location vector (in physics-space coordinates, either
+     * storeResult or a new vector, not null, finite)
+     */
+    abstract public Vec3d getPhysicsLocationDp(Vec3d storeResult);
+
+    /**
+     * Copy the orientation (rotation) of the collision object to a Quaternion.
+     *
+     * @param storeResult storage for the result (modified if not null)
+     * @return a rotation Quaternion (in physics-space coordinates, either
+     * storeResult or a new instance, not null)
+     */
+    abstract public Quaternion getPhysicsRotation(Quaternion storeResult);
+
+    /**
+     * Copy the orientation of the collision object (the basis of its local
+     * coordinate system) to a Matrix3f.
+     *
+     * @param storeResult storage for the result (modified if not null)
+     * @return a rotation matrix (in physics-space coordinates, either
+     * storeResult or a new matrix, not null)
+     */
+    abstract public Matrix3f getPhysicsRotationMatrix(Matrix3f storeResult);
 
     /**
      * Return the collision object's restitution (bounciness).
