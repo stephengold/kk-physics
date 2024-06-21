@@ -68,6 +68,10 @@ abstract public class PhysicsCollisionObject {
      */
     private MeshNormals debugMeshNormals = MeshNormals.None;
     /**
+     * application-specific data of this collision object. Untouched.
+     */
+    private Object applicationData = null;
+    /**
      * scene object that's using this collision object. The scene object is
      * typically a PhysicsControl, PhysicsLink, or Spatial. Used by physics
      * controls.
@@ -108,6 +112,17 @@ abstract public class PhysicsCollisionObject {
     public MeshNormals debugMeshNormals() {
         assert debugMeshNormals != null;
         return debugMeshNormals;
+    }
+
+    /**
+     * Access any application-specific data associated with this collision
+     * object.
+     *
+     * @return the pre-existing instance, or null if none
+     * @see #setApplicationData(java.lang.Object)
+     */
+    public Object getApplicationData() {
+        return applicationData;
     }
 
     /**
@@ -167,6 +182,17 @@ abstract public class PhysicsCollisionObject {
      */
     public void setAddedToSpaceInternal(PhysicsSpace physicsSpace) {
         this.addedToSpace = physicsSpace;
+    }
+
+    /**
+     * Associate application-specific data with this collision object. KK
+     * Physics never touches application-specific data.
+     *
+     * @param data the desired data object (alias created, default=null)
+     * @see #getApplicationData()
+     */
+    public void setApplicationData(Object data) {
+        this.applicationData = data;
     }
 
     /**
