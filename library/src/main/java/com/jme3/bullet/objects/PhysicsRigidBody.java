@@ -689,6 +689,17 @@ public class PhysicsRigidBody extends PhysicsBody {
     }
 
     /**
+     * Test whether the body is static (immobile).
+     *
+     * @return true if static, otherwise false
+     */
+    @Override
+    public boolean isStatic() {
+        boolean result = (mass == massForStatic);
+        return result;
+    }
+
+    /**
      * Alter the {@code addedToSpace} field. Internal use only.
      *
      * @param physicsSpace (alias created if not null)

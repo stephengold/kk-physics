@@ -176,6 +176,13 @@ abstract public class PhysicsCollisionObject {
     }
 
     /**
+     * Test whether the collision object is static (immobile).
+     *
+     * @return true if static, otherwise false
+     */
+    abstract public boolean isStatic();
+
+    /**
      * Alter the {@code addedToSpace} field. Internal use only.
      *
      * @param physicsSpace (may be null, alias created)
