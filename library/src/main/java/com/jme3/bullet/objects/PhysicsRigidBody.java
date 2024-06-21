@@ -668,6 +668,27 @@ public class PhysicsRigidBody extends PhysicsBody {
     // PhysicsBody methods
 
     /**
+     * Reactivate the body if it has been deactivated due to lack of motion.
+     *
+     * @param forceFlag true to force activation (ignored)
+     */
+    @Override
+    public void activate(boolean forceFlag) {
+        bodyInterface.activateBody(bodyId);
+    }
+
+    /**
+     * Test whether the body has been deactivated due to lack of motion.
+     *
+     * @return true if the body is still active, false if it's deactivated
+     */
+    @Override
+    public boolean isActive() {
+        boolean result = joltBody.isActive();
+        return result;
+    }
+
+    /**
      * Alter the {@code addedToSpace} field. Internal use only.
      *
      * @param physicsSpace (alias created if not null)

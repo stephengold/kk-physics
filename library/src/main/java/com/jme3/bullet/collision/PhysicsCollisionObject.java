@@ -93,6 +93,14 @@ abstract public class PhysicsCollisionObject {
     // new methods exposed
 
     /**
+     * Reactivate the collision object if it has been deactivated due to lack of
+     * motion.
+     *
+     * @param forceFlag true to force activation
+     */
+    abstract public void activate(boolean forceFlag);
+
+    /**
      * Determine which normals to include in new debug meshes.
      *
      * @return an enum value (not null)
@@ -130,6 +138,14 @@ abstract public class PhysicsCollisionObject {
     public Object getUserObject() {
         return userObject;
     }
+
+    /**
+     * Test whether the collision object has been deactivated due to lack of
+     * motion.
+     *
+     * @return true if object still active, false if deactivated
+     */
+    abstract public boolean isActive();
 
     /**
      * Test whether this object is added to a space.
