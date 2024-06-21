@@ -144,6 +144,13 @@ abstract public class PhysicsCollisionObject {
     }
 
     /**
+     * Return the collision object's friction parameter.
+     *
+     * @return the parameter value (&ge;0)
+     */
+    abstract public float getFriction();
+
+    /**
      * Return the collision object's restitution (bounciness).
      *
      * @return restitution value
@@ -228,6 +235,13 @@ abstract public class PhysicsCollisionObject {
         Validate.nonNull(newSetting, "new setting");
         this.debugMeshNormals = newSetting;
     }
+
+    /**
+     * Alter the collision object's friction.
+     *
+     * @param friction the desired friction value (&ge;0, default=0.5)
+     */
+    abstract public void setFriction(float friction);
 
     /**
      * Alter the collision object's restitution (bounciness). For perfect

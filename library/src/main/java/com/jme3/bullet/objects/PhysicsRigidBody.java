@@ -234,23 +234,6 @@ public class PhysicsRigidBody extends PhysicsBody {
     }
 
     /**
-     * Return the body's friction parameter.
-     *
-     * @return the parameter value (&ge;0)
-     */
-    public float getFriction() {
-        float result;
-        if (joltBody == null) {
-            result = snapshot.getFriction();
-        } else {
-            result = joltBody.getFriction();
-        }
-
-        assert result >= 0f : result;
-        return result;
-    }
-
-    /**
      * For compatibility with the jme3-jbullet library.
      *
      * @return a new velocity vector (physics-space units per second in
@@ -553,23 +536,6 @@ public class PhysicsRigidBody extends PhysicsBody {
     }
 
     /**
-     * Alter the body's friction.
-     *
-     * @param friction the desired friction value (&ge;0, default=0.5)
-     * <p>
-     * Note: the jolt-java default is 0.2 .
-     */
-    public void setFriction(float friction) {
-        Validate.nonNegative(friction, "friction");
-
-        if (joltBody == null) {
-            snapshot.setFriction(friction);
-        } else {
-            joltBody.setFriction(friction);
-        }
-    }
-
-    /**
      * Alter the linear velocity of the body's center of mass.
      *
      * @param velocity the desired velocity (physics-space units per second in
@@ -678,6 +644,24 @@ public class PhysicsRigidBody extends PhysicsBody {
     }
 
     /**
+     * Return the body's friction parameter.
+     *
+     * @return the parameter value (&ge;0)
+     */
+    @Override
+    public float getFriction() {
+        float result;
+        if (joltBody == null) {
+            result = snapshot.getFriction();
+        } else {
+            result = joltBody.getFriction();
+        }
+
+        assert result >= 0f : result;
+        return result;
+    }
+
+    /**
      * Return the body's restitution parameter.
      *
      * @return the parameter value (&ge;0)
@@ -763,6 +747,24 @@ public class PhysicsRigidBody extends PhysicsBody {
 
         super.setCollisionShape(desiredShape);
         rebuildRigidBody();
+    }
+
+    /**
+     * Alter the body's friction.
+     *
+     * @param friction the desired friction value (&ge;0, default=0.5)
+     * <p>
+     * Note: the jolt-java default is 0.2 .
+     */
+    @Override
+    public void setFriction(float friction) {
+        Validate.nonNegative(friction, "friction");
+
+        if (joltBody == null) {
+            snapshot.setFriction(friction);
+        } else {
+            joltBody.setFriction(friction);
+        }
     }
 
     /**
