@@ -579,6 +579,17 @@ public class PhysicsRigidBody extends PhysicsBody {
         assert result >= 0f : result;
         return result;
     }
+
+    /**
+     * Return the body's mass.
+     *
+     * @return the mass (&gt;0) or zero for a static body
+     */
+    @Override
+    public float getMass() {
+        return mass;
+    }
+
     /**
      * Copy the location of the body's center to a Vector3f.
      *
@@ -719,16 +730,6 @@ public class PhysicsRigidBody extends PhysicsBody {
             this.bodyInterface = physicsSpace.getBodyInterface();
             snapshot.applyTo(this);
         }
-    }
-
-    /**
-     * Return the body's mass.
-     *
-     * @return the mass (&gt;0) or zero for a static body
-     */
-    @Override
-    public float getMass() {
-        return mass;
     }
 
     /**
