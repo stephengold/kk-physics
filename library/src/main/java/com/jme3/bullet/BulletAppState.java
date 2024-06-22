@@ -45,7 +45,9 @@ import jme3utilities.Validate;
  *
  * @author normenhansen
  */
-public class BulletAppState extends BaseAppState {
+public class BulletAppState
+        extends BaseAppState
+        implements PhysicsTickListener {
     // *************************************************************************
     // constants and loggers
 
@@ -181,6 +183,7 @@ public class BulletAppState extends BaseAppState {
         PhysicsSpace pSpace;
         pSpace = createPhysicsSpace();
         debugConfig.setSpace(pSpace);
+        pSpace.addTickListener(this);
         setRunning(true);
     }
     // *************************************************************************
@@ -304,5 +307,31 @@ public class BulletAppState extends BaseAppState {
     public void update(float tpf) {
         super.update(tpf);
         this.tpf = tpf;
+    }
+    // *************************************************************************
+    // PhysicsTickListener methods
+
+    /**
+     * Callback invoked just after the physics has been stepped. A good time to
+     * clear/apply forces. Meant to be overridden.
+     *
+     * @param space the space that was just stepped (not null)
+     * @param timeStep the duration of the simulation step (in seconds, &ge;0)
+     */
+    @Override
+    public void physicsTick(PhysicsSpace space, float timeStep) {
+        // do nothing
+    }
+
+    /**
+     * Callback invoked just before the physics is stepped. A good time to
+     * clear/apply forces. Meant to be overridden.
+     *
+     * @param space the space that's about to be stepped (not null)
+     * @param timeStep the duration of the simulation step (in seconds, &ge;0)
+     */
+    @Override
+    public void prePhysicsTick(PhysicsSpace space, float timeStep) {
+        // do nothing
     }
 }
