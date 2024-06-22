@@ -116,11 +116,6 @@ public class PhysicsSpace extends CollisionSpace {
      */
     private float physicsLag = 0f;
     /**
-     * maximum number of simulation steps per frame (&gt;0) or 0 for a variable
-     * time step
-     */
-    private int maxSubSteps = 4;
-    /**
      * list of registered tick listeners
      */
     final private Collection<PhysicsTickListener> tickListeners
@@ -129,6 +124,11 @@ public class PhysicsSpace extends CollisionSpace {
      * manage contact/collision listeners and events
      */
     private ContactManager manager = new DefaultContactManager(this);
+    /**
+     * maximum number of simulation steps per frame (&gt;0) or 0 for a variable
+     * time step
+     */
+    private int maxSubSteps = 4;
     /**
      *
      */
