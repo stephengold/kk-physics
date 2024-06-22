@@ -218,6 +218,13 @@ abstract public class PhysicsCollisionObject {
     }
 
     /**
+     * Test whether a jolt-java object is assigned to this collision object.
+     *
+     * @return true if one is assigned, otherwise false
+     */
+    abstract public boolean hasAssignedNativeObject();
+
+    /**
      * Test whether the collision object has been deactivated due to lack of
      * motion.
      *
@@ -244,6 +251,14 @@ abstract public class PhysicsCollisionObject {
      * @return true if static, otherwise false
      */
     abstract public boolean isStatic();
+
+    /**
+     * Return the ID of the assigned jolt-java object, assuming that one is
+     * assigned.
+     *
+     * @return the jolt-java identifier
+     */
+    abstract public long nativeId();
 
     /**
      * Alter the {@code addedToSpace} field. Internal use only.

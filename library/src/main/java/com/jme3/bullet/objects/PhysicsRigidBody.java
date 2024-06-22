@@ -295,36 +295,12 @@ public class PhysicsRigidBody extends PhysicsBody {
     }
 
     /**
-     * Test whether a jolt-java object is assigned to this instance.
-     *
-     * @return true if one is assigned, otherwise false
-     */
-    final public boolean hasAssignedNativeObject() {
-        if (joltBody == null) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    /**
      * Test whether the body is in dynamic mode.
      *
      * @return true if in dynamic mode, otherwise false (static/kinematic mode)
      */
     public boolean isDynamic() {
         boolean result = (mass > massForStatic);
-        return result;
-    }
-
-    /**
-     * Return the ID of the assigned jolt-java object, assuming that one is
-     * assigned.
-     *
-     * @return the jolt-java identifier
-     */
-    public long nativeId() {
-        long result = joltBody.getId();
         return result;
     }
 
@@ -694,6 +670,20 @@ public class PhysicsRigidBody extends PhysicsBody {
     }
 
     /**
+     * Test whether a jolt-java object is assigned to this body.
+     *
+     * @return true if one is assigned, otherwise false
+     */
+    @Override
+    public boolean hasAssignedNativeObject() {
+        if (joltBody == null) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    /**
      * Test whether the body has been deactivated due to lack of motion.
      *
      * @return true if the body is still active, false if it's deactivated
@@ -712,6 +702,18 @@ public class PhysicsRigidBody extends PhysicsBody {
     @Override
     public boolean isStatic() {
         boolean result = (mass == massForStatic);
+        return result;
+    }
+
+    /**
+     * Return the ID of the assigned jolt-java object, assuming that one is
+     * assigned.
+     *
+     * @return the jolt-java identifier
+     */
+    @Override
+    public long nativeId() {
+        long result = joltBody.getId();
         return result;
     }
 
