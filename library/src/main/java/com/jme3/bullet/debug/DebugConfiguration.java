@@ -63,6 +63,10 @@ public class DebugConfiguration {
      */
     private boolean isEnabled = false;
     /**
+     * limit which objects are visualized, or null to visualize all objects
+     */
+    private BulletDebugAppState.DebugAppStateFilter filter;
+    /**
      * Camera for visualization, or null if unknown
      */
     private Camera camera;
@@ -137,6 +141,15 @@ public class DebugConfiguration {
      */
     public Camera getCamera() {
         return camera;
+    }
+
+    /**
+     * Access the filter that limits which physics objects are visualized.
+     *
+     * @return the pre-existing instance, or null
+     */
+    BulletDebugAppState.DebugAppStateFilter getFilter() {
+        return filter;
     }
 
     /**
@@ -262,6 +275,16 @@ public class DebugConfiguration {
      */
     public void setEnabled(boolean enable) {
         this.isEnabled = enable;
+    }
+
+    /**
+     * Alter which physics objects are included in the visualization.
+     *
+     * @param filter the desired filter (alias created) or null to visualize all
+     * objects (default=null)
+     */
+    public void setFilter(BulletDebugAppState.DebugAppStateFilter filter) {
+        this.filter = filter;
     }
 
     /**
