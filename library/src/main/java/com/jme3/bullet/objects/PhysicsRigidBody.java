@@ -44,6 +44,7 @@ import java.lang.foreign.MemorySession;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import jme3utilities.Validate;
+import jme3utilities.math.MyVector3f;
 import jolt.math.FVec3;
 import jolt.math.Quat;
 import jolt.physics.body.BodyCreationSettings;
@@ -169,9 +170,16 @@ public class PhysicsRigidBody extends PhysicsBody {
     public void applyCentralImpulse(Vector3f impulse) {
         Validate.finite(impulse, "impulse");
 
-        MemorySession arena = PhysicsSpace.getArena();
-        FVec3 fvec3 = FVec3.of(arena, impulse.x, impulse.y, impulse.z);
-        joltBody.addImpulse(fvec3);
+        if (isDynamic()) {
+            Vector3f velocity = getLinearVelocity(null);
+            MyVector3f.accumulateScaled(velocity, impulse, 1f / mass);
+            setLinearVelocity(velocity);
+        }
+
+        //MemorySession arena = PhysicsSpace.getArena();
+        //FVec3 fvec3 = FVec3.of(arena, impulse.x, impulse.y, impulse.z);
+        //assert bodyId == joltBody.getId();
+        //bodyInterface.addImpulse(bodyId, fvec3);
     }
 
     /**
