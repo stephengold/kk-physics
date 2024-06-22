@@ -40,6 +40,9 @@ import com.jme3.scene.Spatial;
 import com.jme3.util.SafeArrayList;
 import java.lang.foreign.MemorySession;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import jme3utilities.Validate;
@@ -264,6 +267,16 @@ public class PhysicsSpace extends CollisionSpace {
     }
 
     /**
+     * Count the rigid bodies in the space.
+     *
+     * @return count (&ge;0)
+     */
+    public int countRigidBodies() {
+        int count = rigidMap.size();
+        return count;
+    }
+
+    /**
      * Count how many tick listeners are registered with the space.
      *
      * @return the count (&ge;0)
@@ -314,6 +327,31 @@ public class PhysicsSpace extends CollisionSpace {
         Vector3f result = (storeResult == null) ? new Vector3f() : storeResult;
         assert checkGravity();
         result.set(gravity);
+
+        return result;
+    }
+
+    /**
+     * Access the PhysicsSpace <b>running on this thread</b>. For parallel
+     * physics, this may be invoked from the OpenGL thread.
+     *
+     * @return the pre-existing PhysicsSpace running on this thread
+     */
+    public static PhysicsSpace getPhysicsSpace() {
+        CollisionSpace result = getCollisionSpace();
+        return (PhysicsSpace) result;
+    }
+
+    /**
+     * Enumerate rigid bodies (including vehicles) that have been added to this
+     * space and not yet removed.
+     *
+     * @return a new unmodifiable collection of pre-existing instances (not
+     * null)
+     */
+    public Collection<PhysicsRigidBody> getRigidBodyList() {
+        Collection<PhysicsRigidBody> result = rigidMap.values();
+        result = Collections.unmodifiableCollection(result);
 
         return result;
     }
