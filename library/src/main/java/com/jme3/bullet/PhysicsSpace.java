@@ -133,6 +133,11 @@ public class PhysicsSpace extends CollisionSpace {
      *
      */
     private final JobSystem jobSystem;
+    /**
+     * map rigid-body IDs to added collision objects
+     */
+    final private Map<Long, PhysicsRigidBody> rigidMap
+            = new ConcurrentHashMap<>(64);
     private final PhysicsSystem physicsSystem;
     private final TempAllocator tempAllocator;
     /**
@@ -539,6 +544,20 @@ public class PhysicsSpace extends CollisionSpace {
     }
 
     /**
+     * Enumerate collision objects that have been added to the space and not yet
+     * removed.
+     *
+     * @return a new modifiable collection of pre-existing instances (not null)
+     */
+    @Override
+    public Collection<PhysicsCollisionObject> getPcoList() {
+        Collection<PhysicsCollisionObject> result = super.getPcoList();
+        result.addAll(rigidMap.values());
+
+        return result;
+    }
+
+    /**
      * Remove the specified object from the space. For compatibility with the
      * jme3-jbullet library.
      * <p>
@@ -590,7 +609,9 @@ public class PhysicsSpace extends CollisionSpace {
      * @param rigidBody the body to add (not null, modified)
      */
     private void addRigidBody(PhysicsRigidBody rigidBody) {
+        long rigidBodyId = rigidBody.nativeId();
         assert rigidBody.getCollisionSpace() == null;
+        rigidMap.put(rigidBodyId, rigidBody);
 
         BodyInterface bodyInterface = getBodyInterface();
         int bodyId = (int) rigidBody.nativeId();
@@ -654,12 +675,13 @@ public class PhysicsSpace extends CollisionSpace {
      * @param rigidBody the body to remove (not null, modified)
      */
     private void removeRigidBody(PhysicsRigidBody rigidBody) {
+        long rigidBodyId = rigidBody.nativeId();
         assert rigidBody.getCollisionSpace() == this;
+        rigidMap.remove(rigidBodyId);
 
         BodyInterface bodyInterface = getBodyInterface();
-        int bodyId = (int) rigidBody.nativeId();
-        bodyInterface.removeBody(bodyId);
-
+        bodyInterface.removeBody((int)rigidBodyId);
+        
         rigidBody.setAddedToSpaceInternal(null);
     }
 }

@@ -33,6 +33,8 @@ package com.jme3.bullet;
 
 import com.jme3.bullet.collision.PhysicsCollisionObject;
 import java.lang.foreign.MemorySession;
+import java.util.Collection;
+import java.util.TreeSet;
 import java.util.logging.Logger;
 import jme3utilities.Validate;
 
@@ -152,6 +154,17 @@ public class CollisionSpace {
      */
     public static CollisionSpace getCollisionSpace() {
         CollisionSpace result = physicsSpaceTL.get();
+        return result;
+    }
+
+    /**
+     * Enumerate collision objects that have been added to the space and not yet
+     * removed.
+     *
+     * @return a new modifiable collection of pre-existing instances (not null)
+     */
+    public Collection<PhysicsCollisionObject> getPcoList() {
+        Collection<PhysicsCollisionObject> result = new TreeSet<>();
         return result;
     }
 
