@@ -45,8 +45,8 @@ import jolt.physics.collision.shape.ScaledShape;
 import jolt.physics.collision.shape.Shape;
 
 /**
- * The abstract base class for collision shapes based on Jolt's {@code Shape}
- * class.
+ * The abstract base class for collision shapes based on jolt-java's
+ * {@code Shape} class.
  *
  * @author normenhansen
  */
