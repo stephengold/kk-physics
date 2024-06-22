@@ -34,6 +34,8 @@ package com.jme3.bullet.collision.shapes;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.math.Vector3f;
 import java.lang.foreign.MemorySession;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import jme3utilities.Validate;
@@ -104,6 +106,30 @@ abstract public class CollisionShape {
 
         return result;
     }
+
+    /**
+     * Generate vertex indices for a debug-visualization mesh.
+     *
+     * @return a new, unflipped, direct buffer full of indices (capacity a
+     * multiple of 3)
+     */
+    abstract public IntBuffer copyIndices();
+
+    /**
+     * Generate un-indexed triangles for a debug-visualization mesh.
+     *
+     * @return a new, unflipped, direct buffer full of scaled shape coordinates
+     * (capacity a multiple of 9)
+     */
+    abstract public FloatBuffer copyTriangles();
+
+    /**
+     * Generate vertex positions for a debug-visualization mesh.
+     *
+     * @return a new, unflipped, direct buffer full of scaled shape coordinates
+     * (capacity a multiple of 3)
+     */
+    abstract public FloatBuffer copyVertexPositions();
 
     /**
      * Access the underlying jolt-java Shape.
