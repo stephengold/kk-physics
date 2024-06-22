@@ -143,6 +143,9 @@ public class PhysicsSpace extends CollisionSpace {
      */
     final private Map<Long, PhysicsRigidBody> rigidMap
             = new ConcurrentHashMap<>(64);
+    /**
+     * underlying jolt-java object
+     */
     private final PhysicsSystem physicsSystem;
     private final TempAllocator tempAllocator;
     /**
