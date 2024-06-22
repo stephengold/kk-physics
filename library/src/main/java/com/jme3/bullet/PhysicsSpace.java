@@ -36,11 +36,13 @@ import com.jme3.bullet.control.PhysicsControl;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
+import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.util.SafeArrayList;
 import java.lang.foreign.MemorySession;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
@@ -237,6 +239,29 @@ public class PhysicsSpace extends CollisionSpace {
     }
     // *************************************************************************
     // new methods exposed
+
+    /**
+     * Add all physics controls in the specified subtree of the scene graph to
+     * the space (e.g. after loading from disk). For compatibility with the
+     * jme3-jbullet library.
+     * <p>
+     * Does not add joints unless they are managed by a PhysicsControl; the
+     * jme3-jbullet version attempts to add ALL joints.
+     * <p>
+     * Note: recursive!
+     *
+     * @param spatial the root of the subtree (not null)
+     */
+    public void addAll(Spatial spatial) {
+        add(spatial);
+
+        if (spatial instanceof Node) {
+            List<Spatial> children = ((Node) spatial).getChildren();
+            for (Spatial child : children) {
+                addAll(child);
+            }
+        }
+    }
 
     /**
      * Register the specified tick listener with the space.
