@@ -311,4 +311,28 @@ abstract public class PhysicsCollisionObject {
     public void setUserObject(Object user) {
         this.userObject = user;
     }
+    // *************************************************************************
+    // Object methods
+
+    /**
+     * Represent the collision object as a {@code String}.
+     *
+     * @return a descriptive string of text (not null, not empty)
+     */
+    @Override
+    public String toString() {
+        String result = getClass().getSimpleName();
+        result = result.replace("Body", "");
+        result = result.replace("Control", "C");
+        result = result.replace("Physics", "");
+        result = result.replace("Object", "");
+        if (hasAssignedNativeObject()) {
+            long objectId = nativeId();
+            result += "#" + Long.toHexString(objectId);
+        } else {
+            result += "#unassigned";
+        }
+
+        return result;
+    }
 }
