@@ -34,6 +34,7 @@ package com.jme3.bullet;
 import com.jme3.app.Application;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.app.state.BaseAppState;
+import com.jme3.bullet.debug.BulletDebugAppState;
 import com.jme3.bullet.debug.DebugConfiguration;
 import com.jme3.bullet.util.NativeLibrary;
 import com.jme3.renderer.RenderManager;
@@ -64,6 +65,10 @@ public class BulletAppState
      * yet stopped)
      */
     private volatile boolean isRunning = false;
+    /**
+     * AppState to manage the debug visualization, or null if none
+     */
+    private BulletDebugAppState debugAppState;
     /**
      * configuration for debug visualization
      */
@@ -190,6 +195,16 @@ public class BulletAppState
     // new protected methods
 
     /**
+     * Create the configured debug-visualization app state.
+     *
+     * @return a new instance (not null)
+     */
+    protected BulletDebugAppState createDebugAppState() {
+        BulletDebugAppState appState = new BulletDebugAppState(debugConfig);
+        return appState;
+    }
+
+    /**
      * Create the configured {@code PhysicsSpace}.
      *
      * @return a new instance (not null)
@@ -249,6 +264,8 @@ public class BulletAppState
      */
     @Override
     protected void initialize(Application app) {
+        debugConfig.initialize(app);
+        startPhysics();
     }
 
     /**
@@ -307,6 +324,18 @@ public class BulletAppState
     public void update(float tpf) {
         super.update(tpf);
         this.tpf = tpf;
+
+        boolean enable = debugConfig.isEnabled();
+        if (enable && debugAppState == null) {
+            // Start debug visualization.
+            this.debugAppState = createDebugAppState();
+            getStateManager().attach(debugAppState);
+
+        } else if (!enable && debugAppState != null) {
+            // Stop debug visualization.
+            getStateManager().detach(debugAppState);
+            this.debugAppState = null;
+        }
     }
     // *************************************************************************
     // PhysicsTickListener methods
