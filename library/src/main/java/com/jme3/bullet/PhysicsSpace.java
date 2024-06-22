@@ -611,6 +611,11 @@ public class PhysicsSpace extends CollisionSpace {
     private void addRigidBody(PhysicsRigidBody rigidBody) {
         long rigidBodyId = rigidBody.nativeId();
         assert rigidBody.getCollisionSpace() == null;
+
+        if (logger.isLoggable(Level.FINE)) {
+            logger.log(Level.FINE, "Adding {0} to {1}.",
+                    new Object[]{rigidBody, this});
+        }
         rigidMap.put(rigidBodyId, rigidBody);
 
         BodyInterface bodyInterface = getBodyInterface();
@@ -676,7 +681,17 @@ public class PhysicsSpace extends CollisionSpace {
      */
     private void removeRigidBody(PhysicsRigidBody rigidBody) {
         long rigidBodyId = rigidBody.nativeId();
+        if (!rigidMap.containsKey(rigidBodyId)) {
+            logger.log(Level.WARNING, "{0} does not exist in {1}.",
+                    new Object[]{rigidBody, this});
+            return;
+        }
         assert rigidBody.getCollisionSpace() == this;
+
+        if (logger.isLoggable(Level.FINE)) {
+            logger.log(Level.FINE, "Removing {0} from {1}.",
+                    new Object[]{rigidBody, this});
+        }
         rigidMap.remove(rigidBodyId);
 
         BodyInterface bodyInterface = getBodyInterface();
