@@ -203,9 +203,9 @@ public class SphereCollisionShape extends CollisionShape {
     private void createShape() {
         assert radius >= 0f : radius;
 
-        SphereShapeSettings bss = SphereShapeSettings.of(radius);
+        SphereShapeSettings sss = SphereShapeSettings.of(radius);
         MemorySession arena = PhysicsSpace.getArena();
-        Shape shape = Jolt.use(bss, settings -> {
+        Shape shape = Jolt.use(sss, settings -> {
             return settings.create(arena);
         }).orThrow();
         setNativeObject(shape);
