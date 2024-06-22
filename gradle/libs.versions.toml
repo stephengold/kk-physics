@@ -9,7 +9,7 @@ jolt-java = "0.1.0"
 
 heart = "com.github.stephengold:Heart:9.1.0"
 jme3-awt-dialogs = { module = "org.jmonkeyengine:jme3-awt-dialogs", version.ref = "jme" }
-jme3-core = { module = "org.jmonkeyengine:jme3-desktop", version.ref = "jme" }
+jme3-core = { module = "org.jmonkeyengine:jme3-core", version.ref = "jme" }
 jme3-desktop = { module = "org.jmonkeyengine:jme3-desktop", version.ref = "jme" }
 jme3-lwjgl3 = { module = "org.jmonkeyengine:jme3-lwjgl3", version.ref = "jme" }
 jme3-testdata = { module = "org.jmonkeyengine:jme3-testdata", version.ref = "jme" }
