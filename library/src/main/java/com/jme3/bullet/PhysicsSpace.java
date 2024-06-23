@@ -761,8 +761,8 @@ public class PhysicsSpace extends CollisionSpace {
         rigidMap.remove(rigidBodyId);
 
         BodyInterface bodyInterface = getBodyInterface();
-        bodyInterface.removeBody((int)rigidBodyId);
-        
+        bodyInterface.removeBody((int) rigidBodyId);
+
         rigidBody.setAddedToSpaceInternal(null);
     }
 }
