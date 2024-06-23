@@ -78,7 +78,8 @@ public class CollisionSpace {
     // constructors
 
     /**
-     * Instantiate a CollisionSpace.
+     * Instantiate a CollisionSpace. Must be invoked on the designated physics
+     * thread.
      *
      * @param numSolvers the desired number of worker threads (&ge;1, &le;64)
      */

@@ -67,8 +67,8 @@ public class CylinderCollisionShape extends CollisionShape {
     // fields
 
     /**
-     * copy of the half extents for each local axis (not null, no negative
-     * component)
+     * copy of the unscaled half extents for each local axis (not null, no
+     * negative component)
      */
     private Vector3f halfExtents = new Vector3f(0.5f, 0.5f, 0.5f);
     // *************************************************************************
@@ -83,8 +83,8 @@ public class CylinderCollisionShape extends CollisionShape {
     /**
      * Instantiate a cylinder shape around the specified main (height) axis.
      *
-     * @param radius the desired radius (&ge;0)
-     * @param height the desired height (&ge;0)
+     * @param radius the desired unscaled radius (&ge;0)
+     * @param height the desired unscaled height (&ge;0)
      * @param axisIndex 1
      */
     public CylinderCollisionShape(float radius, float height, int axisIndex) {
@@ -100,8 +100,8 @@ public class CylinderCollisionShape extends CollisionShape {
     /**
      * Instantiate a cylinder shape around the specified axis.
      *
-     * @param halfExtents the desired half extents (not null, no negative
-     * component, unaffected)
+     * @param halfExtents the desired unscaled half extents (not null, no
+     * negative component, unaffected)
      * @param axisIndex 1
      */
     public CylinderCollisionShape(Vector3f halfExtents, int axisIndex) {
@@ -129,8 +129,8 @@ public class CylinderCollisionShape extends CollisionShape {
      * Copy the half extents of the cylinder.
      *
      * @param storeResult storage for the result (modified if not null)
-     * @return the half extent for each local axis (either storeResult or a new
-     * vector, not null, no negative component)
+     * @return the unscaled half extent for each local axis (either storeResult
+     * or a new vector, not null, no negative component)
      */
     public Vector3f getHalfExtents(Vector3f storeResult) {
         assert MyVector3f.isAllNonNegative(halfExtents) : halfExtents;
@@ -147,7 +147,7 @@ public class CylinderCollisionShape extends CollisionShape {
     /**
      * Return the height of the cylinder.
      *
-     * @return the height (&ge;0)
+     * @return the unscaled height (&ge;0)
      */
     public float getHeight() {
         float result = 2f * halfExtents.get(PhysicsSpace.AXIS_Y);

@@ -553,8 +553,7 @@ public class PhysicsRigidBody extends PhysicsBody {
     }
 
     /**
-     * Return the total torque applied to the body (excluding contact forces and
-     * damping).
+     * Return the total torque applied to the body.
      *
      * @param storeResult storage for the result (modified if not null)
      * @return the total torque (either storeResult or a new vector, mass times
