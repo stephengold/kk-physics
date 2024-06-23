@@ -31,8 +31,8 @@ Complete source code (in Java) is provided under
 KK Physics comes pre-built as a single library that depends on
 the standard "jme3-core" library from jMonkeyEngine.
 
-For projects built using [Maven] or [Gradle], it is sufficient to add a
-dependency on the KK Physics Library.
+For projects built using [Maven] or [Gradle], it is sufficient to add
+dependencies on the KK Physics library and the jolt-java Linux native library.
 The build tool should automatically resolve the remaining dependencies.
 
 ### Gradle-built projects
@@ -44,6 +44,7 @@ Add to the project’s "build.gradle" file:
     }
     dependencies {
         implementation 'com.github.stephengold:kk-physics:0.1.0'
+        runtimeOnly 'com.github.stephengold:jolt-java-natives-linux-x86:0.1.0'
     }
 
 For some older versions of Gradle,
@@ -63,6 +64,11 @@ Add to the project’s "pom.xml" file:
     <dependency>
       <groupId>com.github.stephengold</groupId>
       <artifactId>kk-physics</artifactId>
+      <version>0.1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.github.stephengold</groupId>
+      <artifactId>jolt-java-natives-linux-x86</artifactId>
       <version>0.1.0</version>
     </dependency>
 
