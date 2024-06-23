@@ -716,7 +716,7 @@ public class PhysicsSpace extends CollisionSpace {
      * @return true if scale factors are exactly equal, otherwise false
      */
     private boolean checkGravity() {
-        MemorySession arena = PhysicsSpace.getArena();
+        MemorySession arena = getArena();
         FVec3 joltGravity = FVec3.of(arena);
         physicsSystem.getGravity(joltGravity);
 
