@@ -153,7 +153,7 @@ public class PhysicsSpace extends CollisionSpace {
      * is 9.81 in the -Y direction, approximating Earth-normal gravity in MKS
      * units for a Y-up coordinate system)
      */
-    final private Vector3f gravity = new Vector3f(0, -9.81f, 0);
+    final private Vector3f gravity = new Vector3f(0f, -9.81f, 0f);
 
     static {
         Jolt.load();
