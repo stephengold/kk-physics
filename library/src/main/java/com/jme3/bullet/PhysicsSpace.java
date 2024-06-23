@@ -461,6 +461,9 @@ public class PhysicsSpace extends CollisionSpace {
      */
     public void setGravity(Vector3f gravity) {
         this.gravity.set(gravity);
+        MemorySession arena = getArena();
+        FVec3 fvec3 = FVec3.of(arena, gravity.x, gravity.y, gravity.z);
+        physicsSystem.setGravity(fvec3);
     }
 
     /**
