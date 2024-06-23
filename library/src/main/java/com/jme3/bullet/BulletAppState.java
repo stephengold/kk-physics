@@ -131,6 +131,16 @@ public class BulletAppState
     }
 
     /**
+     * Test whether debug visualization is enabled.
+     *
+     * @return true if enabled, otherwise false
+     */
+    public boolean isDebugEnabled() {
+        boolean result = debugConfig.isEnabled();
+        return result;
+    }
+
+    /**
      * Test whether the physics simulation is running (started but not yet
      * stopped).
      *
@@ -149,6 +159,16 @@ public class BulletAppState
      */
     public void setDebugEnabled(boolean debugEnabled) {
         debugConfig.setEnabled(debugEnabled);
+    }
+
+    /**
+     * Alter which objects are included in the debug visualization.
+     *
+     * @param filter the filter to use (alias created) or null to visualize all
+     * objects (default=null)
+     */
+    public void setDebugFilter(BulletDebugAppState.DebugAppStateFilter filter) {
+        debugConfig.setFilter(filter);
     }
 
     /**
@@ -212,6 +232,15 @@ public class BulletAppState
     protected PhysicsSpace createPhysicsSpace() {
         PhysicsSpace result = new PhysicsSpace(numSolvers);
         return result;
+    }
+
+    /**
+     * Access the AppState to manage the debug visualization.
+     *
+     * @return the pre-existing instance, or null if none
+     */
+    protected BulletDebugAppState getDebugAppState() {
+        return debugAppState;
     }
 
     /**
