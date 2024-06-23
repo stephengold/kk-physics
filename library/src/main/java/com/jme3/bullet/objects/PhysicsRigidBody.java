@@ -533,6 +533,44 @@ public class PhysicsRigidBody extends PhysicsBody {
         Quaternion quaternion = orientation.toQuaternion();
         reposition(location, quaternion);
     }
+
+    /**
+     * Return the total force applied to the body.
+     *
+     * @param storeResult storage for the result (modified if not null)
+     * @return the total force (either storeResult or a new vector, mass times
+     * physics-space units per second squared in physics-space coordinates)
+     */
+    public Vector3f totalAppliedForce(Vector3f storeResult) {
+        Vector3f result = (storeResult == null) ? new Vector3f() : storeResult;
+
+        MemorySession arena = PhysicsSpace.getArena();
+        FVec3 fvec3 = FVec3.of(arena);
+        joltBody.getAccumulatedForce(fvec3);
+        result.set(fvec3.getX(), fvec3.getY(), fvec3.getZ());
+
+        return result;
+    }
+
+    /**
+     * Return the total torque applied to the body (excluding contact forces and
+     * damping).
+     *
+     * @param storeResult storage for the result (modified if not null)
+     * @return the total torque (either storeResult or a new vector, mass times
+     * physics-space units squared per second squared in physics-space
+     * coordinates)
+     */
+    public Vector3f totalAppliedTorque(Vector3f storeResult) {
+        Vector3f result = (storeResult == null) ? new Vector3f() : storeResult;
+
+        MemorySession arena = PhysicsSpace.getArena();
+        FVec3 fvec3 = FVec3.of(arena);
+        joltBody.getAccumulatedTorque(fvec3);
+        result.set(fvec3.getX(), fvec3.getY(), fvec3.getZ());
+
+        return result;
+    }
     // *************************************************************************
     // PhysicsBody methods
 
