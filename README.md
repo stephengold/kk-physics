@@ -2,6 +2,9 @@ The [KK Physics Project][project] is about integrating
 [the Jolt Physics engine][jolt] into
 [the jMonkeyEngine (JME) game engine][jme].
 
+This project is currently a proof of concept
+and is not intended for production use.
+
 It contains 2 subprojects:
 
  1. library: the KK Physics [JVM] runtime library
@@ -15,24 +18,68 @@ Complete source code (in Java) is provided under
 
 ## Contents of this document
 
++ [How to add KK Physics to an existing project](#add)
 + [How to build KK Physics from source](#build)
 + [External links](#links)
 + [Acknowledgments](#acks)
+
+
+<a name="add"></a>
+
+## How to add KK Physics to an existing project
+
+KK Physics comes pre-built as a single library that depends on
+the standard "jme3-core" library from jMonkeyEngine.
+
+For projects built using [Maven] or [Gradle], it is sufficient to add a
+dependency on the KK Physics Library.
+The build tool should automatically resolve the remaining dependencies.
+
+### Gradle-built projects
+
+Add to the project’s "build.gradle" file:
+
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        implementation 'com.github.stephengold:kk-physics:0.1.0'
+    }
+
+For some older versions of Gradle,
+it's necessary to replace `implementation` with `compile`.
+
+### Maven-built projects
+
+Add to the project’s "pom.xml" file:
+
+    <repositories>
+      <repository>
+        <id>mvnrepository</id>
+        <url>https://repo1.maven.org/maven2/</url>
+      </repository>
+    </repositories>
+
+    <dependency>
+      <groupId>com.github.stephengold</groupId>
+      <artifactId>kk-physics</artifactId>
+      <version>0.1.0</version>
+    </dependency>
 
 
 <a name="build"></a>
 
 ## How to build KK Physics from source
 
-1. Install a [Java Development Kit (JDK)][adoptium],
+1. Install a [Java 19 Development Kit (JDK)][adoptium],
    if you don't already have one.
 2. Point the `JAVA_HOME` environment variable to your JDK installation:
    (In other words, set it to the path of a directory/folder
    containing a "bin" that contains a Java executable.
    That path might look something like
-   "C:\Program Files\Eclipse Adoptium\jdk-17.0.3.7-hotspot"
-   or "/usr/lib/jvm/java-17-openjdk-amd64/" or
-   "/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home" .)
+   "C:\Program Files\Eclipse Adoptium\jdk-19.0.3.7-hotspot"
+   or "/usr/lib/jvm/java-19-openjdk-amd64/" or
+   "/Library/Java/JavaVirtualMachines/zulu-19.jdk/Contents/Home" .)
   + using Bash or Zsh: `export JAVA_HOME="` *path to installation* `"`
   + using [Fish]: `set -g JAVA_HOME "` *path to installation* `"`
   + using Windows Command Prompt: `set JAVA_HOME="` *path to installation* `"`
@@ -41,6 +88,7 @@ Complete source code (in Java) is provided under
   + using [Git]:
     + `git clone https://github.com/stephengold/kk-physics.git`
     + `cd kk-physics`
+    + `git checkout -b latest 0.1.0`
 4. Run the [Gradle] wrapper:
   + using Bash or Fish or PowerShell or Zsh: `./gradlew build`
   + using Windows Command Prompt: `.\gradlew build`
@@ -77,6 +125,8 @@ You can restore the project to a pristine state:
 <a name="history"></a>
 
 ## History
+
+The API and much of the source code is derived from [Minie].
 
 [Jump to the table of contents](#toc)
 
@@ -118,7 +168,7 @@ correct the situation: sgold@sonic.net
 [Jump to the table of contents](#toc)
 
 
-[adoptium]: https://adoptium.net/releases.html "Adoptium Project"
+[adoptium]: https://adoptium.net/temurin/releases/?version=19 "Eclipse Temurin Releases"
 [firefox]: https://www.mozilla.org/en-US/firefox "Firefox"
 [fish]: https://fishshell.com/ "Fish command-line shell"
 [git]: https://git-scm.com "Git"
@@ -134,6 +184,7 @@ correct the situation: sgold@sonic.net
 [lwjgl]: https://www.lwjgl.org "Lightweight Java Game Library"
 [markdown]: https://daringfireball.net/projects/markdown "Markdown Project"
 [meld]: https://meldmerge.org "Meld merge tool"
+[minie]: https://stephengold.github.io/Minie/minie/overview.html "Minie Project"
 [mint]: https://linuxmint.com "Linux Mint Project"
 [netbeans]: https://netbeans.org "NetBeans Project"
 [project]: https://stephengold.github.io/kk-physics "KK Physics Project"
