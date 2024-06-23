@@ -209,6 +209,16 @@ public class BulletDebugAppState extends BaseAppState {
     }
 
     /**
+     * Access the Material for visualizing angular-velocity vectors.
+     *
+     * @return the pre-existing Material (not null)
+     */
+    Material getAngularVelocityMaterial() {
+        assert magentas[2] != null;
+        return magentas[2];
+    }
+
+    /**
      * Access a Material for coloring the indexed child of a
      * CompoundCollisionShape.
      *
@@ -248,6 +258,33 @@ public class BulletDebugAppState extends BaseAppState {
     }
 
     /**
+     * Access the Material for visualizing velocity vectors.
+     *
+     * @return the pre-existing Material (not null)
+     */
+    Material getVelocityVectorMaterial() {
+        assert white != null;
+        return white;
+    }
+
+    /**
+     * Alter which angular velocities are visualized. For internal use only.
+     *
+     * @param filter the desired filter, or null to visualize no angular
+     * velocities
+     */
+    public void setAngularVelocityFilter(DebugAppStateFilter filter) {
+        configuration.setAngularVelocityFilter(filter);
+
+        for (Node transformedNode : pcoMap.values()) {
+            Node parent = transformedNode.getParent();
+            Control control
+                    = parent.getControl(AngularVelocityDebugControl.class);
+            parent.removeControl(control);
+        }
+    }
+
+    /**
      * Alter which physics objects are visualized. For compatibility with the
      * jme3-jbullet library.
      *
@@ -256,6 +293,23 @@ public class BulletDebugAppState extends BaseAppState {
      */
     public void setFilter(DebugAppStateFilter filter) {
         configuration.setFilter(filter);
+    }
+
+    /**
+     * Alter which velocity vectors are visualized. For internal use only.
+     *
+     * @param filter the desired filter, or null to visualize no velocity
+     * vectors
+     */
+    public void setVelocityVectorFilter(DebugAppStateFilter filter) {
+        configuration.setVelocityVectorFilter(filter);
+
+        for (Node transformedNode : pcoMap.values()) {
+            Node parent = transformedNode.getParent();
+            Control control
+                    = parent.getControl(VelocityVectorDebugControl.class);
+            parent.removeControl(control);
+        }
     }
     // *************************************************************************
     // new protected methods
@@ -421,6 +475,15 @@ public class BulletDebugAppState extends BaseAppState {
             }
         }
     }
+
+    /**
+     * Synchronize the velocity visualizers with the collision objects in the
+     * PhysicsSpace.
+     */
+    protected void updateVelocities() {
+        updateAngularVelocities();
+        updateVelocityVectors();
+    }
     // *************************************************************************
     // BaseAppState methods
 
@@ -502,6 +565,7 @@ public class BulletDebugAppState extends BaseAppState {
 
         updatePcoMap();
         updateShapes();
+        updateVelocities();
 
         // Update the (debug) root node.
         root.updateLogicalState(tpf);
@@ -516,6 +580,38 @@ public class BulletDebugAppState extends BaseAppState {
     }
     // *************************************************************************
     // private methods
+
+    /**
+     * Synchronize the angular-velocity debug controls with the dynamic rigid
+     * bodies in the PhysicsSpace.
+     */
+    private void updateAngularVelocities() {
+        DebugAppStateFilter filter = configuration.getAngularVelocityFilter();
+        if (filter == null) {
+            return;
+        }
+
+        for (Map.Entry<PhysicsCollisionObject, Node> entry
+                : pcoMap.entrySet()) {
+            PhysicsCollisionObject pco = entry.getKey();
+            boolean display = pco instanceof PhysicsRigidBody
+                    && ((PhysicsRigidBody) pco).isDynamic()
+                    && filter.displayObject(pco);
+
+            Node transformedNode = entry.getValue();
+            Node parent = transformedNode.getParent();
+            Control control
+                    = parent.getControl(AngularVelocityDebugControl.class);
+
+            if (control == null && display) {
+                logger.log(Level.FINE, "Create AngularVelocityDebugControl");
+                control = new AngularVelocityDebugControl(this, pco);
+                parent.addControl(control);
+            } else if (control != null && !display) {
+                parent.removeControl(control);
+            }
+        }
+    }
 
     /**
      * Synchronize the visualization nodes with the collision objects in the
@@ -543,6 +639,38 @@ public class BulletDebugAppState extends BaseAppState {
         for (Node transformedNode : oldMap.values()) {
             Node parent = transformedNode.getParent();
             parent.removeFromParent();
+        }
+    }
+
+    /**
+     * Synchronize the velocity-vector debug controls with the dynamic rigid
+     * bodies in the PhysicsSpace.
+     */
+    private void updateVelocityVectors() {
+        DebugAppStateFilter filter = configuration.getVelocityVectorFilter();
+        if (filter == null) {
+            return;
+        }
+
+        for (Map.Entry<PhysicsCollisionObject, Node> entry
+                : pcoMap.entrySet()) {
+            PhysicsCollisionObject pco = entry.getKey();
+            boolean display = pco instanceof PhysicsRigidBody
+                    && ((PhysicsRigidBody) pco).isDynamic()
+                    && filter.displayObject(pco);
+
+            Node transformedNode = entry.getValue();
+            Node parent = transformedNode.getParent();
+            Control control
+                    = parent.getControl(VelocityVectorDebugControl.class);
+
+            if (control == null && display) {
+                logger.log(Level.FINE, "Create new VelocityVectorDebugControl");
+                control = new VelocityVectorDebugControl(this, pco);
+                parent.addControl(control);
+            } else if (control != null && !display) {
+                parent.removeControl(control);
+            }
         }
     }
 

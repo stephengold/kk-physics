@@ -151,6 +151,21 @@ public class BulletAppState
     }
 
     /**
+     * Alter which angular velocities are included in the debug visualization.
+     *
+     * @param filter the filter to use (alias created) or null to visualize no
+     * angular velocities (default=null)
+     */
+    public void setDebugAngularVelocityFilter(
+            BulletDebugAppState.DebugAppStateFilter filter) {
+        if (debugAppState == null) {
+            debugConfig.setAngularVelocityFilter(filter);
+        } else {
+            debugAppState.setAngularVelocityFilter(filter);
+        }
+    }
+
+    /**
      * Enable or disable debug visualization. Changes take effect on the next
      * update.
      *
@@ -169,6 +184,21 @@ public class BulletAppState
      */
     public void setDebugFilter(BulletDebugAppState.DebugAppStateFilter filter) {
         debugConfig.setFilter(filter);
+    }
+
+    /**
+     * Alter which velocity vectors are included in the debug visualization.
+     *
+     * @param filter the filter to use (alias created) or null to visualize no
+     * velocity vectors (default=null)
+     */
+    public void setDebugVelocityVectorFilter(
+            BulletDebugAppState.DebugAppStateFilter filter) {
+        if (debugAppState == null) {
+            debugConfig.setVelocityVectorFilter(filter);
+        } else {
+            debugAppState.setVelocityVectorFilter(filter);
+        }
     }
 
     /**

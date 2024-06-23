@@ -63,9 +63,19 @@ public class DebugConfiguration {
      */
     private boolean isEnabled = false;
     /**
+     * limit which angular velocities are visualized, or null to visualize no
+     * angular velocities
+     */
+    private BulletDebugAppState.DebugAppStateFilter angularVelocityFilter;
+    /**
      * limit which objects are visualized, or null to visualize all objects
      */
     private BulletDebugAppState.DebugAppStateFilter filter;
+    /**
+     * limit which velocity vectors are visualized, or null to visualize no
+     * velocity vectors
+     */
+    private BulletDebugAppState.DebugAppStateFilter velocityVectorFilter;
     /**
      * Camera for visualization, or null if unknown
      */
@@ -135,6 +145,15 @@ public class DebugConfiguration {
     }
 
     /**
+     * Access the filter that limits which angular velocities are visualized.
+     *
+     * @return the pre-existing instance, or null
+     */
+    BulletDebugAppState.DebugAppStateFilter getAngularVelocityFilter() {
+        return angularVelocityFilter;
+    }
+
+    /**
      * Access the Camera used for visualization.
      *
      * @return the pre-existing instance, or null if unknown
@@ -169,6 +188,15 @@ public class DebugConfiguration {
      */
     public Spatial getTransformSpatial() {
         return transformSpatial;
+    }
+
+    /**
+     * Access the filter that limits which velocity vectors are visualized.
+     *
+     * @return the pre-existing instance, or null
+     */
+    BulletDebugAppState.DebugAppStateFilter getVelocityVectorFilter() {
+        return velocityVectorFilter;
     }
 
     /**
@@ -234,6 +262,17 @@ public class DebugConfiguration {
                 renderManager.renderScene(rootNode, viewPort);
             }
         }
+    }
+
+    /**
+     * Alter which angular velocities are included in the visualization.
+     *
+     * @param filter the desired filter (alias created) or null to visualize no
+     * angular velocities (default=null)
+     */
+    public void setAngularVelocityFilter(
+            BulletDebugAppState.DebugAppStateFilter filter) {
+        this.angularVelocityFilter = filter;
     }
 
     /**
@@ -324,6 +363,17 @@ public class DebugConfiguration {
      */
     public void setTransformSpatial(Spatial spatial) {
         this.transformSpatial = spatial;
+    }
+
+    /**
+     * Alter which velocity vectors are included in the visualization.
+     *
+     * @param filter the desired filter (alias created) or null to visualize no
+     * velocity vectors (default=null)
+     */
+    public void setVelocityVectorFilter(
+            BulletDebugAppState.DebugAppStateFilter filter) {
+        this.velocityVectorFilter = filter;
     }
 
     /**
