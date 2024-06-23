@@ -160,7 +160,7 @@ public class PhysicsSpace extends CollisionSpace {
         Jolt.registerDefaultAllocator();
         Jolt.createFactory();
         Jolt.registerTypes();
-        System.out.println("Features: " + Jolt.featureSet());
+        //System.out.println("Features: " + Jolt.featureSet());
         Jolt.assertSinglePrecision();
     }
     // *************************************************************************
