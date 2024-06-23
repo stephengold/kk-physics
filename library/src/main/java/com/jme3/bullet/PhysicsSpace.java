@@ -244,6 +244,17 @@ public class PhysicsSpace extends CollisionSpace {
     // new methods exposed
 
     /**
+     * Activate all rigid bodies in the space.
+     *
+     * @param forceFlag true to force activation
+     */
+    public void activateAll(boolean forceFlag) {
+        for (PhysicsRigidBody rigidBody : rigidMap.values()) {
+            rigidBody.activate(forceFlag);
+        }
+    }
+
+    /**
      * Add all physics controls in the specified subtree of the scene graph to
      * the space (e.g. after loading from disk). For compatibility with the
      * jme3-jbullet library.
