@@ -183,6 +183,7 @@ correct the situation: sgold@sonic.net
 [license]: https://github.com/stephengold/kk-physics/blob/master/LICENSE "KK Physics license"
 [lwjgl]: https://www.lwjgl.org "Lightweight Java Game Library"
 [markdown]: https://daringfireball.net/projects/markdown "Markdown Project"
+[maven]: https://maven.apache.org "Maven Project"
 [meld]: https://meldmerge.org "Meld merge tool"
 [minie]: https://stephengold.github.io/Minie/minie/overview.html "Minie Project"
 [mint]: https://linuxmint.com "Linux Mint Project"
