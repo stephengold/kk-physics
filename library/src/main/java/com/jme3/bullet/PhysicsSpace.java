@@ -175,7 +175,8 @@ public class PhysicsSpace extends CollisionSpace {
     public PhysicsSpace(int numSolvers) {
         super(numSolvers);
 
-        this.tempAllocator = TempAllocator.of(10 * 1024 * 1024);
+        int maxBodies = 10_000;
+        this.tempAllocator = TempAllocator.of(30_000 * maxBodies);
         MemorySession arena = getArena();
 
         this.jobSystem = JobSystem.of(
@@ -228,10 +229,9 @@ public class PhysicsSpace extends CollisionSpace {
         };
         ObjectLayerPairFilter olpf = ObjectLayerPairFilter.of(arena, olpff);
 
-        int maxBodies = 44444;
         int numBodyMutexes = 0;
-        int maxBodyPairs = 1024;
-        int maxContactConstraints = 1024;
+        int maxBodyPairs = maxBodies;
+        int maxContactConstraints = 3 * maxBodies;
         this.physicsSystem = PhysicsSystem.of(maxBodies, numBodyMutexes,
                 maxBodyPairs, maxContactConstraints, bpli, ovbplf, olpf);
 
