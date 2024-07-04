@@ -55,7 +55,6 @@ import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.util.SafeArrayList;
-import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;

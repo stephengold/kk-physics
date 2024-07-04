@@ -32,12 +32,9 @@
 package com.jme3.bullet.util;
 
 import com.github.stephengold.joltjni.Jolt;
-import com.jme3.system.JmeSystem;
 import com.jme3.system.NativeLibraryLoader;
 import com.jme3.system.Platform;
-import java.io.File;
 import java.util.logging.Logger;
-import jme3utilities.MyString;
 import jme3utilities.math.MyMath;
 
 /**
