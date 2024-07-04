@@ -1,5 +1,7 @@
 // Gradle script to build the "apps" subproject of KK Physics
 
+import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
+
 plugins {
     `application` // to build JVM applications
 }
@@ -52,9 +54,14 @@ tasks.withType<Javadoc>().all { // Javadoc runtime options:
     }
 }
 
+val os = DefaultNativePlatform.getCurrentOperatingSystem()
+
 tasks.withType<JavaExec>().all { // Java runtime options:
     classpath = sourceSets.main.get().getRuntimeClasspath()
     enableAssertions = true
+    if (os.isMacOsX()) {
+        jvmArgs("-XstartOnFirstThread") // required for GLFW on macOS
+    }
 }
 
 // Register cleanup tasks:
