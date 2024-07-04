@@ -5,8 +5,8 @@ plugins {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_19
-    targetCompatibility = JavaVersion.VERSION_19
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
 }
 
 application {
@@ -43,13 +43,12 @@ tasks.withType<JavaCompile>().all { // Java compile-time options:
     options.compilerArgs.add("-Xdiags:verbose")
     options.compilerArgs.add("-Xlint:unchecked")
     options.encoding = "UTF-8"
-    options.release = 19
+    options.release = 11
     options.setDeprecation(true) // to provide detailed deprecation warnings
 }
 
 tasks.withType<Javadoc>().all { // Javadoc runtime options:
     (options as CoreJavadocOptions).apply {
-        addStringOption("-release", "19")
     }
 }
 
