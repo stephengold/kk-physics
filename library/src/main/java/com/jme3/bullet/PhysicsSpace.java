@@ -198,7 +198,7 @@ public class PhysicsSpace extends CollisionSpace {
 
         this.physicsSystem = new PhysicsSystem();
 
-        int maxBodies = 9_999;
+        int maxBodies = 15_000;
         int numBodyMutexes = 0; // 0 means "use the default value"
         int maxBodyPairs = maxBodies;
         int maxContactConstraints = 2 * maxBodies;
