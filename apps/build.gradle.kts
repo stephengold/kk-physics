@@ -21,18 +21,29 @@ tasks.named<Jar>("jar") {
 }
 
 val btf = "ReleaseSp"
+val os = DefaultNativePlatform.getCurrentOperatingSystem()
+
 dependencies {
     implementation(libs.jme3.core)
     implementation(libs.jme3.desktop)
-    runtimeOnly(libs.jme3.awt.dialogs)
+    if (!os.isMacOsX()) {
+        // AWT and GLFW are incompatible on macOS:
+        runtimeOnly(libs.jme3.awt.dialogs)
+    }
     runtimeOnly(libs.jme3.lwjgl3)
     runtimeOnly(libs.jme3.testdata)
 
     implementation(libs.heart)
-    runtimeOnly(variantOf(libs.jolt.jni.linux64){ classifier(btf) })
-    runtimeOnly(variantOf(libs.jolt.jni.macosx64){ classifier(btf) })
-    runtimeOnly(variantOf(libs.jolt.jni.macosxarm64){ classifier(btf) })
-    runtimeOnly(variantOf(libs.jolt.jni.windows64){ classifier(btf) })
+    if (os.isLinux()) {
+        runtimeOnly(variantOf(libs.jolt.jni.linux64){ classifier(btf) })
+    }
+    if (os.isMacOsX()) {
+        runtimeOnly(variantOf(libs.jolt.jni.macosx64){ classifier(btf) })
+        runtimeOnly(variantOf(libs.jolt.jni.macosxarm64){ classifier(btf) })
+    }
+    if (os.isWindows()) {
+        runtimeOnly(variantOf(libs.jolt.jni.windows64){ classifier(btf) })
+    }
 
     implementation(project(":library")) // for latest sourcecode
 }
@@ -53,8 +64,6 @@ tasks.withType<Javadoc>().all { // Javadoc runtime options:
     (options as CoreJavadocOptions).apply {
     }
 }
-
-val os = DefaultNativePlatform.getCurrentOperatingSystem()
 
 tasks.withType<JavaExec>().all { // Java runtime options:
     classpath = sourceSets.main.get().getRuntimeClasspath()
