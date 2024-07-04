@@ -55,8 +55,6 @@ tasks.withType<Javadoc>().all { // Javadoc runtime options:
 tasks.withType<JavaExec>().all { // Java runtime options:
     classpath = sourceSets.main.get().getRuntimeClasspath()
     enableAssertions = true
-    jvmArgs("--enable-native-access=ALL-UNNAMED")
-    jvmArgs("--enable-preview")
 }
 
 // Register cleanup tasks:
