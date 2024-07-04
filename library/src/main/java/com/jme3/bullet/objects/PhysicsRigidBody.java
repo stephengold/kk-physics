@@ -31,6 +31,16 @@
  */
 package com.jme3.bullet.objects;
 
+import com.github.stephengold.joltjni.Body;
+import com.github.stephengold.joltjni.BodyCreationSettings;
+import com.github.stephengold.joltjni.BodyId;
+import com.github.stephengold.joltjni.BodyInterface;
+import com.github.stephengold.joltjni.EMotionType;
+import com.github.stephengold.joltjni.MotionProperties;
+import com.github.stephengold.joltjni.Quat;
+import com.github.stephengold.joltjni.RVec3;
+import com.github.stephengold.joltjni.Vec3;
+import com.github.stephengold.joltjni.Vec3Arg;
 import com.jme3.bullet.CollisionSpace;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.collision.shapes.CollisionShape;
@@ -40,22 +50,14 @@ import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.simsilica.mathd.Quatd;
 import com.simsilica.mathd.Vec3d;
-import java.lang.foreign.MemorySession;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import jme3utilities.Validate;
 import jme3utilities.math.MyVector3f;
-import jolt.math.FVec3;
-import jolt.math.Quat;
-import jolt.physics.body.BodyCreationSettings;
-import jolt.physics.body.BodyInterface;
-import jolt.physics.body.MotionType;
-import jolt.physics.body.MutableBody;
-import jolt.physics.body.MutableMotionProperties;
 
 /**
- * A collision object to simulate a rigid body, based on jolt-java's
- * {@code MutableBody}.
+ * A collision object to simulate a rigid body, based on jolt-jni's {@code Body}
+ * class.
  *
  * @author normenhansen
  */
@@ -72,7 +74,15 @@ public class PhysicsRigidBody extends PhysicsBody {
     // fields
 
     /**
-     * jolt-java interface for modifications, or null if not added to a space
+     * underlying jolt-jni object
+     */
+    private Body joltBody;
+    /**
+     * jolt-jni body ID, or null if not added to a space
+     */
+    private BodyId bodyId;
+    /**
+     * jolt-jni interface for modifications, or null if not added to a space
      */
     private BodyInterface bodyInterface;
     /**
@@ -80,17 +90,9 @@ public class PhysicsRigidBody extends PhysicsBody {
      */
     protected float mass = 1f;
     /**
-     * jolt-java body ID, or -1 if not added to a space
+     * jolt-jni motion properties, or null if not created
      */
-    private int bodyId = -1;
-    /**
-     * underlying jolt-java object
-     */
-    private MutableBody joltBody;
-    /**
-     * jolt-java motion properties, or null if not created
-     */
-    private MutableMotionProperties motionProperties;
+    private MotionProperties motionProperties;
     /**
      * temporary storage for properties
      */
@@ -175,11 +177,15 @@ public class PhysicsRigidBody extends PhysicsBody {
             MyVector3f.accumulateScaled(velocity, impulse, 1f / mass);
             setLinearVelocity(velocity);
         }
+    }
 
-        //MemorySession arena = PhysicsSpace.getArena();
-        //FVec3 fvec3 = FVec3.of(arena, impulse.x, impulse.y, impulse.z);
-        //assert bodyId == joltBody.getId();
-        //bodyInterface.addImpulse(bodyId, fvec3);
+    /**
+     * Return the body's Jolt ID.
+     *
+     * @return the pre-existing instance, or null if none
+     */
+    public BodyId findBodyId() {
+        return bodyId;
     }
 
     /**
@@ -209,10 +215,8 @@ public class PhysicsRigidBody extends PhysicsBody {
             snapshot.getAngularVelocity(vec3d);
             result.set((float) vec3d.x, (float) vec3d.y, (float) vec3d.z);
         } else {
-            MemorySession arena = PhysicsSpace.getArena();
-            FVec3 fvec3 = FVec3.of(arena);
-            motionProperties.getAngularVelocity(fvec3);
-            result.set(fvec3.getX(), fvec3.getY(), fvec3.getZ());
+            Vec3 vec3 = motionProperties.getAngularVelocity();
+            result.set(vec3.getX(), vec3.getY(), vec3.getZ());
         }
 
         return result;
@@ -232,10 +236,8 @@ public class PhysicsRigidBody extends PhysicsBody {
         if (motionProperties == null) {
             snapshot.getAngularVelocity(result);
         } else {
-            MemorySession arena = PhysicsSpace.getArena();
-            FVec3 fvec3 = FVec3.of(arena);
-            motionProperties.getAngularVelocity(fvec3);
-            result.set(fvec3.getX(), fvec3.getY(), fvec3.getZ());
+            Vec3 vec3 = joltBody.getAngularVelocity();
+            result.set(vec3.getX(), vec3.getY(), vec3.getZ());
         }
 
         return result;
@@ -269,10 +271,8 @@ public class PhysicsRigidBody extends PhysicsBody {
             snapshot.getLinearVelocity(vec3d);
             result.set((float) vec3d.x, (float) vec3d.y, (float) vec3d.z);
         } else {
-            MemorySession arena = PhysicsSpace.getArena();
-            FVec3 fvec3 = FVec3.of(arena);
-            motionProperties.getLinearVelocity(fvec3);
-            result.set(fvec3.getX(), fvec3.getY(), fvec3.getZ());
+            Vec3Arg vec3 = joltBody.getLinearVelocity();
+            result.set(vec3.getX(), vec3.getY(), vec3.getZ());
         }
 
         return result;
@@ -293,10 +293,8 @@ public class PhysicsRigidBody extends PhysicsBody {
         if (motionProperties == null) {
             snapshot.getLinearVelocity(result);
         } else {
-            MemorySession arena = PhysicsSpace.getArena();
-            FVec3 fvec3 = FVec3.of(arena);
-            motionProperties.getLinearVelocity(fvec3);
-            result.set(fvec3.getX(), fvec3.getY(), fvec3.getZ());
+            Vec3 vec3 = joltBody.getLinearVelocity();
+            result.set(vec3.getX(), vec3.getY(), vec3.getZ());
         }
 
         return result;
@@ -313,10 +311,10 @@ public class PhysicsRigidBody extends PhysicsBody {
     }
 
     /**
-     * Rebuild the rigid body with a new jolt-java object.
+     * Rebuild the rigid body with a new jolt-jni object.
      */
     public void rebuildRigidBody() {
-        MutableBody oldBody = joltBody;
+        Body oldBody = joltBody;
         Vec3d location = new Vec3d();
         Quaternion orientation = new Quaternion();
         PhysicsSpace removedFrom = (PhysicsSpace) getCollisionSpace();
@@ -364,7 +362,7 @@ public class PhysicsRigidBody extends PhysicsBody {
      * not null, not zero, unaffected)
      */
     public void reposition(Vec3d location, Quaternion orientation) {
-        MutableBody oldBody = joltBody;
+        Body oldBody = joltBody;
         PhysicsSpace removedFrom = (PhysicsSpace) getCollisionSpace();
         RigidBodySnapshot nextSnapshot = new RigidBodySnapshot(this);
 
@@ -411,10 +409,9 @@ public class PhysicsRigidBody extends PhysicsBody {
             Vec3d vec3d = new Vec3d(omega);
             snapshot.setAngularVelocity(vec3d);
         } else {
-            MemorySession arena = PhysicsSpace.getArena();
-            FVec3 fvec3 = FVec3.of(arena, (float) omega.x, (float) omega.y,
+            Vec3 vec3 = new Vec3((float) omega.x, (float) omega.y,
                     (float) omega.z);
-            bodyInterface.setAngularVelocity(bodyId, fvec3);
+            bodyInterface.setAngularVelocity(bodyId, vec3);
         }
     }
 
@@ -428,13 +425,12 @@ public class PhysicsRigidBody extends PhysicsBody {
         Validate.nonNull(omega, "angular velocity");
         assert isDynamic();
 
+        Vec3Arg vec3 = new Vec3(
+                (float) omega.x, (float) omega.y, (float) omega.z);
         if (bodyInterface == null) {
-            snapshot.setAngularVelocity(omega);
+            joltBody.setAngularVelocity(vec3);
         } else {
-            MemorySession arena = PhysicsSpace.getArena();
-            FVec3 fvec3 = FVec3.of(arena, (float) omega.x, (float) omega.y,
-                    (float) omega.z);
-            bodyInterface.setAngularVelocity(bodyId, fvec3);
+            bodyInterface.setAngularVelocity(bodyId, vec3);
         }
     }
 
@@ -448,14 +444,12 @@ public class PhysicsRigidBody extends PhysicsBody {
         Validate.finite(velocity, "velocity");
         assert isDynamic();
 
+        Vec3 vec3 = new Vec3(
+                (float) velocity.x, (float) velocity.y, (float) velocity.z);
         if (bodyInterface == null) {
-            Vec3d vec3d = new Vec3d(velocity);
-            snapshot.setLinearVelocity(vec3d);
+            joltBody.setLinearVelocity(vec3);
         } else {
-            MemorySession arena = PhysicsSpace.getArena();
-            FVec3 fvec3 = FVec3.of(arena, (float) velocity.x,
-                    (float) velocity.y, (float) velocity.z);
-            bodyInterface.setLinearVelocity(bodyId, fvec3);
+            bodyInterface.setLinearVelocity(bodyId, vec3);
         }
     }
 
@@ -469,13 +463,11 @@ public class PhysicsRigidBody extends PhysicsBody {
         Validate.nonNull(velocity, "velocity");
         assert isDynamic();
 
+        Vec3 vec3 = new Vec3(velocity.x, velocity.y, velocity.z);
         if (bodyInterface == null) {
-            snapshot.setLinearVelocity(velocity);
+            joltBody.setLinearVelocity(vec3);
         } else {
-            MemorySession arena = PhysicsSpace.getArena();
-            FVec3 fvec3 = FVec3.of(arena, (float) velocity.x,
-                    (float) velocity.y, (float) velocity.z);
-            bodyInterface.setLinearVelocity(bodyId, fvec3);
+            bodyInterface.setLinearVelocity(bodyId, vec3);
         }
     }
 
@@ -544,10 +536,8 @@ public class PhysicsRigidBody extends PhysicsBody {
     public Vector3f totalAppliedForce(Vector3f storeResult) {
         Vector3f result = (storeResult == null) ? new Vector3f() : storeResult;
 
-        MemorySession arena = PhysicsSpace.getArena();
-        FVec3 fvec3 = FVec3.of(arena);
-        joltBody.getAccumulatedForce(fvec3);
-        result.set(fvec3.getX(), fvec3.getY(), fvec3.getZ());
+        Vec3 vec3 = joltBody.getAccumulatedForce();
+        result.set(vec3.getX(), vec3.getY(), vec3.getZ());
 
         return result;
     }
@@ -563,10 +553,8 @@ public class PhysicsRigidBody extends PhysicsBody {
     public Vector3f totalAppliedTorque(Vector3f storeResult) {
         Vector3f result = (storeResult == null) ? new Vector3f() : storeResult;
 
-        MemorySession arena = PhysicsSpace.getArena();
-        FVec3 fvec3 = FVec3.of(arena);
-        joltBody.getAccumulatedTorque(fvec3);
-        result.set(fvec3.getX(), fvec3.getY(), fvec3.getZ());
+        Vec3 vec3 = joltBody.getAccumulatedTorque();
+        result.set(vec3.getX(), vec3.getY(), vec3.getZ());
 
         return result;
     }
@@ -622,14 +610,14 @@ public class PhysicsRigidBody extends PhysicsBody {
     public Vector3f getPhysicsLocation(Vector3f storeResult) {
         Vector3f result = (storeResult == null) ? new Vector3f() : storeResult;
 
-        MemorySession arena = PhysicsSpace.getArena();
-        FVec3 fvec3 = FVec3.of(arena);
-        bodyInterface.getCenterOfMassPosition(bodyId, fvec3);
-        result.x = fvec3.getX();
-        result.y = fvec3.getY();
-        result.z = fvec3.getZ();
+        RVec3 rvec3 = joltBody.getCenterOfMassPosition();
+        result.x = rvec3.x();
+        result.y = rvec3.y();
+        result.z = rvec3.z();
 
-        assert Vector3f.isValidVector(result);
+        if (!Vector3f.isValidVector(result)) {
+            throw new RuntimeException("result = " + result);
+        }
         return result;
     }
 
@@ -644,12 +632,10 @@ public class PhysicsRigidBody extends PhysicsBody {
     public Vec3d getPhysicsLocationDp(Vec3d storeResult) {
         Vec3d result = (storeResult == null) ? new Vec3d() : storeResult;
 
-        MemorySession arena = PhysicsSpace.getArena();
-        FVec3 fvec3 = FVec3.of(arena);
-        bodyInterface.getCenterOfMassPosition(bodyId, fvec3);
-        result.x = fvec3.getX();
-        result.y = fvec3.getY();
-        result.z = fvec3.getZ();
+        RVec3 rvec3 = joltBody.getCenterOfMassPosition();
+        result.x = rvec3.xx();
+        result.y = rvec3.yy();
+        result.z = rvec3.zz();
 
         assert result.isFinite();
         return result;
@@ -667,9 +653,7 @@ public class PhysicsRigidBody extends PhysicsBody {
         Quaternion result
                 = (storeResult == null) ? new Quaternion() : storeResult;
 
-        MemorySession arena = PhysicsSpace.getArena();
-        Quat wr = Quat.of(arena);
-        joltBody.getRotation(wr);
+        Quat wr = joltBody.getRotation();
         result.set(wr.getX(), wr.getY(), wr.getZ(), wr.getW());
 
         return result;
@@ -686,9 +670,7 @@ public class PhysicsRigidBody extends PhysicsBody {
     public Matrix3f getPhysicsRotationMatrix(Matrix3f storeResult) {
         Matrix3f result = (storeResult == null) ? new Matrix3f() : storeResult;
 
-        MemorySession arena = PhysicsSpace.getArena();
-        Quat wr = Quat.of(arena);
-        joltBody.getRotation(wr);
+        Quat wr = joltBody.getRotation();
         Quaternion quaternion
                 = new Quaternion(wr.getX(), wr.getY(), wr.getZ(), wr.getW());
         result.set(quaternion);
@@ -715,7 +697,7 @@ public class PhysicsRigidBody extends PhysicsBody {
     }
 
     /**
-     * Test whether a jolt-java object is assigned to this body.
+     * Test whether a jolt-jni object is assigned to this body.
      *
      * @return true if one is assigned, otherwise false
      */
@@ -751,14 +733,14 @@ public class PhysicsRigidBody extends PhysicsBody {
     }
 
     /**
-     * Return the ID of the assigned jolt-java object, assuming that one is
+     * Return the address of the assigned jolt-jni object, assuming that one is
      * assigned.
      *
-     * @return the jolt-java identifier
+     * @return the virtual address (not zero)
      */
     @Override
     public long nativeId() {
-        long result = joltBody.getId();
+        long result = joltBody.va();
         return result;
     }
 
@@ -781,7 +763,7 @@ public class PhysicsRigidBody extends PhysicsBody {
 
     /**
      * Apply the specified CollisionShape to the body. The body gets rebuilt on
-     * the jolt-java side.
+     * the jolt-jni side.
      *
      * @param desiredShape the shape to apply (not null, alias created)
      */
@@ -803,9 +785,9 @@ public class PhysicsRigidBody extends PhysicsBody {
     /**
      * Alter the body's friction.
      *
-     * @param friction the desired friction value (&ge;0, default=0.5)
+     * @param friction the desired friction value (default=0.5)
      * <p>
-     * Note: the jolt-java default is 0.2 .
+     * Note: the jolt-jni default is 0.2 .
      */
     @Override
     public void setFriction(float friction) {
@@ -836,7 +818,7 @@ public class PhysicsRigidBody extends PhysicsBody {
     /**
      * Alter the body's restitution.
      *
-     * @param restitution the desired restitution value (&ge;0)
+     * @param restitution the desired restitution value (default=0)
      */
     @Override
     public void setRestitution(float restitution) {
@@ -863,24 +845,22 @@ public class PhysicsRigidBody extends PhysicsBody {
      * not null, not zero, unaffected)
      * @return a new instance (not null)
      */
-    private static MutableBody createRigidBody(CollisionShape shape, float mass,
+    private static Body createRigidBody(CollisionShape shape, float mass,
             Vec3d location, Quaternion orientation) {
-        MemorySession arena = PhysicsSpace.getArena();
-        FVec3 fvec3 = FVec3.of(arena, (float) location.x, (float) location.y,
-                (float) location.z);
-        Quat quat = Quat.of(arena, orientation.getX(), orientation.getY(),
+        RVec3 rvec3 = new RVec3(location.x, location.y, location.z);
+        Quat quat = new Quat(orientation.getX(), orientation.getY(),
                 orientation.getZ(), orientation.getW());
 
         BodyCreationSettings settings;
         if (mass > 0f) {
-            settings = BodyCreationSettings.of(arena, shape.getJoltShape(),
-                    fvec3, quat, MotionType.DYNAMIC,
+            settings = new BodyCreationSettings(shape.getJoltShape(),
+                    rvec3, quat, EMotionType.Dynamic,
                     PhysicsSpace.OBJ_LAYER_MOVING);
             settings.setGravityFactor(1f);
         } else {
             assert mass == 0f : mass;
-            settings = BodyCreationSettings.of(arena, shape.getJoltShape(),
-                    fvec3, quat, MotionType.STATIC,
+            settings = new BodyCreationSettings(shape.getJoltShape(),
+                    rvec3, quat, EMotionType.Static,
                     PhysicsSpace.OBJ_LAYER_NON_MOVING);
             settings.setGravityFactor(0f);
         }
@@ -888,7 +868,7 @@ public class PhysicsRigidBody extends PhysicsBody {
         PhysicsSpace physicsSpace
                 = (PhysicsSpace) CollisionSpace.getCollisionSpace();
         BodyInterface bodyInterface = physicsSpace.getBodyInterface();
-        MutableBody result = bodyInterface.createBody(settings);
+        Body result = bodyInterface.createBody(settings);
 
         return result;
     }

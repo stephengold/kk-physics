@@ -219,7 +219,7 @@ abstract public class PhysicsCollisionObject
     }
 
     /**
-     * Test whether a jolt-java object is assigned to this collision object.
+     * Test whether a jolt-jni object is assigned to this collision object.
      *
      * @return true if one is assigned, otherwise false
      */
@@ -254,10 +254,10 @@ abstract public class PhysicsCollisionObject
     abstract public boolean isStatic();
 
     /**
-     * Return the ID of the assigned jolt-java object, assuming that one is
+     * Return the address of the assigned native object, assuming one is
      * assigned.
      *
-     * @return the jolt-java identifier
+     * @return the virtual address (not zero)
      */
     abstract public long nativeId();
 

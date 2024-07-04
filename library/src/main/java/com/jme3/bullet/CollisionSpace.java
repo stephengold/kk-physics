@@ -32,7 +32,6 @@
 package com.jme3.bullet;
 
 import com.jme3.bullet.collision.PhysicsCollisionObject;
-import java.lang.foreign.MemorySession;
 import java.util.Collection;
 import java.util.TreeSet;
 import java.util.logging.Logger;
@@ -68,11 +67,6 @@ public class CollisionSpace {
      * {@code setLocalThreadPhysicsSpace()}) before terminating.
      */
     final private static ThreadLocal<CollisionSpace> physicsSpaceTL
-            = new ThreadLocal<>();
-    /**
-     * memory session for each thread
-     */
-    final private static ThreadLocal<MemorySession> tlArenas
             = new ThreadLocal<>();
     // *************************************************************************
     // constructors
@@ -129,23 +123,6 @@ public class CollisionSpace {
         assert numSolvers >= 1 : numSolvers;
         assert numSolvers <= 64 : numSolvers;
         return numSolvers;
-    }
-
-    /**
-     * Access the MemorySession associated with the current thread.
-     *
-     * @return the pre-existing instance, or {@code null} if none
-     */
-    final public static synchronized MemorySession getArena() {
-        MemorySession result = tlArenas.get();
-        if (result == null) {
-            //System.out.println("Lazily creating a confined memory session.");
-            result = MemorySession.openConfined();
-            assert result != null;
-            tlArenas.set(result);
-        }
-
-        return result;
     }
 
     /**

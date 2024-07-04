@@ -21,9 +21,10 @@ java {
 
 dependencies {
     api(libs.jme3.core)
-    api(libs.jolt.java)
+    api(libs.jolt.jni.windows64)
     api(libs.sim.math)
     implementation(libs.heart)
+    implementation(libs.jme3.desktop)
 }
 
 configurations.all {
@@ -41,7 +42,6 @@ tasks.withType<JavaCompile>().all { // Java compile-time options:
 
 tasks.withType<Javadoc>().all { // Javadoc runtime options:
     (options as CoreJavadocOptions).apply {
-        addBooleanOption("-enable-preview", true)
         addStringOption("-release", "19")
     }
 }

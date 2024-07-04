@@ -31,27 +31,16 @@
  */
 package com.jme3.bullet.collision.shapes;
 
-import com.jme3.bullet.PhysicsSpace;
+import com.github.stephengold.joltjni.BoxShape;
+import com.github.stephengold.joltjni.Vec3;
+import com.github.stephengold.joltjni.Vec3Arg;
 import com.jme3.math.Vector3f;
-import com.jme3.scene.Mesh;
-import com.jme3.scene.VertexBuffer;
-import com.jme3.scene.mesh.IndexBuffer;
-import com.jme3.scene.shape.Box;
-import com.jme3.util.BufferUtils;
-import java.lang.foreign.MemorySession;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 import java.util.logging.Logger;
 import jme3utilities.Validate;
-import jme3utilities.math.MyBuffer;
 import jme3utilities.math.MyVector3f;
-import jolt.Jolt;
-import jolt.math.FVec3;
-import jolt.physics.collision.shape.BoxShapeSettings;
-import jolt.physics.collision.shape.Shape;
 
 /**
- * An axis-aligned, rectangular-solid collision shape based on jolt-java's
+ * An axis-aligned, rectangular-solid collision shape based on jolt-jni's
  * {@code BoxShape}.
  *
  * @author normenhansen
@@ -149,83 +138,6 @@ public class BoxCollisionShape extends CollisionShape {
         return result;
     }
     // *************************************************************************
-    // CollisionShape methods
-
-    /**
-     * Generate vertex indices for a debug-visualization mesh.
-     *
-     * @return a new, unflipped, direct buffer full of indices (capacity a
-     * multiple of 3)
-     */
-    @Override
-    public IntBuffer copyIndices() {
-        Vector3f he = halfExtents.mult(scale);
-        Mesh mesh = new Box(he.x, he.y, he.z);
-
-        IndexBuffer ib = mesh.getIndicesAsList();
-        int numInts = ib.size();
-        IntBuffer result = BufferUtils.createIntBuffer(numInts);
-        for (int ii = 0; ii < numInts; ++ii) {
-            int index = ib.get(ii);
-            result.put(ii, index);
-        }
-
-        assert (result.limit() == result.capacity());
-        assert result.isDirect();
-        assert (result.capacity() % 3) == 0;
-        return result;
-    }
-
-    /**
-     * Generate un-indexed triangles for a debug-visualization mesh.
-     *
-     * @return a new, unflipped, direct buffer full of scaled shape coordinates
-     * (capacity a multiple of 9)
-     */
-    @Override
-    public FloatBuffer copyTriangles() {
-        Vector3f he = halfExtents.mult(scale);
-        Mesh mesh = new Box(he.x, he.y, he.z);
-
-        IndexBuffer ib = mesh.getIndicesAsList();
-        int numTriangles = mesh.getTriangleCount();
-        int numIndices = 3 * numTriangles;
-        int numFloats = 3 * numIndices;
-        FloatBuffer pb = mesh.getFloatBuffer(VertexBuffer.Type.Position);
-        Vector3f tmpVector = new Vector3f();
-
-        FloatBuffer result = BufferUtils.createFloatBuffer(numFloats);
-        for (int ii = 0; ii < numIndices; ++ii) {
-            int index = ib.get(ii);
-            MyBuffer.get(pb, 3 * index, tmpVector);
-            MyBuffer.put(result, 3 * ii, tmpVector);
-        }
-
-        assert (result.limit() == result.capacity());
-        assert result.isDirect();
-        assert (result.capacity() % 9) == 0;
-        return result;
-    }
-
-    /**
-     * Generate vertex positions for a debug-visualization mesh.
-     *
-     * @return a new, unflipped, direct buffer full of scaled shape coordinates
-     * (capacity a multiple of 3)
-     */
-    @Override
-    public FloatBuffer copyVertexPositions() {
-        Vector3f he = halfExtents.mult(scale);
-        Mesh mesh = new Box(he.x, he.y, he.z);
-
-        FloatBuffer result = mesh.getFloatBuffer(VertexBuffer.Type.Position);
-
-        assert (result.limit() == result.capacity());
-        assert result.isDirect();
-        assert (result.capacity() % 3) == 0;
-        return result;
-    }
-    // *************************************************************************
     // Java private methods
 
     /**
@@ -234,13 +146,8 @@ public class BoxCollisionShape extends CollisionShape {
     private void createShape() {
         assert MyVector3f.isAllNonNegative(halfExtents) : halfExtents;
 
-        MemorySession arena = PhysicsSpace.getArena();
-        FVec3 vec3
-                = FVec3.of(arena, halfExtents.x, halfExtents.y, halfExtents.z);
-        BoxShapeSettings bss = BoxShapeSettings.of(vec3);
-        Shape shape = Jolt.use(bss, settings -> {
-            return settings.create(arena);
-        }).orThrow();
+        Vec3Arg vec3 = new Vec3(halfExtents.x, halfExtents.y, halfExtents.z);
+        BoxShape shape = new BoxShape(vec3);
         setNativeObject(shape);
     }
 }

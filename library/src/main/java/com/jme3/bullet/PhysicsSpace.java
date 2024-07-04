@@ -31,15 +31,31 @@
  */
 package com.jme3.bullet;
 
+import com.github.stephengold.joltjni.BodyId;
+import com.github.stephengold.joltjni.BodyInterface;
+import com.github.stephengold.joltjni.EActivation;
+import com.github.stephengold.joltjni.EBodyType;
+import com.github.stephengold.joltjni.JobSystem;
+import com.github.stephengold.joltjni.JobSystemThreadPool;
+import com.github.stephengold.joltjni.Jolt;
+import com.github.stephengold.joltjni.MapObj2Bp;
+import com.github.stephengold.joltjni.ObjVsBpFilter;
+import com.github.stephengold.joltjni.ObjVsObjFilter;
+import com.github.stephengold.joltjni.PhysicsSystem;
+import com.github.stephengold.joltjni.TempAllocator;
+import com.github.stephengold.joltjni.TempAllocatorImpl;
+import com.github.stephengold.joltjni.Vec3;
+import com.github.stephengold.joltjni.Vec3Arg;
 import com.jme3.bullet.collision.PhysicsCollisionObject;
 import com.jme3.bullet.control.PhysicsControl;
 import com.jme3.bullet.objects.PhysicsRigidBody;
+import com.jme3.bullet.util.NativeLibrary;
 import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.util.SafeArrayList;
-import java.lang.foreign.MemorySession;
+import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -48,19 +64,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import jme3utilities.Validate;
-import jolt.Jolt;
-import jolt.core.JobSystem;
-import jolt.core.TempAllocator;
-import jolt.math.FVec3;
-import jolt.physics.Activation;
-import jolt.physics.PhysicsSystem;
-import jolt.physics.body.BodyInterface;
-import jolt.physics.collision.ObjectLayerPairFilter;
-import jolt.physics.collision.ObjectLayerPairFilterFn;
-import jolt.physics.collision.broadphase.BroadPhaseLayerInterface;
-import jolt.physics.collision.broadphase.BroadPhaseLayerInterfaceFn;
-import jolt.physics.collision.broadphase.ObjectVsBroadPhaseLayerFilter;
-import jolt.physics.collision.broadphase.ObjectVsBroadPhaseLayerFilterFn;
 
 /**
  * A CollisionSpace to simulate dynamic physics, with its own
@@ -144,9 +147,12 @@ public class PhysicsSpace extends CollisionSpace {
     final private Map<Long, PhysicsRigidBody> rigidMap
             = new ConcurrentHashMap<>(64);
     /**
-     * underlying jolt-java object
+     * underlying jolt-jni object
      */
     private final PhysicsSystem physicsSystem;
+    /**
+     * allocate temporary memory for physics simulation
+     */
     private final TempAllocator tempAllocator;
     /**
      * copy of the gravity-acceleration vector for newly-added bodies (default
@@ -156,12 +162,7 @@ public class PhysicsSpace extends CollisionSpace {
     final private Vector3f gravity = new Vector3f(0f, -9.81f, 0f);
 
     static {
-        Jolt.load();
-        Jolt.registerDefaultAllocator();
-        Jolt.createFactory();
-        Jolt.registerTypes();
-        //System.out.println("Features: " + Jolt.featureSet());
-        Jolt.assertSinglePrecision();
+        NativeLibrary.load();
     }
     // *************************************************************************
     // constructors
@@ -175,67 +176,37 @@ public class PhysicsSpace extends CollisionSpace {
     public PhysicsSpace(int numSolvers) {
         super(numSolvers);
 
-        int maxBodies = 10_000;
-        this.tempAllocator = TempAllocator.of(30_000 * maxBodies);
-        MemorySession arena = getArena();
+        this.tempAllocator = new TempAllocatorImpl(150 * 1024 * 1024);
 
-        this.jobSystem = JobSystem.of(
-                JobSystem.MAX_PHYSICS_JOBS,
-                JobSystem.MAX_PHYSICS_BARRIERS,
-                numSolvers);
+        int maxJobs = Jolt.cMaxPhysicsJobs;
+        int maxBarriers = Jolt.cMaxPhysicsBarriers;
+        this.jobSystem
+                = new JobSystemThreadPool(maxJobs, maxBarriers, numSolvers);
 
-        BroadPhaseLayerInterfaceFn bplif = new BroadPhaseLayerInterfaceFn() {
-            @Override
-            public int getNumBroadPhaseLayers() {
-                return 2;
-            }
+        int numObjLayers = 2;
+        int numBpLayers = 2;
+        MapObj2Bp mapObj2Bp = new MapObj2Bp(numObjLayers, numBpLayers)
+                .add(OBJ_LAYER_NON_MOVING, BP_LAYER_NON_MOVING)
+                .add(OBJ_LAYER_MOVING, BP_LAYER_MOVING);
 
-            @Override
-            public byte getBroadPhaseLayer(short layer) {
-                return switch (layer) {
-                    case OBJ_LAYER_NON_MOVING ->
-                        BP_LAYER_NON_MOVING;
-                    case OBJ_LAYER_MOVING ->
-                        BP_LAYER_MOVING;
-                    default ->
-                        throw new IllegalArgumentException(
-                                "Invalid object layer " + layer);
-                };
-            }
-        };
-        BroadPhaseLayerInterface bpli
-                = BroadPhaseLayerInterface.of(arena, bplif);
+        ObjVsBpFilter objVsBpFilter
+                = new ObjVsBpFilter(numObjLayers, numBpLayers)
+                        .disablePair(OBJ_LAYER_NON_MOVING, BP_LAYER_NON_MOVING);
 
-        ObjectVsBroadPhaseLayerFilterFn ovbplff
-                = (short layer1, byte layer2) -> switch (layer1) {
-            case OBJ_LAYER_NON_MOVING ->
-                layer2 == BP_LAYER_MOVING;
-            case OBJ_LAYER_MOVING ->
-                true;
-            default ->
-                false;
-        };
-        ObjectVsBroadPhaseLayerFilter ovbplf
-                = ObjectVsBroadPhaseLayerFilter.of(arena, ovbplff);
+        ObjVsObjFilter objVsObjFilter = new ObjVsObjFilter(numObjLayers)
+                .disablePair(OBJ_LAYER_NON_MOVING, BP_LAYER_NON_MOVING);
 
-        ObjectLayerPairFilterFn olpff
-                = (short layer1, short layer2) -> switch (layer1) {
-            case OBJ_LAYER_NON_MOVING ->
-                layer2 == OBJ_LAYER_MOVING;
-            case OBJ_LAYER_MOVING ->
-                true;
-            default ->
-                false;
-        };
-        ObjectLayerPairFilter olpf = ObjectLayerPairFilter.of(arena, olpff);
+        this.physicsSystem = new PhysicsSystem();
 
-        int numBodyMutexes = 0;
+        int maxBodies = 9_999;
+        int numBodyMutexes = 0; // 0 means "use the default value"
         int maxBodyPairs = maxBodies;
-        int maxContactConstraints = 3 * maxBodies;
-        this.physicsSystem = PhysicsSystem.of(maxBodies, numBodyMutexes,
-                maxBodyPairs, maxContactConstraints, bpli, ovbplf, olpf);
+        int maxContactConstraints = 2 * maxBodies;
+        physicsSystem.init(
+                maxBodies, numBodyMutexes, maxBodyPairs, maxContactConstraints,
+                mapObj2Bp, objVsBpFilter, objVsObjFilter);
 
-        FVec3 defaultGravity = FVec3.of(arena, gravity.x, gravity.y, gravity.z);
+        Vec3Arg defaultGravity = new Vec3(gravity.x, gravity.y, gravity.z);
         physicsSystem.setGravity(defaultGravity);
 
         initThread();
@@ -296,12 +267,12 @@ public class PhysicsSpace extends CollisionSpace {
     }
 
     /**
-     * Count how many active bodies are in the space.
+     * Count how many active rigid bodies are in the space.
      *
      * @return the count (&ge;0)
      */
-    public int countActiveBodies() {
-        int result = physicsSystem.getNumActiveBodies();
+    public int countActiveRigidBodies() {
+        int result = physicsSystem.getNumActiveBodies(EBodyType.RigidBody);
         return result;
     }
 
@@ -335,7 +306,7 @@ public class PhysicsSpace extends CollisionSpace {
     }
 
     /**
-     * Access the jolt-java BodyInterface. Internal use only.
+     * Access the jolt-jni BodyInterface. Internal use only.
      *
      * @return an instance (not null)
      */
@@ -472,9 +443,8 @@ public class PhysicsSpace extends CollisionSpace {
      */
     public void setGravity(Vector3f gravity) {
         this.gravity.set(gravity);
-        MemorySession arena = getArena();
-        FVec3 fvec3 = FVec3.of(arena, gravity.x, gravity.y, gravity.z);
-        physicsSystem.setGravity(fvec3);
+        Vec3Arg vec3 = new Vec3(gravity.x, gravity.y, gravity.z);
+        physicsSystem.setGravity(vec3);
     }
 
     /**
@@ -570,9 +540,8 @@ public class PhysicsSpace extends CollisionSpace {
 
             // Single-step the physics system:
             int collisionSteps = 1;
-            int integrationSubSteps = 1;
             physicsSystem.update(timePerStep, collisionSteps,
-                    integrationSubSteps, tempAllocator, jobSystem);
+                    tempAllocator, jobSystem);
 
             postTick(timePerStep);
         }
@@ -689,36 +658,34 @@ public class PhysicsSpace extends CollisionSpace {
      * @param rigidBody the body to add (not null, modified)
      */
     private void addRigidBody(PhysicsRigidBody rigidBody) {
-        long rigidBodyId = rigidBody.nativeId();
+        long bodyVa = rigidBody.nativeId();
         assert rigidBody.getCollisionSpace() == null;
 
         if (logger.isLoggable(Level.FINE)) {
             logger.log(Level.FINE, "Adding {0} to {1}.",
                     new Object[]{rigidBody, this});
         }
-        rigidMap.put(rigidBodyId, rigidBody);
+        rigidMap.put(bodyVa, rigidBody);
 
         BodyInterface bodyInterface = getBodyInterface();
-        int bodyId = (int) rigidBody.nativeId();
+        BodyId bodyId = rigidBody.findBodyId();
         if (rigidBody.isDynamic()) {
-            bodyInterface.addBody(bodyId, Activation.ACTIVATE);
+            bodyInterface.addBody(bodyId, EActivation.Activate);
         } else {
-            bodyInterface.addBody(bodyId, Activation.DONT_ACTIVATE);
+            bodyInterface.addBody(bodyId, EActivation.DontActivate);
         }
 
         rigidBody.setAddedToSpaceInternal(this);
     }
 
     /**
-     * Compare jolt-java's gravity vector to the local copy.
+     * Compare jolt-jni's gravity vector to the local copy.
      *
      * @param storeVector caller-allocated temporary storage (not null)
      * @return true if scale factors are exactly equal, otherwise false
      */
     private boolean checkGravity() {
-        MemorySession arena = getArena();
-        FVec3 joltGravity = FVec3.of(arena);
-        physicsSystem.getGravity(joltGravity);
+        Vec3Arg joltGravity = physicsSystem.getGravity();
 
         boolean result = (joltGravity.getX() == gravity.x
                 && joltGravity.getY() == gravity.y
@@ -760,8 +727,12 @@ public class PhysicsSpace extends CollisionSpace {
      * @param rigidBody the body to remove (not null, modified)
      */
     private void removeRigidBody(PhysicsRigidBody rigidBody) {
-        long rigidBodyId = rigidBody.nativeId();
-        if (!rigidMap.containsKey(rigidBodyId)) {
+        assert rigidBody.getCollisionSpace() == this;
+
+        BodyId bodyId = rigidBody.findBodyId();
+        long bodyVa = rigidBody.nativeId();
+        assert rigidMap.containsKey(bodyVa);
+        if (bodyId == null || !rigidMap.containsKey(bodyVa)) {
             logger.log(Level.WARNING, "{0} does not exist in {1}.",
                     new Object[]{rigidBody, this});
             return;
@@ -772,10 +743,10 @@ public class PhysicsSpace extends CollisionSpace {
             logger.log(Level.FINE, "Removing {0} from {1}.",
                     new Object[]{rigidBody, this});
         }
-        rigidMap.remove(rigidBodyId);
+        rigidMap.remove(bodyVa);
 
         BodyInterface bodyInterface = getBodyInterface();
-        bodyInterface.removeBody((int) rigidBodyId);
+        bodyInterface.removeBody(bodyId);
 
         rigidBody.setAddedToSpaceInternal(null);
     }

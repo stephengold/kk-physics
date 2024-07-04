@@ -31,26 +31,15 @@
  */
 package com.jme3.bullet.collision.shapes;
 
+import com.github.stephengold.joltjni.CylinderShape;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.math.Vector3f;
-import com.jme3.scene.Mesh;
-import com.jme3.scene.VertexBuffer;
-import com.jme3.scene.mesh.IndexBuffer;
-import com.jme3.util.BufferUtils;
-import java.lang.foreign.MemorySession;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 import java.util.logging.Logger;
 import jme3utilities.Validate;
-import jme3utilities.math.MyBuffer;
 import jme3utilities.math.MyVector3f;
-import jme3utilities.mesh.Prism;
-import jolt.Jolt;
-import jolt.physics.collision.shape.CylinderShapeSettings;
-import jolt.physics.collision.shape.Shape;
 
 /**
- * A cylindrical collision shape based on jolt-java's {@code CylinderShape}.
+ * A cylindrical collision shape based on jolt-jni's {@code CylinderShape}.
  *
  * @author normenhansen
  */
@@ -177,81 +166,6 @@ public class CylinderCollisionShape extends CollisionShape {
 
         return canScale;
     }
-
-    /**
-     * Generate vertex indices for a debug-visualization mesh.
-     *
-     * @return a new, unflipped, direct buffer full of indices (capacity a
-     * multiple of 3)
-     */
-    @Override
-    public IntBuffer copyIndices() {
-        Vector3f he = halfExtents.mult(scale);
-        Mesh mesh = new Prism(24, he.x, 2f * he.y, false);
-
-        IndexBuffer ib = mesh.getIndicesAsList();
-        int numInts = ib.size();
-        IntBuffer result = BufferUtils.createIntBuffer(numInts);
-        for (int ii = 0; ii < numInts; ++ii) {
-            int index = ib.get(ii);
-            result.put(ii, index);
-        }
-
-        assert (result.limit() == result.capacity());
-        assert result.isDirect();
-        assert (result.capacity() % 3) == 0;
-        return result;
-    }
-
-    /**
-     * Generate un-indexed triangles for a debug-visualization mesh.
-     *
-     * @return a new, unflipped, direct buffer full of scaled shape coordinates
-     * (capacity a multiple of 9)
-     */
-    @Override
-    public FloatBuffer copyTriangles() {
-        Vector3f he = halfExtents.mult(scale);
-        Mesh mesh = new Prism(24, he.x, 2f * he.y, false);
-
-        IndexBuffer ib = mesh.getIndicesAsList();
-        int numTriangles = mesh.getTriangleCount();
-        int numIndices = 3 * numTriangles;
-        int numFloats = 3 * numIndices;
-        FloatBuffer pb = mesh.getFloatBuffer(VertexBuffer.Type.Position);
-        Vector3f tmpVector = new Vector3f();
-
-        FloatBuffer result = BufferUtils.createFloatBuffer(numFloats);
-        for (int ii = 0; ii < numIndices; ++ii) {
-            int index = ib.get(ii);
-            MyBuffer.get(pb, 3 * index, tmpVector);
-            MyBuffer.put(result, 3 * ii, tmpVector);
-        }
-
-        assert (result.limit() == result.capacity());
-        assert result.isDirect();
-        assert (result.capacity() % 9) == 0;
-        return result;
-    }
-
-    /**
-     * Generate vertex positions for a debug-visualization mesh.
-     *
-     * @return a new, unflipped, direct buffer full of scaled shape coordinates
-     * (capacity a multiple of 3)
-     */
-    @Override
-    public FloatBuffer copyVertexPositions() {
-        Vector3f he = halfExtents.mult(scale);
-        Mesh mesh = new Prism(24, he.x, 2f * he.y, false);
-
-        FloatBuffer result = mesh.getFloatBuffer(VertexBuffer.Type.Position);
-
-        assert (result.limit() == result.capacity());
-        assert result.isDirect();
-        assert (result.capacity() % 3) == 0;
-        return result;
-    }
     // *************************************************************************
     // Java private methods
 
@@ -264,12 +178,7 @@ public class CylinderCollisionShape extends CollisionShape {
 
         float halfHeight = halfExtents.y;
         float radius = halfExtents.x;
-        CylinderShapeSettings css
-                = CylinderShapeSettings.of(halfHeight, radius);
-        MemorySession arena = PhysicsSpace.getArena();
-        Shape shape = Jolt.use(css, settings -> {
-            return settings.create(arena);
-        }).orThrow();
+        CylinderShape shape = new CylinderShape(halfHeight, radius);
         setNativeObject(shape);
     }
 }

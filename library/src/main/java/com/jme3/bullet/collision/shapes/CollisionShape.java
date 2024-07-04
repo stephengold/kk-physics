@@ -31,21 +31,20 @@
  */
 package com.jme3.bullet.collision.shapes;
 
-import com.jme3.bullet.PhysicsSpace;
+import com.github.stephengold.joltjni.ScaledShape;
+import com.github.stephengold.joltjni.Shape;
+import com.github.stephengold.joltjni.Vec3;
+import com.github.stephengold.joltjni.Vec3Arg;
 import com.jme3.math.Vector3f;
-import java.lang.foreign.MemorySession;
+import com.jme3.util.BufferUtils;
 import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import jme3utilities.Validate;
 import jme3utilities.math.MyVector3f;
-import jolt.math.FVec3;
-import jolt.physics.collision.shape.ScaledShape;
-import jolt.physics.collision.shape.Shape;
 
 /**
- * The abstract base class for collision shapes based on jolt-java's
+ * The abstract base class for collision shapes based on jolt-jni's
  * {@code Shape} class.
  *
  * @author normenhansen
@@ -63,11 +62,11 @@ abstract public class CollisionShape {
     // fields
 
     /**
-     * underlying scaled jolt-java object
+     * underlying scaled jolt-jni object
      */
     private ScaledShape joltShape;
     /**
-     * underlying unscaled jolt-java object
+     * underlying unscaled jolt-jni object
      */
     private Shape unscaledShape;
     /**
@@ -78,7 +77,7 @@ abstract public class CollisionShape {
     // constructors
 
     /**
-     * Instantiate a collision shape with no underlying jolt-java objects.
+     * Instantiate a collision shape with no underlying jolt-jni objects.
      * <p>
      * This no-arg constructor was made explicit to avoid javadoc warnings from
      * JDK 18+.
@@ -108,31 +107,22 @@ abstract public class CollisionShape {
     }
 
     /**
-     * Generate vertex indices for a debug-visualization mesh.
-     *
-     * @return a new, unflipped, direct buffer full of indices (capacity a
-     * multiple of 3)
-     */
-    abstract public IntBuffer copyIndices();
-
-    /**
      * Generate un-indexed triangles for a debug-visualization mesh.
      *
      * @return a new, unflipped, direct buffer full of scaled shape coordinates
      * (capacity a multiple of 9)
      */
-    abstract public FloatBuffer copyTriangles();
+    public FloatBuffer copyTriangles() {
+        int numTriangles = joltShape.countDebugTriangles();
+        int numFloats = 9 * numTriangles;
+        FloatBuffer result = BufferUtils.createFloatBuffer(numFloats);
+        joltShape.copyDebugTriangles(result);
+
+        return result;
+    }
 
     /**
-     * Generate vertex positions for a debug-visualization mesh.
-     *
-     * @return a new, unflipped, direct buffer full of scaled shape coordinates
-     * (capacity a multiple of 3)
-     */
-    abstract public FloatBuffer copyVertexPositions();
-
-    /**
-     * Access the underlying jolt-java Shape.
+     * Access the underlying jolt-jni Shape.
      *
      * @return the pre-existing instance (not null)
      */
@@ -169,12 +159,12 @@ abstract public class CollisionShape {
     }
 
     /**
-     * Return the ID of the assigned jolt-java object.
+     * Return the ID of the assigned jolt-jni object.
      *
      * @return the raw long value associated with the unscaled shape
      */
     public long nativeId() {
-        long result = unscaledShape.address().toRawLongValue();
+        long result = unscaledShape.va();
         return result;
     }
 
@@ -215,9 +205,8 @@ abstract public class CollisionShape {
 
         this.scale.set(scale);
 
-        MemorySession arena = PhysicsSpace.getArena();
-        FVec3 fvec3 = FVec3.of(arena, scale.x, scale.y, scale.z);
-        this.joltShape = ScaledShape.of(unscaledShape, fvec3);
+        Vec3Arg vec3 = new Vec3(scale.x, scale.y, scale.z);
+        this.joltShape = new ScaledShape(unscaledShape, vec3);
 
         logger.log(Level.FINE, "Scaling {0}.", this);
     }
@@ -225,7 +214,7 @@ abstract public class CollisionShape {
     // new protected methods
 
     /**
-     * Initialize the underlying jolt-java objects.
+     * Initialize the underlying jolt-jni objects.
      *
      * @param unscaled the unscaled shape to use
      */
@@ -236,22 +225,19 @@ abstract public class CollisionShape {
 
         this.unscaledShape = unscaled;
 
-        MemorySession arena = PhysicsSpace.getArena();
-        FVec3 fvec3 = FVec3.of(arena, scale.x, scale.y, scale.z);
-        this.joltShape = ScaledShape.of(unscaledShape, fvec3);
+        Vec3Arg vec3 = new Vec3(scale.x, scale.y, scale.z);
+        this.joltShape = new ScaledShape(unscaledShape, vec3);
     }
     // *************************************************************************
     // Java private methods
 
     /**
-     * Compare jolt-java's scale factors to the local copies.
+     * Compare jolt-jni's scale factors with the local copies.
      *
      * @return true if the factors match exactly, otherwise false
      */
     private boolean checkScale() {
-        MemorySession arena = PhysicsSpace.getArena();
-        FVec3 joltScale = FVec3.of(arena);
-        joltShape.getScale(joltScale);
+        Vec3Arg joltScale = joltShape.getScale();
 
         boolean result = (joltScale.getX() == scale.x
                 && joltScale.getY() == scale.y

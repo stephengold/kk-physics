@@ -38,7 +38,6 @@ import com.jme3.scene.Mesh;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.VertexBuffer;
 import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 import java.util.Collections;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -48,7 +47,7 @@ import jme3utilities.MyMesh;
 import jme3utilities.Validate;
 
 /**
- * A utility class to generate debug meshes for jolt-java collision shapes.
+ * A utility class to generate debug meshes for jolt-jni collision shapes.
  *
  * @author CJ Hare, normenhansen
  */
@@ -120,8 +119,7 @@ final public class DebugShapeFactory {
     public static FloatBuffer debugVertices(
             CollisionShape shape, int meshResolution) {
         Validate.nonNull(shape, "shape");
-
-        FloatBuffer result = shape.copyVertexPositions();
+        FloatBuffer result = shape.copyTriangles();
 
         assert (result.capacity() % numAxes) == 0 : result.capacity();
         return result;
@@ -271,37 +269,24 @@ final public class DebugShapeFactory {
      * @return a new Mesh (not null)
      */
     private static Mesh createMesh(CollisionShape shape, MeshNormals normals) {
-        FloatBuffer positions;
-        IntBuffer indices;
+        FloatBuffer positions = shape.copyTriangles();
         Mesh mesh = new Mesh();
+        mesh.setBuffer(VertexBuffer.Type.Position, numAxes, positions);
+
         switch (normals) {
             case Facet: // always start with a non-indexed mesh
-                positions = shape.copyTriangles();
-                mesh.setBuffer(VertexBuffer.Type.Position, numAxes, positions);
                 MyMesh.generateFacetNormals(mesh);
                 break;
 
             case None:
-                positions = shape.copyVertexPositions();
-                indices = shape.copyIndices();
-                mesh.setBuffer(VertexBuffer.Type.Index, MyMesh.vpt,
-                        VertexBuffer.Format.UnsignedInt, indices);
-                mesh.setBuffer(VertexBuffer.Type.Position, numAxes, positions);
                 break;
 
-            case Smooth: // always start with a non-indexed mesh
-                positions = shape.copyTriangles();
-                mesh.setBuffer(VertexBuffer.Type.Position, numAxes, positions);
+            case Smooth:
                 MyMesh.generateFacetNormals(mesh);
                 MyMesh.smoothNormals(mesh);
                 break;
 
             case Sphere:
-                positions = shape.copyVertexPositions();
-                indices = shape.copyIndices();
-                mesh.setBuffer(VertexBuffer.Type.Index, MyMesh.vpt,
-                        VertexBuffer.Format.UnsignedInt, indices);
-                mesh.setBuffer(VertexBuffer.Type.Position, numAxes, positions);
                 MyMesh.addSphereNormals(mesh);
                 break;
 

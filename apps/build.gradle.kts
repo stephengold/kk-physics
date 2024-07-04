@@ -18,6 +18,7 @@ tasks.named<Jar>("jar") {
     }
 }
 
+val btf = "ReleaseSp"
 dependencies {
     implementation(libs.jme3.core)
     implementation(libs.jme3.desktop)
@@ -26,7 +27,10 @@ dependencies {
     runtimeOnly(libs.jme3.testdata)
 
     implementation(libs.heart)
-    runtimeOnly(libs.jolt.java.linux)
+    runtimeOnly(variantOf(libs.jolt.jni.linux64){ classifier(btf) })
+    runtimeOnly(variantOf(libs.jolt.jni.macosx64){ classifier(btf) })
+    runtimeOnly(variantOf(libs.jolt.jni.macosxarm64){ classifier(btf) })
+    runtimeOnly(variantOf(libs.jolt.jni.windows64){ classifier(btf) })
 
     implementation(project(":library")) // for latest sourcecode
 }
@@ -36,7 +40,6 @@ configurations.all {
 }
 
 tasks.withType<JavaCompile>().all { // Java compile-time options:
-    options.compilerArgs.add("--enable-preview")
     options.compilerArgs.add("-Xdiags:verbose")
     options.compilerArgs.add("-Xlint:unchecked")
     options.encoding = "UTF-8"
@@ -46,7 +49,6 @@ tasks.withType<JavaCompile>().all { // Java compile-time options:
 
 tasks.withType<Javadoc>().all { // Javadoc runtime options:
     (options as CoreJavadocOptions).apply {
-        addBooleanOption("-enable-preview", true)
         addStringOption("-release", "19")
     }
 }
@@ -61,8 +63,17 @@ tasks.withType<JavaExec>().all { // Java runtime options:
 // Register cleanup tasks:
 
 tasks.named("clean") {
-    dependsOn("cleanLogs")
+    dependsOn("cleanDLLs", "cleanDyLibs", "cleanLogs", "cleanSOs")
+}
+tasks.register<Delete>("cleanDLLs") { // extracted Windows native libraries
+    delete(fileTree(".").matching{ include("*.dll") })
+}
+tasks.register<Delete>("cleanDyLibs") { // extracted macOS native libraries
+    delete(fileTree(".").matching{ include("*.dylib") })
 }
 tasks.register<Delete>("cleanLogs") { // JVM crash logs
     delete(fileTree(".").matching{ include("hs_err_pid*.log") })
+}
+tasks.register<Delete>("cleanSOs") { // extracted Linux native libraries
+    delete(fileTree(".").matching{ include("*.so") })
 }
