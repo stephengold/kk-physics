@@ -96,6 +96,12 @@ final public class NativeLibrary {
                 Platform.Linux64,
                 "linux/x86-64/com/github/stephengold/libjoltjni.so");
         NativeLibraryLoader.registerNativeLibrary("jolt-jni",
+                Platform.MacOSX64,
+                "osx/x86-64/com/github/stephengold/libjoltjni.dylib");
+        NativeLibraryLoader.registerNativeLibrary("jolt-jni",
+                Platform.MacOSX_ARM64,
+                "osx/aarch64/com/github/stephengold/libjoltjni.dylib");
+        NativeLibraryLoader.registerNativeLibrary("jolt-jni",
                 Platform.Windows64,
                 "windows/x86-64/com/github/stephengold/joltjni.dll");
 
