@@ -24,8 +24,10 @@ val btf = "ReleaseSp"
 val os = DefaultNativePlatform.getCurrentOperatingSystem()
 
 dependencies {
+    implementation(libs.heart)
     implementation(libs.jme3.core)
     implementation(libs.jme3.desktop)
+
     if (!os.isMacOsX()) {
         // AWT and GLFW are incompatible on macOS:
         runtimeOnly(libs.jme3.awt.dialogs)
@@ -33,7 +35,6 @@ dependencies {
     runtimeOnly(libs.jme3.lwjgl3)
     runtimeOnly(libs.jme3.testdata)
 
-    implementation(libs.heart)
     if (os.isLinux()) {
         runtimeOnly(variantOf(libs.jolt.jni.linux64){ classifier(btf) })
     }
