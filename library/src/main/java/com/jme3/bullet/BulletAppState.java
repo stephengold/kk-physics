@@ -37,6 +37,7 @@ import com.jme3.app.state.BaseAppState;
 import com.jme3.bullet.debug.BulletDebugAppState;
 import com.jme3.bullet.debug.DebugConfiguration;
 import com.jme3.bullet.util.NativeLibrary;
+import com.jme3.renderer.Camera;
 import com.jme3.renderer.RenderManager;
 import java.util.logging.Logger;
 import jme3utilities.Validate;
@@ -110,6 +111,16 @@ public class BulletAppState
     }
 
     /**
+     * Access the Camera used for debug visualization.
+     *
+     * @return the pre-existing instance, or null if unknown
+     */
+    public Camera getDebugCamera() {
+        Camera result = debugConfig.getCamera();
+        return result;
+    }
+
+    /**
      * Access the PhysicsSpace managed by this state. Normally there is none
      * until the state is attached.
      *
@@ -163,6 +174,16 @@ public class BulletAppState
         } else {
             debugAppState.setAngularVelocityFilter(filter);
         }
+    }
+
+    /**
+     * Replace the Camera used for debug visualization.
+     *
+     * @param camera the Camera to use (alias created) or null for unknown
+     * (defaults to the application's main camera)
+     */
+    public void setDebugCamera(Camera camera) {
+        debugConfig.setCamera(camera);
     }
 
     /**
