@@ -7,7 +7,7 @@ and is not intended for production use.
 
 It contains 2 subprojects:
 
- 1. library: the KK Physics [JVM] runtime library
+ 1. library: the KK Physics [JVM] runtime library and its automated tests
  2. apps: non-automated test software
 
 Complete source code (in Java) is provided under
@@ -28,12 +28,15 @@ Complete source code (in Java) is provided under
 
 ## How to add KK Physics to an existing project
 
-KK Physics comes pre-built as a single library that depends on
-the standard "jme3-core" library from jMonkeyEngine.
+KK Physics comes pre-built as a single JVM library.
 
 For projects built using [Maven] or [Gradle], it is sufficient to add
-dependencies on the KK Physics library and the jolt-java Linux native library.
+dependencies on the KK Physics library and appropriate jolt-jni native libraries.
 The build tool should automatically resolve the remaining dependencies.
+
+In the following examples:
++ "Linux64" may be replaced by "MacOSX64", "MacOSX_ARM64", or "Windows64".
++ "DebugSp" may be replaced by "DebugDp", "ReleaseSp", or "ReleaseDp". 
 
 ### Gradle-built projects
 
@@ -43,8 +46,8 @@ Add to the project’s "build.gradle" file:
         mavenCentral()
     }
     dependencies {
-        implementation 'com.github.stephengold:kk-physics:0.1.0'
-        runtimeOnly 'com.github.stephengold:jolt-java-natives-linux-x86:0.1.0'
+        implementation 'com.github.stephengold:kk-physics:0.2.0'
+        runtimeOnly 'com.github.stephengold:jolt-jni-Linux64:0.1.10:DebugSp'
     }
 
 For some older versions of Gradle,
@@ -64,12 +67,13 @@ Add to the project’s "pom.xml" file:
     <dependency>
       <groupId>com.github.stephengold</groupId>
       <artifactId>kk-physics</artifactId>
-      <version>0.1.0</version>
+      <version>0.2.0</version>
     </dependency>
     <dependency>
       <groupId>com.github.stephengold</groupId>
-      <artifactId>jolt-java-natives-linux-x86</artifactId>
-      <version>0.1.0</version>
+      <artifactId>jolt-jni-Linux64</artifactId>
+      <version>0.1.10</version>
+      <classifier>DebugSp</classifier>
     </dependency>
 
 
@@ -77,15 +81,15 @@ Add to the project’s "pom.xml" file:
 
 ## How to build KK Physics from source
 
-1. Install a [Java 19 Development Kit (JDK)][adoptium],
+1. Install a [Java Development Kit (JDK)][adoptium],
    if you don't already have one.
 2. Point the `JAVA_HOME` environment variable to your JDK installation:
    (In other words, set it to the path of a directory/folder
    containing a "bin" that contains a Java executable.
    That path might look something like
-   "C:\Program Files\Eclipse Adoptium\jdk-19.0.3.7-hotspot"
-   or "/usr/lib/jvm/java-19-openjdk-amd64/" or
-   "/Library/Java/JavaVirtualMachines/zulu-19.jdk/Contents/Home" .)
+   "C:\Program Files\Eclipse Adoptium\jdk-17.0.3.7-hotspot"
+   or "/usr/lib/jvm/java-17-openjdk-amd64/" or
+   "/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home" .)
   + using Bash or Zsh: `export JAVA_HOME="` *path to installation* `"`
   + using [Fish]: `set -g JAVA_HOME "` *path to installation* `"`
   + using Windows Command Prompt: `set JAVA_HOME="` *path to installation* `"`
@@ -94,7 +98,7 @@ Add to the project’s "pom.xml" file:
   + using [Git]:
     + `git clone https://github.com/stephengold/kk-physics.git`
     + `cd kk-physics`
-    + `git checkout -b latest 0.1.0`
+    + `git checkout -b latest 0.2.0`
 4. Run the [Gradle] wrapper:
   + using Bash or Fish or PowerShell or Zsh: `./gradlew build`
   + using Windows Command Prompt: `.\gradlew build`
