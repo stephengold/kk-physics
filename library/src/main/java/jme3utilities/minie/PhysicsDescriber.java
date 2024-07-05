@@ -31,6 +31,7 @@ import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.collision.shapes.CylinderCollisionShape;
+import com.jme3.bullet.collision.shapes.MeshCollisionShape;
 import com.jme3.bullet.collision.shapes.SphereCollisionShape;
 import com.jme3.material.Material;
 import com.jme3.math.Vector3f;
@@ -108,6 +109,12 @@ public class PhysicsDescriber extends Describer {
 
             Vector3f he = cylinder.getHalfExtents(null);
             desc = describeHalfExtents(he);
+            result.append(desc);
+
+        } else if (shape instanceof MeshCollisionShape) {
+            MeshCollisionShape meshShape = (MeshCollisionShape) shape;
+            int numV = meshShape.countMeshVertices();
+            desc = String.format("[numV=%d]", numV);
             result.append(desc);
 
         } else if (shape instanceof SphereCollisionShape) {
