@@ -849,14 +849,14 @@ public class PhysicsRigidBody extends PhysicsBody {
 
         BodyCreationSettings settings;
         if (mass > 0f) {
-            settings = new BodyCreationSettings(shape.getJoltShape(),
-                    rvec3, quat, EMotionType.Dynamic,
+            settings = new BodyCreationSettings(
+                    shape.getJoltShape(), rvec3, quat, EMotionType.Dynamic,
                     PhysicsSpace.OBJ_LAYER_MOVING);
             settings.setGravityFactor(1f);
         } else {
             assert mass == massForStatic : mass;
-            settings = new BodyCreationSettings(shape.getJoltShape(),
-                    rvec3, quat, EMotionType.Static,
+            settings = new BodyCreationSettings(
+                    shape.getJoltShape(), rvec3, quat, EMotionType.Static,
                     PhysicsSpace.OBJ_LAYER_NON_MOVING);
             settings.setGravityFactor(0f);
         }
