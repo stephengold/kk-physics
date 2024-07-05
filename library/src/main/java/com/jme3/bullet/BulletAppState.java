@@ -111,6 +111,26 @@ public class BulletAppState
     }
 
     /**
+     * Determine the length of the debug axis arrows.
+     *
+     * @return length (in physics-space units, &ge;0)
+     */
+    public float debugAxisLength() {
+        float result = debugConfig.axisArrowLength();
+        return result;
+    }
+
+    /**
+     * Determine the line width of the debug axis arrows.
+     *
+     * @return width (in pixels, &ge;1) or 0 for solid arrows
+     */
+    public float debugAxisLineWidth() {
+        float result = debugConfig.axisLineWidth();
+        return result;
+    }
+
+    /**
      * Access the Camera used for debug visualization.
      *
      * @return the pre-existing instance, or null if unknown
@@ -174,6 +194,27 @@ public class BulletAppState
         } else {
             debugAppState.setAngularVelocityFilter(filter);
         }
+    }
+
+    /**
+     * Alter the length of the debug axis arrows.
+     *
+     * @param length the desired length (in physics-space units, &ge;0)
+     */
+    public void setDebugAxisLength(float length) {
+        Validate.nonNegative(length, "length");
+        debugConfig.setAxisArrowLength(length);
+    }
+
+    /**
+     * Alter the line width for debug axis arrows.
+     *
+     * @param width the desired width (in pixels, &ge;1) or 0 for solid arrows
+     * (default=1)
+     */
+    public void setDebugAxisLineWidth(float width) {
+        Validate.inRange(width, "width", 0f, Float.MAX_VALUE);
+        debugConfig.setAxisLineWidth(width);
     }
 
     /**
