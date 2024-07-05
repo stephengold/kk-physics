@@ -119,15 +119,14 @@ final public class NativeLibrary {
     }
 
     /**
-     * Return the number of worker threads to use.
+     * Return the recommended number of worker threads to use.
      *
-     * @return the recommended number (&ge;1)
+     * @return the count (&ge;1, &le;64)
      */
     public static int numThreads() {
-        int result = Runtime.getRuntime().availableProcessors() - 1;
-        if (result < 1) {
-            result = 1;
-        }
+        int numCpus = Runtime.getRuntime().availableProcessors();
+        int result = (int) Math.floor(0.9 * numCpus);
+        result = MyMath.clamp(result, 1, 64);
 
         return result;
     }

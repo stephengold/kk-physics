@@ -84,7 +84,7 @@ public class BulletAppState
     /**
      * number of threads to create in the thread-safe pool
      */
-    private int numSolvers = NativeLibrary.countThreads();
+    private int numSolvers = NativeLibrary.numThreads();
     // *************************************************************************
     // constructors
 
