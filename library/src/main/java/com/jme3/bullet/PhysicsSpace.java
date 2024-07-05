@@ -132,6 +132,15 @@ public class PhysicsSpace extends CollisionSpace {
      */
     private ContactManager manager = new DefaultContactManager(this);
     /**
+     * count collision objects added or removed since the previous broadphase
+     * optimization
+     */
+    private int addRemoveCount = 0;
+    /**
+     * number of adds or removes to trigger broadphase optimization
+     */
+    private int bpoThreshold = 5;
+    /**
      * maximum number of simulation steps per frame (&gt;0) or 0 for a variable
      * time step
      */
@@ -316,6 +325,16 @@ public class PhysicsSpace extends CollisionSpace {
     }
 
     /**
+     * Return the number of adds or removes required to trigger broadphase
+     * optimization.
+     *
+     * @return the threshold value (&ge;0)
+     */
+    public int getBpoThreshold() {
+        return bpoThreshold;
+    }
+
+    /**
      * Access the current ContactManager.
      *
      * @return the pre-existing instance (not null)
@@ -421,6 +440,16 @@ public class PhysicsSpace extends CollisionSpace {
     }
 
     /**
+     * Alter the number of adds or removes required to trigger broadphase
+     * optimization.
+     *
+     * @param threshold the desired threshold (&ge;0, default=5)
+     */
+    public void setBpoThreshold(int threshold) {
+        this.bpoThreshold = threshold;
+    }
+
+    /**
      * Replace the current ContactManager with the specified one.
      *
      * @param manager the desired manager (not null)
@@ -510,7 +539,10 @@ public class PhysicsSpace extends CollisionSpace {
         assert Validate.nonNegative(timeInterval, "time interval");
         assert Validate.nonNegative(maxSteps, "max steps");
 
-        physicsSystem.optimizeBroadPhase();
+        if (addRemoveCount >= bpoThreshold) {
+            physicsSystem.optimizeBroadPhase();
+            this.addRemoveCount = 0;
+        }
 
         float timePerStep;
         int numSubSteps;
@@ -673,6 +705,7 @@ public class PhysicsSpace extends CollisionSpace {
         } else {
             bodyInterface.addBody(bodyId, EActivation.DontActivate);
         }
+        ++addRemoveCount;
 
         rigidBody.setAddedToSpaceInternal(this);
     }
@@ -746,6 +779,7 @@ public class PhysicsSpace extends CollisionSpace {
 
         BodyInterface bodyInterface = getBodyInterface();
         bodyInterface.removeBody(bodyId);
+        ++addRemoveCount;
 
         rigidBody.setAddedToSpaceInternal(null);
     }
