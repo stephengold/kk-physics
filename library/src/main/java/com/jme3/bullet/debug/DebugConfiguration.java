@@ -243,9 +243,11 @@ public class DebugConfiguration {
      * @return a new array of pre-existing instances (not null)
      */
     ViewPort[] listViewPorts() {
-        final int numViewPorts = viewPorts.length;
+        final int numViewPorts = (viewPorts == null) ? 0 : viewPorts.length;
         ViewPort[] result = new ViewPort[numViewPorts];
-        System.arraycopy(viewPorts, 0, result, 0, numViewPorts);
+        if (numViewPorts > 0) {
+            System.arraycopy(viewPorts, 0, result, 0, numViewPorts);
+        }
 
         return result;
     }
