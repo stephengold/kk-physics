@@ -832,7 +832,7 @@ public class PhysicsRigidBody extends PhysicsBody {
     // Java private methods
 
     /**
-     * Instantiate the specified {@code MutableBody}.
+     * Instantiate the specified {@code Body}.
      *
      * @param shape the desired shape (not null, alias created)
      * @param mass if 0, a static body is created; otherwise a dynamic body is

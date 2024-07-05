@@ -61,7 +61,7 @@ tasks.withType<JavaCompile>().all { // Java compile-time options:
     options.setDeprecation(true) // to provide detailed deprecation warnings
 }
 
-tasks.withType<Javadoc>().all { // Javadoc runtime options:
+tasks.withType<Javadoc>().all { // Javadoc options:
     (options as CoreJavadocOptions).apply {
     }
 }
