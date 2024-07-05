@@ -118,7 +118,7 @@ public class TestBrickWall extends SimpleApplication {
                 bulletGeometry.setLocalTranslation(cam.getLocation());
                 
                 SphereCollisionShape bulletCollisionShape = new SphereCollisionShape(0.4f);
-//                RigidBodyControl bulletNode = new BombControl(assetManager, bulletCollisionShape, 1);
+                //BombControl bulletNode = new BombControl(assetManager, bulletCollisionShape, 1);
                 RigidBodyControl bulletNode = new RigidBodyControl(bulletCollisionShape, 1);
                 bulletNode.setLinearVelocity(cam.getDirection().mult(25));
                 bulletGeometry.addControl(bulletNode);

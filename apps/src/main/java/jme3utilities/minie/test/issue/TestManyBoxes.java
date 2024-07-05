@@ -90,6 +90,7 @@ public class TestManyBoxes extends SimpleApplication {
      */
     public static void main(String[] arguments) {
         TestManyBoxes app = new TestManyBoxes();
+        //app.setPauseOnLostFocus(false); // to run in the background
         app.start();
     }
     // *************************************************************************

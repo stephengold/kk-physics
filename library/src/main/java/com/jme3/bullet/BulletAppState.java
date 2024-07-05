@@ -82,7 +82,7 @@ public class BulletAppState
      */
     private float tpf;
     /**
-     * number of threads to create in the thread-safe pool
+     * number of worker threads to use
      */
     private int numSolvers = NativeLibrary.numThreads();
     // *************************************************************************

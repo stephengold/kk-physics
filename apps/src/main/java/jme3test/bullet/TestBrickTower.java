@@ -116,7 +116,7 @@ public class TestBrickTower extends SimpleApplication {
                 bulletGeometry.setMaterial(mat2);
                 bulletGeometry.setShadowMode(ShadowMode.CastAndReceive);
                 bulletGeometry.setLocalTranslation(cam.getLocation());
-//                RigidBodyControl bulletNode = new BombControl(assetManager, bulletCollisionShape, 1);
+                //BombControl bulletNode = new BombControl(assetManager, bulletCollisionShape, 1);
                 RigidBodyControl bulletNode = new RigidBodyControl(bulletCollisionShape, 1);
                 bulletNode.setLinearVelocity(cam.getDirection().mult(25));
                 bulletGeometry.addControl(bulletNode);
