@@ -14,4 +14,4 @@ jobs:
           distribution: 'zulu'
           java-version: 19
       - uses: actions/checkout@v4
-      - run: ./gradlew build javadoc --console=plain --no-daemon --stacktrace
+      - run: ./gradlew build --console=plain --no-daemon --stacktrace
