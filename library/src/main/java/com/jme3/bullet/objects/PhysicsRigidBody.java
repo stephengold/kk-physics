@@ -791,8 +791,6 @@ public class PhysicsRigidBody extends PhysicsBody {
      */
     @Override
     public void setFriction(float friction) {
-        Validate.nonNegative(friction, "friction");
-
         if (joltBody == null) {
             snapshot.setFriction(friction);
         } else {
