@@ -585,7 +585,6 @@ public class PhysicsRigidBody extends PhysicsBody {
             result = joltBody.getFriction();
         }
 
-        assert result >= 0f : result;
         return result;
     }
 
@@ -692,7 +691,6 @@ public class PhysicsRigidBody extends PhysicsBody {
             result = joltBody.getRestitution();
         }
 
-        assert result >= 0f : result;
         return result;
     }
 
