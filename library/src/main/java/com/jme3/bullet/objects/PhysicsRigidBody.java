@@ -854,7 +854,7 @@ public class PhysicsRigidBody extends PhysicsBody {
                     PhysicsSpace.OBJ_LAYER_MOVING);
             settings.setGravityFactor(1f);
         } else {
-            assert mass == 0f : mass;
+            assert mass == massForStatic : mass;
             settings = new BodyCreationSettings(shape.getJoltShape(),
                     rvec3, quat, EMotionType.Static,
                     PhysicsSpace.OBJ_LAYER_NON_MOVING);
