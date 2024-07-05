@@ -13,3 +13,8 @@
 *.dll
 *.dylib
 *.so
+
+# Ignore profiler folders:
+/config/Preferences/
+/config/Windows2Local/
+/var/
