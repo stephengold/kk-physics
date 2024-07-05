@@ -63,18 +63,6 @@ final public class NativeLibrary {
     // new methods exposed
 
     /**
-     * Count how many threads are available for task scheduling.
-     *
-     * @return the count (&ge;1, &le;64)
-     */
-    public static int countThreads() {
-        int result = Runtime.getRuntime().availableProcessors() - 1;
-        result = MyMath.clamp(result, 1, 64);
-
-        return result;
-    }
-
-    /**
      * Test whether the native library uses double-precision arithmetic.
      *
      * @return true if double-precision, false if single-precision
