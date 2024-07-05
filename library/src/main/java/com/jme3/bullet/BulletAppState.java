@@ -39,6 +39,9 @@ import com.jme3.bullet.debug.DebugConfiguration;
 import com.jme3.bullet.util.NativeLibrary;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.RenderManager;
+import com.jme3.renderer.ViewPort;
+import com.jme3.renderer.queue.RenderQueue;
+import com.jme3.scene.Node;
 import java.util.logging.Logger;
 import jme3utilities.Validate;
 
@@ -249,6 +252,21 @@ public class BulletAppState
     }
 
     /**
+     * Alter the shadow mode of the debug root node.
+     *
+     * @param mode the desired value (not null, default=Off)
+     */
+    public void setDebugShadowMode(RenderQueue.ShadowMode mode) {
+        Validate.nonNull(mode, "mode");
+
+        if (debugAppState != null) {
+            Node node = debugAppState.getRootNode();
+            node.setShadowMode(mode);
+        }
+        debugConfig.setShadowMode(mode);
+    }
+
+    /**
      * Alter which velocity vectors are included in the debug visualization.
      *
      * @param filter the filter to use (alias created) or null to visualize no
@@ -261,6 +279,16 @@ public class BulletAppState
         } else {
             debugAppState.setVelocityVectorFilter(filter);
         }
+    }
+
+    /**
+     * Alter which view ports will render the debug visualization.
+     *
+     * @param viewPorts (not null, aliases created)
+     */
+    public void setDebugViewPorts(ViewPort... viewPorts) {
+        Validate.nonNull(viewPorts, "view ports");
+        debugConfig.setViewPorts(viewPorts);
     }
 
     /**
