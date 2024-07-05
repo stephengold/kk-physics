@@ -1,5 +1,7 @@
 // Gradle script to build the "library" subproject of KK Physics
 
+import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
+
 plugins {
     `java-library`  // to build JVM libraries
     `maven-publish` // to publish artifacts to Maven repositories
@@ -19,12 +21,29 @@ java {
     targetCompatibility = JavaVersion.VERSION_11
 }
 
+val btf = "DebugSp"
+val os = DefaultNativePlatform.getCurrentOperatingSystem()
+
 dependencies {
     api(libs.jme3.core)
     api(libs.jolt.jni.windows64)
     api(libs.sim.math)
     implementation(libs.heart)
     implementation(libs.jme3.desktop)
+
+    testImplementation(libs.junit4)
+    testRuntimeOnly(libs.jme3.testdata)
+    if (os.isLinux()) {
+        testRuntimeOnly(variantOf(libs.jolt.jni.linux64){ classifier(btf) })
+    }
+    if (os.isMacOsX()) {
+        testRuntimeOnly(variantOf(libs.jolt.jni.macosx64){ classifier(btf) })
+        testRuntimeOnly(variantOf(libs.jolt.jni.macosxarm64){ classifier(btf) })
+    }
+    if (os.isWindows()) {
+        testRuntimeOnly(variantOf(libs.jolt.jni.windows64){ classifier(btf) })
+    }
+
 }
 
 configurations.all {
