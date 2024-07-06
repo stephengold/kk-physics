@@ -46,8 +46,8 @@ Add to the project’s "build.gradle" file:
         mavenCentral()
     }
     dependencies {
-        implementation 'com.github.stephengold:kk-physics:0.2.0'
-        runtimeOnly 'com.github.stephengold:jolt-jni-Linux64:0.1.10:DebugSp'
+        implementation("com.github.stephengold:kk-physics:0.2.0")
+        runtimeOnly("com.github.stephengold:jolt-jni-Linux64:0.1.10:DebugSp")
     }
 
 For some older versions of Gradle,
