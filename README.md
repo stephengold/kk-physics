@@ -164,6 +164,7 @@ software developers:
     + [LWJGL], the Lightweight Java Game Library
     + the [Markdown] document-conversion tool
     + the [Meld] visual merge tool
+    + Microsoft Windows
     + the [NetBeans] integrated development environment
 
 I am grateful to [GitHub] and [Sonatype]
