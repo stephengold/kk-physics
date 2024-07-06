@@ -10,7 +10,7 @@ It contains 2 subprojects:
  1. library: the KK Physics [JVM] runtime library and its automated tests
  2. apps: non-automated test software
 
-Complete source code (in Java) is provided under
+Complete source code (in [Java]) is provided under
 [a 3-clause BSD license][license].
 
 
