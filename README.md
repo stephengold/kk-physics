@@ -178,7 +178,7 @@ correct the situation: sgold@sonic.net
 [Jump to the table of contents](#toc)
 
 
-[adoptium]: https://adoptium.net/temurin/releases/?version=19 "Eclipse Temurin Releases"
+[adoptium]: https://adoptium.net/temurin/releases/ "Adoptium Project"
 [firefox]: https://www.mozilla.org/en-US/firefox "Firefox"
 [fish]: https://fishshell.com/ "Fish command-line shell"
 [git]: https://git-scm.com "Git"
