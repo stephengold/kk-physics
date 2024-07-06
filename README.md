@@ -138,6 +138,9 @@ You can restore the project to a pristine state:
 
 ## History
 
+The evolution of this project is chronicled in
+[its release log][log].
+
 The API and much of the source code is derived from [Minie].
 
 [Jump to the table of contents](#toc)
@@ -194,6 +197,7 @@ correct the situation: sgold@sonic.net
 [jolt-java]: https://github.com/aecsocket/jolt-java?tab=readme-ov-file#readme "Jolt-java Project"
 [jvm]: https://en.wikipedia.org/wiki/Java_virtual_machine "Java virtual machine"
 [license]: https://github.com/stephengold/kk-physics/blob/master/LICENSE "KK Physics license"
+[log]: https://github.com/stephengold/kk-physics/blob/master/library/release-log.md "release log"
 [lwjgl]: https://www.lwjgl.org "Lightweight Java Game Library"
 [markdown]: https://daringfireball.net/projects/markdown "Markdown Project"
 [maven]: https://maven.apache.org "Maven Project"
