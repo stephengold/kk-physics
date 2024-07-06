@@ -34,7 +34,9 @@ For projects built using [Maven] or [Gradle], it is sufficient to add
 dependencies on the KK Physics library and appropriate jolt-jni native libraries.
 The build tool should automatically resolve the remaining dependencies.
 
-In the following examples:
+Current jolt-jni releases provide 16 native libraries,
+each specific to a particular platform, build type, and build flavor.
+In the following buildscript excerpts:
 + "Linux64" may be replaced by "MacOSX64", "MacOSX_ARM64", or "Windows64".
 + "DebugSp" may be replaced by "DebugDp", "ReleaseSp", or "ReleaseDp". 
 
