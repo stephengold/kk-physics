@@ -3,7 +3,7 @@
 [versions]
 
 jme = "3.6.1-stable"
-jolt-jni = "0.1.10"
+jolt-jni = "0.2.0"
 
 [libraries]
 
