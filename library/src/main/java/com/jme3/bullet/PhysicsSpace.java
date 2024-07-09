@@ -689,15 +689,14 @@ public class PhysicsSpace extends CollisionSpace {
      * @param rigidBody the body to add (not null, modified)
      */
     private void addRigidBody(PhysicsRigidBody rigidBody) {
-        long bodyVa = rigidBody.nativeId();
         assert rigidBody.getCollisionSpace() == null;
+
+        rigidBody.setAddedToSpaceInternal(this);
 
         if (logger.isLoggable(Level.FINE)) {
             logger.log(Level.FINE, "Adding {0} to {1}.",
                     new Object[]{rigidBody, this});
         }
-        rigidMap.put(bodyVa, rigidBody);
-
         BodyInterface bodyInterface = getBodyInterface();
         BodyId bodyId = rigidBody.findBodyId();
         if (rigidBody.isDynamic()) {
@@ -705,9 +704,11 @@ public class PhysicsSpace extends CollisionSpace {
         } else {
             bodyInterface.addBody(bodyId, EActivation.DontActivate);
         }
-        ++addRemoveCount;
 
-        rigidBody.setAddedToSpaceInternal(this);
+        long bodyVa = rigidBody.nativeId();
+        rigidMap.put(bodyVa, rigidBody);
+
+        ++addRemoveCount;
     }
 
     /**

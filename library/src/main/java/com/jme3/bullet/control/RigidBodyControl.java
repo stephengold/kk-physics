@@ -273,11 +273,6 @@ public class RigidBodyControl
             this.added = false;
         }
         if (newSpace != null && isEnabled()) {
-            if (!hasAssignedNativeObject()) {
-                String message = "Cannot add an incomplete RigidBodyControl "
-                        + "to a PhysicsSpace.";
-                throw new IllegalStateException(message);
-            }
             newSpace.addCollisionObject(this);
             this.added = true;
         }
