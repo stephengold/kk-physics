@@ -438,7 +438,6 @@ public class PhysicsRigidBody extends PhysicsBody {
      * not null, not zero, unaffected)
      */
     public void reposition(Vec3d location, Quaternion orientation) {
-        Body oldBody = joltBody;
         PhysicsSpace removedFrom = (PhysicsSpace) getCollisionSpace();
         if (removedFrom != null) {
             removedFrom.removeCollisionObject(this);
@@ -448,6 +447,7 @@ public class PhysicsRigidBody extends PhysicsBody {
         CollisionShape shape = getCollisionShape();
         this.settings
                 = newSettings(shape, mass, location, orientation, this);
+        Body oldBody = joltBody;
         if (removedFrom != null) {
             this.bodyInterface = removedFrom.getBodyInterface();
             this.joltBody = bodyInterface.createBody(settings);
@@ -516,8 +516,7 @@ public class PhysicsRigidBody extends PhysicsBody {
         Validate.finite(velocity, "velocity");
         assert isDynamic();
 
-        Vec3 vec3 = new Vec3(
-                (float) velocity.x, (float) velocity.y, (float) velocity.z);
+        Vec3 vec3 = new Vec3(velocity.x, velocity.y, velocity.z);
         if (bodyInterface == null) {
             settings.setLinearVelocity(vec3);
         } else {
