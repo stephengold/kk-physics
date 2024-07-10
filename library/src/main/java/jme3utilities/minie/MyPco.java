@@ -65,6 +65,8 @@ final public class MyPco {
         String result;
         if (body.isStatic()) {
             result = "Sta";
+        } else if (body.isKinematic()) {
+            result = "Kin";
         } else {
             float mass = body.getMass();
             String massText = MyString.describe(mass);

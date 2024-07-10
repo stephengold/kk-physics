@@ -54,6 +54,7 @@ import com.simsilica.mathd.Vec3d;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import jme3utilities.Validate;
+import jme3utilities.math.MyQuaternion;
 import jme3utilities.math.MyVector3f;
 
 /**
@@ -403,8 +404,30 @@ public class PhysicsRigidBody extends PhysicsBody {
      * @return true if in dynamic mode, otherwise false (static/kinematic mode)
      */
     public boolean isDynamic() {
-        boolean result = (mass > massForStatic);
-        return result;
+        EMotionType motionType = getMotionType();
+        if (motionType == EMotionType.Dynamic) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Test whether the body is in kinematic mode.
+     * <p>
+     * In kinematic mode, the body is not influenced by physics but can affect
+     * other physics objects. Its kinetic force is calculated based on its
+     * movement and weight.
+     *
+     * @return true if in kinematic mode, otherwise false (dynamic/static mode)
+     */
+    final public boolean isKinematic() {
+        EMotionType motionType = getMotionType();
+        if (motionType == EMotionType.Kinematic) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -429,7 +452,6 @@ public class PhysicsRigidBody extends PhysicsBody {
             CollisionShape shape = getCollisionShape();
             newSettings(shape, mass, new Vec3d(), new Quaternion(), null);
         }
-        // TODO kinematic flag, gravity, physics joints
     }
 
     /**
@@ -466,7 +488,6 @@ public class PhysicsRigidBody extends PhysicsBody {
             removedFrom.enqueueForAdditionToSystemInternal(this);
             assert getCollisionSpace() == removedFrom;
         }
-        // TODO kinematic flag, gravity, physics joints
     }
 
     /**
@@ -477,7 +498,7 @@ public class PhysicsRigidBody extends PhysicsBody {
      */
     public void setAngularVelocity(Vector3f omega) {
         Validate.finite(omega, "angular velocity");
-        assert isDynamic();
+        assert !isStatic();
 
         Vec3 vec3 = new Vec3(omega.x, omega.y, omega.z);
         if (bodyInterface == null) {
@@ -495,7 +516,7 @@ public class PhysicsRigidBody extends PhysicsBody {
      */
     public void setAngularVelocityDp(Vec3d omega) {
         Validate.nonNull(omega, "angular velocity");
-        assert isDynamic();
+        assert !isStatic();
 
         Vec3Arg vec3 = new Vec3(
                 (float) omega.x, (float) omega.y, (float) omega.z);
@@ -514,7 +535,7 @@ public class PhysicsRigidBody extends PhysicsBody {
      */
     public void setLinearVelocity(Vector3f velocity) {
         Validate.finite(velocity, "velocity");
-        assert isDynamic();
+        assert !isStatic();
 
         Vec3 vec3 = new Vec3(velocity.x, velocity.y, velocity.z);
         if (bodyInterface == null) {
@@ -532,7 +553,7 @@ public class PhysicsRigidBody extends PhysicsBody {
      */
     public void setLinearVelocityDp(Vec3d velocity) {
         Validate.nonNull(velocity, "velocity");
-        assert isDynamic();
+        assert !isStatic();
 
         Vec3 vec3 = new Vec3(velocity.x, velocity.y, velocity.z);
         if (bodyInterface == null) {
@@ -540,6 +561,90 @@ public class PhysicsRigidBody extends PhysicsBody {
         } else {
             bodyInterface.setLinearVelocity(bodyId, vec3);
         }
+    }
+
+    /**
+     * Put the body into kinematic mode or take it out of kinematic mode.
+     * <p>
+     * In kinematic mode, the body is not influenced by physics but can affect
+     * other physics objects. Its kinetic force is calculated based on its mass
+     * and motion.
+     *
+     * @param kinematic true&rarr;set kinematic mode, false&rarr;set
+     * dynamic/static (default=false)
+     */
+    public void setKinematic(boolean kinematic) {
+        EMotionType desiredMotionType;
+        if (kinematic == true) {
+            desiredMotionType = EMotionType.Kinematic;
+        } else if (mass == massForStatic) {
+            desiredMotionType = EMotionType.Static;
+        } else {
+            desiredMotionType = EMotionType.Dynamic;
+        }
+
+        if (getMotionType() != desiredMotionType) {
+            if (joltBody == null) {
+                settings.setMotionType(desiredMotionType);
+
+            } else {
+                Vec3d location = new Vec3d();
+                Quaternion orientation = new Quaternion();
+                getPhysicsLocationDp(location);
+                getPhysicsRotation(orientation);
+
+                PhysicsSpace removedFrom = (PhysicsSpace) getCollisionSpace();
+                removedFrom.removeCollisionObject(this);
+                assert getCollisionSpace() == null;
+                logger2.log(Level.INFO, "Clearing {0}.", this);
+
+                CollisionShape shape = getCollisionShape();
+                newSettings(shape, mass, location, orientation, this);
+                settings.setMotionType(desiredMotionType);
+                removedFrom.enqueueForAdditionToSystemInternal(this);
+                assert getCollisionSpace() == removedFrom;
+            }
+        }
+    }
+
+    /**
+     * Relocate a kinematic body by altering its linear velocity.
+     *
+     * @param location the desired location (in physics-space coordinates, not
+     * null, unaffected)
+     * @param timeStep the expected time step (in seconds, &gt;0)
+     */
+    public void setKinematicLocation(Vector3f location, float timeStep) {
+        Validate.nonNull(location, "location");
+        Validate.positive(timeStep, "time step");
+
+        Vector3f tmpVector = getPhysicsLocation(null); // TODO garbage
+        location.subtract(tmpVector, tmpVector);
+        tmpVector.divideLocal(timeStep);
+        setLinearVelocity(tmpVector);
+    }
+
+    /**
+     * Reorient a kinematic body by altering its angular velocity.
+     *
+     * @param orientation the desired orientation (relative to physics-space
+     * coordinates, not null, unaffected)
+     * @param timeStep the expected time step (in seconds, &gt;0)
+     */
+    public void setKinematicOrientation(
+            Quaternion orientation, float timeStep) {
+        Validate.nonZero(orientation, "orientation");
+        Validate.positive(timeStep, "time step");
+
+        Quaternion tmpQuaternion = getPhysicsRotation(null); // TODO garbage
+        tmpQuaternion.inverseLocal();
+        orientation.mult(tmpQuaternion, tmpQuaternion);
+        MyQuaternion.pow(tmpQuaternion, 1f / timeStep, tmpQuaternion);
+
+        Vector3f tmpVector = new Vector3f(); // TODO garbage
+        float angle = tmpQuaternion.toAngleAxis(tmpVector);
+        tmpVector.multLocal(angle);
+        setAngularVelocity(tmpVector);
     }
 
     /**
@@ -822,8 +927,12 @@ public class PhysicsRigidBody extends PhysicsBody {
      */
     @Override
     public boolean isStatic() {
-        boolean result = (mass == massForStatic);
-        return result;
+        EMotionType motionType = getMotionType();
+        if (motionType == EMotionType.Static) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**

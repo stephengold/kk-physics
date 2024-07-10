@@ -324,7 +324,14 @@ public class RigidBodyControl
             return;
         }
 
-        if (!MySpatial.isIgnoringTransforms(spatial)) {
+        if (isKinematic()) {
+            Vector3f location = spatial.getWorldTranslation();
+            setKinematicLocation(location, tpf);
+
+            Quaternion orientation = spatial.getWorldRotation();
+            setKinematicOrientation(orientation, tpf);
+
+        } else if (!MySpatial.isIgnoringTransforms(spatial)) {
             Vector3f location = getPhysicsLocation(null);
             MySpatial.setWorldLocation(spatial, location);
 
