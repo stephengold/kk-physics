@@ -336,7 +336,7 @@ public class PhysicsSpace extends CollisionSpace {
     }
 
     /**
-     * Access the jolt-jni BodyInterface. Internal use only.
+     * Access the jolt-jni {@code BodyInterface}. Internal use only.
      *
      * @return an instance (not null)
      */
@@ -720,7 +720,7 @@ public class PhysicsSpace extends CollisionSpace {
      * Add the specified {@code PhysicsRigidBody} to the space, but not to the
      * {@code PhysicsSystem}.
      * <p>
-     * NOTE: When a rigid body is added, its gravity gets set to that of the
+     * TODO: When a rigid body is added, its gravity gets set to that of the
      * space.
      *
      * @param rigidBody the body to add (not null, modified)

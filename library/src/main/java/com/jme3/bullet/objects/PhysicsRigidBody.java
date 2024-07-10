@@ -957,7 +957,7 @@ public class PhysicsRigidBody extends PhysicsBody {
      * Alter the angular damping constant.
      *
      * @param damping the desired constant (in units of 1/second, &ge;0, &le;1,
-     * default=??)
+     * default=0)
      */
     public void setAngularDamping(float damping) {
         Validate.fraction(damping, "damping");
@@ -1010,7 +1010,7 @@ public class PhysicsRigidBody extends PhysicsBody {
      * Alter the linear damping constant.
      *
      * @param damping the desired constant (in units of 1/second, &ge;0, &le;1,
-     * default=??)
+     * default=0)
      */
     public void setLinearDamping(float damping) {
         Validate.fraction(damping, "damping");
@@ -1066,7 +1066,7 @@ public class PhysicsRigidBody extends PhysicsBody {
      * @param orientation the desired orientation (in physics-space coordinates,
      * not null, not zero, unaffected)
      * @param oldPrb a source for additional rigid-body parameters (unaffected)
-     * or null to use KK Physics defaults
+     * or null to use the KK Physics defaults
      */
     private void newSettings(CollisionShape shape, float mass, Vec3d location,
             Quaternion orientation, PhysicsRigidBody oldPrb) {
