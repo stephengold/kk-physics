@@ -245,6 +245,7 @@ public class TestDefaults {
         prismVertices.add(new Vector3f(-1f, -1f, 0f));
         HullCollisionShape hull = new HullCollisionShape(prismVertices);
         testConvexShape(hull);
+        Assert.assertEquals(6, hull.countHullVertices());
         Assert.assertEquals(6, hull.countMeshVertices());
     }
 

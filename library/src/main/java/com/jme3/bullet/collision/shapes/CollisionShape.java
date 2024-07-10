@@ -214,6 +214,16 @@ abstract public class CollisionShape {
     // new protected methods
 
     /**
+     * Access the underlying jolt-jni Shape.
+     *
+     * @return the pre-existing instance (not null)
+     */
+    protected Shape getUnscaledShape() {
+        assert unscaledShape != null;
+        return unscaledShape;
+    }
+
+    /**
      * Initialize the underlying jolt-jni objects.
      *
      * @param unscaled the unscaled shape to use

@@ -113,6 +113,9 @@ public class PhysicsDescriber extends Describer {
             result.append(desc);
 
         } else if (shape instanceof HullCollisionShape) {
+            int numV = ((HullCollisionShape) shape).countHullVertices();
+            desc = String.format("[%d]", numV);
+            result.append(desc);
 
         } else if (shape instanceof MeshCollisionShape) {
             MeshCollisionShape meshShape = (MeshCollisionShape) shape;

@@ -31,8 +31,10 @@
  */
 package com.jme3.bullet.collision.shapes;
 
+import com.github.stephengold.joltjni.ConvexHullShape;
 import com.github.stephengold.joltjni.ConvexHullShapeSettings;
 import com.github.stephengold.joltjni.Shape;
+import com.github.stephengold.joltjni.Vec3;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Mesh;
 import com.jme3.scene.VertexBuffer.Type;
@@ -175,6 +177,37 @@ public class HullCollisionShape extends CollisionShape {
     }
     // *************************************************************************
     // new methods exposed
+
+    /**
+     * Copy the unscaled vertex locations of the optimized convex hull.
+     *
+     * @return a new array (not null)
+     */
+    public float[] copyHullVertices() {
+        ConvexHullShape shape = (ConvexHullShape) getUnscaledShape();
+        int numHullVertices = shape.getNumPoints();
+        float[] result = new float[numHullVertices * numAxes];
+        for (int vi = 0; vi < numHullVertices; ++vi) {
+            Vec3 point = shape.getPoint(vi);
+            result[numAxes * vi] = point.getX();
+            result[numAxes * vi + 1] = point.getY();
+            result[numAxes * vi + 2] = point.getZ();
+        }
+
+        return result;
+    }
+
+    /**
+     * Count the number of vertices in the optimized convex hull.
+     *
+     * @return the count (&ge;0)
+     */
+    public int countHullVertices() {
+        ConvexHullShape shape = (ConvexHullShape) getUnscaledShape();
+        int result = shape.getNumPoints();
+
+        return result;
+    }
 
     /**
      * Count the vertices used to generate the hull.
