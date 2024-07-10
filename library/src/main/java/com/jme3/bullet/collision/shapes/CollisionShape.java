@@ -126,7 +126,7 @@ abstract public class CollisionShape {
      *
      * @return the pre-existing instance (not null)
      */
-    public Shape getJoltShape() {
+    public ScaledShape getJoltShape() {
         assert joltShape != null;
         return joltShape;
     }
