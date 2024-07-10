@@ -35,6 +35,7 @@ import com.github.stephengold.joltjni.Body;
 import com.github.stephengold.joltjni.BodyCreationSettings;
 import com.github.stephengold.joltjni.BodyId;
 import com.github.stephengold.joltjni.BodyInterface;
+import com.github.stephengold.joltjni.EMotionQuality;
 import com.github.stephengold.joltjni.EMotionType;
 import com.github.stephengold.joltjni.MotionProperties;
 import com.github.stephengold.joltjni.Quat;
@@ -185,6 +186,22 @@ public class PhysicsRigidBody extends PhysicsBody {
     }
 
     /**
+     * Return the angular damping constant.
+     *
+     * @return the constant (in units of 1/second, &ge;0, &le;1)
+     */
+    public float getAngularDamping() {
+        float result;
+        if (motionProperties == null) {
+            result = settings.getAngularDamping();
+        } else {
+            result = motionProperties.getAngularDamping();
+        }
+
+        return result;
+    }
+
+    /**
      * For compatibility with the jme3-jbullet library.
      *
      * @return a new velocity vector (radians per second in physics-space
@@ -235,6 +252,38 @@ public class PhysicsRigidBody extends PhysicsBody {
             vec3 = motionProperties.getAngularVelocity();
         }
         result.set(vec3.getX(), vec3.getY(), vec3.getZ());
+
+        return result;
+    }
+
+    /**
+     * Return the gravity factor.
+     *
+     * @return the factor
+     */
+    public float getGravityFactor() {
+        float result;
+        if (motionProperties == null) {
+            result = settings.getGravityFactor();
+        } else {
+            result = motionProperties.getGravityFactor();
+        }
+
+        return result;
+    }
+
+    /**
+     * Return the linear damping constant.
+     *
+     * @return the constant (in units of 1/second, &ge;0, &le;1)
+     */
+    public float getLinearDamping() {
+        float result;
+        if (motionProperties == null) {
+            result = settings.getLinearDamping();
+        } else {
+            result = motionProperties.getLinearDamping();
+        }
 
         return result;
     }
@@ -292,6 +341,38 @@ public class PhysicsRigidBody extends PhysicsBody {
             vec3 = motionProperties.getLinearVelocity();
         }
         result.set(vec3.getX(), vec3.getY(), vec3.getZ());
+
+        return result;
+    }
+
+    /**
+     * Return the motion quality.
+     *
+     * @return an enum value (not null)
+     */
+    public EMotionQuality getMotionQuality() {
+        EMotionQuality result;
+        if (motionProperties == null) {
+            result = settings.getMotionQuality();
+        } else {
+            result = motionProperties.getMotionQuality();
+        }
+
+        return result;
+    }
+
+    /**
+     * Return the motion type.
+     *
+     * @return an enum value (not null)
+     */
+    public EMotionType getMotionType() {
+        EMotionType result;
+        if (joltBody == null) {
+            result = settings.getMotionType();
+        } else {
+            result = joltBody.getMotionType();
+        }
 
         return result;
     }
@@ -770,6 +851,22 @@ public class PhysicsRigidBody extends PhysicsBody {
     }
 
     /**
+     * Alter the angular damping constant.
+     *
+     * @param damping the desired constant (in units of 1/second, &ge;0, &le;1,
+     * default=??)
+     */
+    public void setAngularDamping(float damping) {
+        Validate.fraction(damping, "damping");
+
+        if (motionProperties == null) {
+            settings.setAngularDamping(damping);
+        } else {
+            motionProperties.setAngularDamping(damping);
+        }
+    }
+
+    /**
      * Apply the specified CollisionShape to the body. The body gets rebuilt on
      * the jolt-jni side.
      *
@@ -803,6 +900,22 @@ public class PhysicsRigidBody extends PhysicsBody {
             settings.setFriction(friction);
         } else {
             joltBody.setFriction(friction);
+        }
+    }
+
+    /**
+     * Alter the linear damping constant.
+     *
+     * @param damping the desired constant (in units of 1/second, &ge;0, &le;1,
+     * default=??)
+     */
+    public void setLinearDamping(float damping) {
+        Validate.fraction(damping, "damping");
+
+        if (motionProperties == null) {
+            settings.setLinearDamping(damping);
+        } else {
+            motionProperties.setLinearDamping(damping);
         }
     }
 
@@ -879,11 +992,33 @@ public class PhysicsRigidBody extends PhysicsBody {
             result.setFriction(0.5f);
 
         } else {
+            float angularDamping = oldPrb.getAngularDamping();
+            result.setAngularDamping(angularDamping);
+
             float friction = oldPrb.getFriction();
             result.setFriction(friction);
 
+            float gravityFactor = oldPrb.getGravityFactor();
+            result.setGravityFactor(gravityFactor);
+
+            float linearDamping = oldPrb.getLinearDamping();
+            result.setLinearDamping(linearDamping);
+
+            EMotionQuality quality = oldPrb.getMotionQuality();
+            result.setMotionQuality(quality);
+
             float restitution = oldPrb.getRestitution();
             result.setRestitution(restitution);
+
+            if (oldPrb.isDynamic()) {
+                Vector3f vec = new Vector3f();
+
+                oldPrb.getAngularVelocity(vec);
+                result.setAngularVelocity(new Vec3(vec.x, vec.y, vec.z));
+
+                oldPrb.getLinearVelocity(vec);
+                result.setLinearVelocity(new Vec3(vec.x, vec.y, vec.z));
+            }
         }
 
         return result;
