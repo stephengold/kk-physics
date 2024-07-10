@@ -43,7 +43,6 @@ dependencies {
     if (os.isWindows()) {
         testRuntimeOnly(variantOf(libs.jolt.jni.windows64){ classifier(btf) })
     }
-
 }
 
 configurations.all {

@@ -146,7 +146,7 @@ public class PhysicsSpace extends CollisionSpace {
      */
     private int maxSubSteps = 4;
     /**
-     *
+     * schedule simulation jobs
      */
     private final JobSystem jobSystem;
     /**
@@ -697,6 +697,7 @@ public class PhysicsSpace extends CollisionSpace {
             logger.log(Level.FINE, "Adding {0} to {1}.",
                     new Object[]{rigidBody, this});
         }
+
         BodyInterface bodyInterface = getBodyInterface();
         BodyId bodyId = rigidBody.findBodyId();
         if (rigidBody.isDynamic()) {
@@ -714,7 +715,6 @@ public class PhysicsSpace extends CollisionSpace {
     /**
      * Compare jolt-jni's gravity vector to the local copy.
      *
-     * @param storeVector caller-allocated temporary storage (not null)
      * @return true if scale factors are exactly equal, otherwise false
      */
     private boolean checkGravity() {

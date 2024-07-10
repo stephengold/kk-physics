@@ -147,9 +147,9 @@ abstract public class PhysicsCollisionObject
     }
 
     /**
-     * Return the collision object's friction parameter.
+     * Return the collision object's friction ratio.
      *
-     * @return the parameter value (&ge;0)
+     * @return the ratio
      */
     abstract public float getFriction();
 
@@ -303,9 +303,9 @@ abstract public class PhysicsCollisionObject
     }
 
     /**
-     * Alter the collision object's friction.
+     * Alter the collision object's friction ratio.
      *
-     * @param friction the desired friction value (&ge;0, default=0.5)
+     * @param friction the desired ratio (default=0.5)
      */
     abstract public void setFriction(float friction);
 

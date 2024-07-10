@@ -122,7 +122,7 @@ abstract public class CollisionShape {
     }
 
     /**
-     * Access the underlying jolt-jni Shape.
+     * Access the underlying jolt-jni ScaledShape.
      *
      * @return the pre-existing instance (not null)
      */

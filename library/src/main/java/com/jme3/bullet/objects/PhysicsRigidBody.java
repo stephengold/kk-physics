@@ -440,7 +440,6 @@ public class PhysicsRigidBody extends PhysicsBody {
     public void reposition(Vec3d location, Quaternion orientation) {
         Body oldBody = joltBody;
         PhysicsSpace removedFrom = (PhysicsSpace) getCollisionSpace();
-
         if (removedFrom != null) {
             removedFrom.removeCollisionObject(this);
         }
@@ -647,7 +646,7 @@ public class PhysicsRigidBody extends PhysicsBody {
     /**
      * Return the body's friction parameter.
      *
-     * @return the parameter value (&ge;0)
+     * @return the parameter value
      */
     @Override
     public float getFriction() {
@@ -764,7 +763,7 @@ public class PhysicsRigidBody extends PhysicsBody {
     /**
      * Return the body's restitution parameter.
      *
-     * @return the parameter value (&ge;0)
+     * @return the parameter value
      */
     @Override
     public float getRestitution() {
@@ -827,9 +826,9 @@ public class PhysicsRigidBody extends PhysicsBody {
     }
 
     /**
-     * Alter the {@code addedToSpace} field. Internal use only.
+     * Add to the specified space. Internal use only.
      *
-     * @param physicsSpace (alias created if not null)
+     * @param physicsSpace (may be null)
      */
     @Override
     public void setAddedToSpaceInternal(PhysicsSpace physicsSpace) {
@@ -956,7 +955,7 @@ public class PhysicsRigidBody extends PhysicsBody {
      * Instantiate body-creation settings.
      *
      * @param shape the desired shape (not null, alias created)
-     * @param mass if 0, a static body is created; otherwise a dynamic body is
+     * @param mass if 0, a static body is created, otherwise a dynamic body is
      * created (&ge;0, default=1)
      * @param location the desired location (in physics-space coordinates, not
      * null, unaffected)

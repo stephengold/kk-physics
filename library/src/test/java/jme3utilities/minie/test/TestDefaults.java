@@ -199,7 +199,7 @@ public class TestDefaults {
     }
 
     private static void testShapesConcave() {
-        // MeshCollisionShape
+        // MeshCollisionShape:
         Mesh quad = new CenterQuad(1f, 1f);
         MeshCollisionShape mesh2 = new MeshCollisionShape(quad, false);
         testShape(mesh2);
