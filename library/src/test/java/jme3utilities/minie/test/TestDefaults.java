@@ -33,6 +33,7 @@ import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.collision.shapes.CylinderCollisionShape;
+import com.jme3.bullet.collision.shapes.HullCollisionShape;
 import com.jme3.bullet.collision.shapes.MeshCollisionShape;
 import com.jme3.bullet.collision.shapes.SphereCollisionShape;
 import com.jme3.bullet.control.RigidBodyControl;
@@ -42,6 +43,8 @@ import com.jme3.math.Matrix3f;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Mesh;
 import com.jme3.scene.shape.CenterQuad;
+import java.util.ArrayList;
+import java.util.List;
 import jme3utilities.MeshNormals;
 import org.junit.Assert;
 import org.junit.Test;
@@ -159,6 +162,11 @@ public class TestDefaults {
         Assert.assertNotNull(prb);
         testPco(prb);
 
+        Assert.assertEquals(0f, prb.getAngularDamping(), 0f);
+        Assert.assertEquals(0f, prb.getLinearDamping(), 0f);
+        Assert.assertFalse(prb.isKinematic());
+        Utils.assertEquals(0f, 0f, 0f, prb.totalAppliedForce(null), 0f);
+        Utils.assertEquals(0f, 0f, 0f, prb.totalAppliedTorque(null), 0f);
         if (prb.getMass() > 0f) {
             Utils.assertEquals(0f, 0f, 0f, prb.getAngularVelocity(null), 0f);
             Utils.assertEquals(0f, 0f, 0f, prb.getLinearVelocity(null), 0f);
@@ -203,6 +211,7 @@ public class TestDefaults {
         Mesh quad = new CenterQuad(1f, 1f);
         MeshCollisionShape mesh2 = new MeshCollisionShape(quad, false);
         testShape(mesh2);
+        Assert.assertEquals(2, mesh2.countMeshTriangles());
         Assert.assertEquals(4, mesh2.countMeshVertices());
         Assert.assertEquals(1, mesh2.countSubmeshes());
         Assert.assertTrue(mesh2.isNonMoving());
@@ -225,6 +234,18 @@ public class TestDefaults {
         testConvexShape(cylinder);
         Assert.assertEquals(PhysicsSpace.AXIS_Y, cylinder.getAxis());
         Assert.assertEquals(2f, cylinder.getHeight(), 0f);
+
+        // HullCollisionShape
+        List<Vector3f> prismVertices = new ArrayList<>(6);
+        prismVertices.add(new Vector3f(1f, 1f, 1f));
+        prismVertices.add(new Vector3f(1f, 1f, -1f));
+        prismVertices.add(new Vector3f(-1f, 1f, 0f));
+        prismVertices.add(new Vector3f(1f, -1f, 1f));
+        prismVertices.add(new Vector3f(1f, -1f, -1f));
+        prismVertices.add(new Vector3f(-1f, -1f, 0f));
+        HullCollisionShape hull = new HullCollisionShape(prismVertices);
+        testConvexShape(hull);
+        Assert.assertEquals(6, hull.countMeshVertices());
     }
 
     private static void testShapesConvex2() {
