@@ -33,7 +33,6 @@ package com.jme3.bullet;
 
 import com.github.stephengold.joltjni.BodyId;
 import com.github.stephengold.joltjni.BodyInterface;
-import com.github.stephengold.joltjni.EActivation;
 import com.github.stephengold.joltjni.EBodyType;
 import com.github.stephengold.joltjni.JobSystem;
 import com.github.stephengold.joltjni.JobSystemThreadPool;
@@ -57,6 +56,7 @@ import com.jme3.scene.Spatial;
 import com.jme3.util.SafeArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -150,7 +150,14 @@ public class PhysicsSpace extends CollisionSpace {
      */
     private final JobSystem jobSystem;
     /**
-     * map rigid-body IDs to added collision objects
+     * map native IDs to rigid bodies that are queued up to be added to the
+     * {@code PhysicsSystem}
+     */
+    final private Map<Long, PhysicsRigidBody> queuedMap
+            = new ConcurrentHashMap<>(64);
+    /**
+     * map native IDs to rigid bodies that have been added to the
+     * {@code PhysicsSystem}
      */
     final private Map<Long, PhysicsRigidBody> rigidMap
             = new ConcurrentHashMap<>(64);
@@ -290,7 +297,7 @@ public class PhysicsSpace extends CollisionSpace {
      * @return count (&ge;0)
      */
     public int countRigidBodies() {
-        int count = rigidMap.size();
+        int count = queuedMap.size() + rigidMap.size();
         return count;
     }
 
@@ -302,6 +309,21 @@ public class PhysicsSpace extends CollisionSpace {
     public int countTickListeners() {
         int count = tickListeners.size();
         return count;
+    }
+
+    /**
+     * Enqueue the specified body for addition to the {@code PhysicsSystem}
+     * before the next simulation step. Internal use only.
+     *
+     * @param body the body to be added (not null)
+     */
+    public void enqueueForAdditionToSystemInternal(PhysicsRigidBody body) {
+        long nativeId = body.nativeId();
+        assert !queuedMap.containsKey(nativeId);
+        assert !rigidMap.containsKey(nativeId);
+
+        queuedMap.put(nativeId, body);
+        body.setAddedToSpaceInternal(this);
     }
 
     /**
@@ -378,7 +400,10 @@ public class PhysicsSpace extends CollisionSpace {
      * null)
      */
     public Collection<PhysicsRigidBody> getRigidBodyList() {
-        Collection<PhysicsRigidBody> result = rigidMap.values();
+        int size = countRigidBodies();
+        Collection<PhysicsRigidBody> result = new HashSet<>(size);
+        result.addAll(rigidMap.values());
+        result.addAll(queuedMap.values());
         result = Collections.unmodifiableCollection(result);
 
         return result;
@@ -564,6 +589,16 @@ public class PhysicsSpace extends CollisionSpace {
         for (int i = 0; i < numSubSteps; ++i) {
             preTick(timePerStep);
 
+            // Add queued bodies to the physics system:
+            for (PhysicsRigidBody body : queuedMap.values()) {
+                body.addToSystemInternal();
+
+                long newId = body.nativeId();
+                PhysicsRigidBody previousBody = rigidMap.put(newId, body);
+                assert previousBody == null : previousBody;
+            }
+            queuedMap.clear();
+
             if (addRemoveCount >= bpoThreshold) {
                 physicsSystem.optimizeBroadPhase();
                 this.addRemoveCount = 0;
@@ -632,6 +667,7 @@ public class PhysicsSpace extends CollisionSpace {
     @Override
     public Collection<PhysicsCollisionObject> getPcoList() {
         Collection<PhysicsCollisionObject> result = super.getPcoList();
+        result.addAll(queuedMap.values());
         result.addAll(rigidMap.values());
 
         return result;
@@ -681,7 +717,8 @@ public class PhysicsSpace extends CollisionSpace {
     // Java private methods
 
     /**
-     * Add the specified PhysicsRigidBody to the space.
+     * Add the specified {@code PhysicsRigidBody} to the space, but not to the
+     * {@code PhysicsSystem}.
      * <p>
      * NOTE: When a rigid body is added, its gravity gets set to that of the
      * space.
@@ -697,19 +734,7 @@ public class PhysicsSpace extends CollisionSpace {
             logger.log(Level.FINE, "Adding {0} to {1}.",
                     new Object[]{rigidBody, this});
         }
-
-        BodyInterface bodyInterface = getBodyInterface();
-        BodyId bodyId = rigidBody.findBodyId();
-        if (rigidBody.isDynamic()) {
-            bodyInterface.addBody(bodyId, EActivation.Activate);
-        } else {
-            bodyInterface.addBody(bodyId, EActivation.DontActivate);
-        }
-
-        long bodyVa = rigidBody.nativeId();
-        rigidMap.put(bodyVa, rigidBody);
-
-        ++addRemoveCount;
+        enqueueForAdditionToSystemInternal(rigidBody);
     }
 
     /**
@@ -755,33 +780,38 @@ public class PhysicsSpace extends CollisionSpace {
     }
 
     /**
-     * Remove the specified PhysicsRigidBody from the space.
+     * Remove the specified rigid body from the space and its physics system.
      *
      * @param rigidBody the body to remove (not null, modified)
      */
     private void removeRigidBody(PhysicsRigidBody rigidBody) {
         assert rigidBody.getCollisionSpace() == this;
 
-        BodyId bodyId = rigidBody.findBodyId();
-        long bodyVa = rigidBody.nativeId();
-        assert rigidMap.containsKey(bodyVa);
-        if (bodyId == null || !rigidMap.containsKey(bodyVa)) {
-            logger.log(Level.WARNING, "{0} does not exist in {1}.",
-                    new Object[]{rigidBody, this});
-            return;
-        }
-        assert rigidBody.getCollisionSpace() == this;
-
         if (logger.isLoggable(Level.FINE)) {
             logger.log(Level.FINE, "Removing {0} from {1}.",
                     new Object[]{rigidBody, this});
         }
-        rigidMap.remove(bodyVa);
 
-        BodyInterface bodyInterface = getBodyInterface();
-        bodyInterface.removeBody(bodyId);
-        ++addRemoveCount;
+        PhysicsRigidBody removedBody;
+        long id = rigidBody.nativeId();
+        if (queuedMap.containsKey(id)) {
+            removedBody = queuedMap.remove(id);
 
+        } else {
+            removedBody = rigidMap.remove(id);
+            if (removedBody == null) {
+                logger.log(Level.WARNING, "{0} does not exist in {1}.",
+                        new Object[]{rigidBody, this});
+                return;
+            }
+
+            BodyInterface bodyInterface = getBodyInterface();
+            BodyId bodyId = rigidBody.findBodyId();
+            bodyInterface.removeBody(bodyId);
+            ++addRemoveCount;
+        }
+
+        assert removedBody == rigidBody : removedBody;
         rigidBody.setAddedToSpaceInternal(null);
     }
 }

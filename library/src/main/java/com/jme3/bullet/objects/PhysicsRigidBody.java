@@ -35,11 +35,13 @@ import com.github.stephengold.joltjni.Body;
 import com.github.stephengold.joltjni.BodyCreationSettings;
 import com.github.stephengold.joltjni.BodyId;
 import com.github.stephengold.joltjni.BodyInterface;
+import com.github.stephengold.joltjni.EActivation;
 import com.github.stephengold.joltjni.EMotionQuality;
 import com.github.stephengold.joltjni.EMotionType;
 import com.github.stephengold.joltjni.MotionProperties;
 import com.github.stephengold.joltjni.Quat;
 import com.github.stephengold.joltjni.RVec3;
+import com.github.stephengold.joltjni.Shape;
 import com.github.stephengold.joltjni.Vec3;
 import com.github.stephengold.joltjni.Vec3Arg;
 import com.jme3.bullet.PhysicsSpace;
@@ -154,11 +156,29 @@ public class PhysicsRigidBody extends PhysicsBody {
         }
         super.setCollisionShape(shape);
         this.mass = mass;
-        this.settings
-                = newSettings(shape, mass, location, orientation, null);
+        newSettings(shape, mass, location, orientation, null);
     }
     // *************************************************************************
     // new methods exposed
+
+    /**
+     * Create the jolt-jni Body and add it to the {@code PhysicsSystem}.
+     * Internal use only.
+     */
+    public void addToSystemInternal() {
+        PhysicsSpace space = (PhysicsSpace) getCollisionSpace();
+        this.bodyInterface = space.getBodyInterface();
+        this.joltBody = bodyInterface.createBody(settings);
+        logger2.log(Level.INFO, "Created {0}.", joltBody);
+
+        this.bodyId = joltBody.getId();
+        if (joltBody.getMotionType() == EMotionType.Dynamic) {
+            bodyInterface.addBody(bodyId, EActivation.Activate);
+        } else {
+            bodyInterface.addBody(bodyId, EActivation.DontActivate);
+        }
+        this.motionProperties = joltBody.getMotionProperties();
+    }
 
     /**
      * Apply a central impulse to the body.
@@ -391,40 +411,23 @@ public class PhysicsRigidBody extends PhysicsBody {
      * Rebuild the rigid body with a new jolt-jni object.
      */
     public void rebuildRigidBody() {
-        Body oldBody = joltBody;
-        Vec3d location = new Vec3d();
-        Quaternion orientation = new Quaternion();
-        PhysicsSpace removedFrom = (PhysicsSpace) getCollisionSpace();
+        if (joltBody != null) {
+            Vec3d location = getPhysicsLocationDp(null);
+            Quaternion orientation = getPhysicsRotation(null);
 
-        if (oldBody != null) {
-            if (removedFrom != null) {
-                getPhysicsLocationDp(location);
-                getPhysicsRotation(orientation);
-                removedFrom.removeCollisionObject(this);
-            }
+            PhysicsSpace removedFrom = (PhysicsSpace) getCollisionSpace();
+            removedFrom.removeCollisionObject(this);
+            assert getCollisionSpace() == null;
             logger2.log(Level.INFO, "Clearing {0}.", this);
-        }
 
-        CollisionShape shape = getCollisionShape();
-        PhysicsRigidBody oldPrb = (settings == null) ? null : this;
-        this.settings = newSettings(shape, mass, location, orientation, oldPrb);
+            CollisionShape shape = getCollisionShape();
+            newSettings(shape, mass, location, orientation, this);
+            removedFrom.enqueueForAdditionToSystemInternal(this);
+            assert getCollisionSpace() == removedFrom;
 
-        if (removedFrom != null) {
-            this.joltBody = bodyInterface.createBody(settings);
-            if (logger2.isLoggable(Level.INFO)) {
-                if (oldBody == null) {
-                    logger2.log(
-                            Level.INFO, "Created {0}.", joltBody);
-                } else {
-                    logger2.log(
-                            Level.INFO, "Substituted {0} for {1}.",
-                            new Object[]{joltBody, oldBody});
-                }
-            }
-
-            this.bodyId = joltBody.getId();
-            this.motionProperties = joltBody.getMotionProperties();
-            removedFrom.addCollisionObject(this);
+        } else if (settings == null) { // an incomplete RigidBodyControl:
+            CollisionShape shape = getCollisionShape();
+            newSettings(shape, mass, new Vec3d(), new Quaternion(), null);
         }
         // TODO kinematic flag, gravity, physics joints
     }
@@ -438,33 +441,30 @@ public class PhysicsRigidBody extends PhysicsBody {
      * not null, not zero, unaffected)
      */
     public void reposition(Vec3d location, Quaternion orientation) {
-        PhysicsSpace removedFrom = (PhysicsSpace) getCollisionSpace();
-        if (removedFrom != null) {
+        Validate.nonNull(location, "location");
+        Validate.nonZero(orientation, "orientation");
+
+        if (joltBody == null) {
+            RVec3 rvec3 = new RVec3(location.x, location.y, location.z);
+            settings.setPosition(rvec3);
+
+            float qw = orientation.getW();
+            float qx = orientation.getX();
+            float qy = orientation.getY();
+            float qz = orientation.getZ();
+            Quat quat = new Quat(qx, qy, qz, qw);
+            settings.setRotation(quat);
+
+        } else {
+            PhysicsSpace removedFrom = (PhysicsSpace) getCollisionSpace();
             removedFrom.removeCollisionObject(this);
-        }
-        logger2.log(Level.INFO, "Clearing {0}.", this);
+            assert getCollisionSpace() == null;
+            logger2.log(Level.INFO, "Clearing {0}.", this);
 
-        CollisionShape shape = getCollisionShape();
-        this.settings
-                = newSettings(shape, mass, location, orientation, this);
-        Body oldBody = joltBody;
-        if (removedFrom != null) {
-            this.bodyInterface = removedFrom.getBodyInterface();
-            this.joltBody = bodyInterface.createBody(settings);
-            if (logger2.isLoggable(Level.INFO)) {
-                if (oldBody != null) {
-                    logger2.log(Level.INFO, "Created {0}.", joltBody);
-                } else {
-                    logger2.log(Level.INFO, "Substituted {0} for {1}.",
-                            new Object[]{joltBody, oldBody});
-                }
-            }
-            this.bodyId = joltBody.getId();
-            this.motionProperties = joltBody.getMotionProperties();
-        }
-
-        if (removedFrom != null) {
-            removedFrom.addCollisionObject(this);
+            CollisionShape shape = getCollisionShape();
+            newSettings(shape, mass, location, orientation, this);
+            removedFrom.enqueueForAdditionToSystemInternal(this);
+            assert getCollisionSpace() == removedFrom;
         }
         // TODO kinematic flag, gravity, physics joints
     }
@@ -607,8 +607,12 @@ public class PhysicsRigidBody extends PhysicsBody {
     public Vector3f totalAppliedForce(Vector3f storeResult) {
         Vector3f result = (storeResult == null) ? new Vector3f() : storeResult;
 
-        Vec3 vec3 = joltBody.getAccumulatedForce();
-        result.set(vec3.getX(), vec3.getY(), vec3.getZ());
+        if (joltBody == null) {
+            result.zero();
+        } else {
+            Vec3 vec3 = joltBody.getAccumulatedForce();
+            result.set(vec3.getX(), vec3.getY(), vec3.getZ());
+        }
 
         return result;
     }
@@ -624,8 +628,12 @@ public class PhysicsRigidBody extends PhysicsBody {
     public Vector3f totalAppliedTorque(Vector3f storeResult) {
         Vector3f result = (storeResult == null) ? new Vector3f() : storeResult;
 
-        Vec3 vec3 = joltBody.getAccumulatedTorque();
-        result.set(vec3.getX(), vec3.getY(), vec3.getZ());
+        if (joltBody == null) {
+            result.zero();
+        } else {
+            Vec3 vec3 = joltBody.getAccumulatedTorque();
+            result.set(vec3.getX(), vec3.getY(), vec3.getZ());
+        }
 
         return result;
     }
@@ -783,7 +791,7 @@ public class PhysicsRigidBody extends PhysicsBody {
      */
     @Override
     public boolean hasAssignedNativeObject() {
-        if (joltBody == null) {
+        if (settings == null && joltBody == null) {
             return false;
         } else {
             return true;
@@ -797,7 +805,13 @@ public class PhysicsRigidBody extends PhysicsBody {
      */
     @Override
     public boolean isActive() {
-        boolean result = joltBody.isActive();
+        boolean result;
+        if (joltBody == null) {
+            result = isDynamic();
+        } else {
+            result = joltBody.isActive();
+        }
+
         return result;
     }
 
@@ -820,32 +834,14 @@ public class PhysicsRigidBody extends PhysicsBody {
      */
     @Override
     public long nativeId() {
-        long result = joltBody.va();
-        return result;
-    }
-
-    /**
-     * Add to the specified space. Internal use only.
-     *
-     * @param physicsSpace (may be null)
-     */
-    @Override
-    public void setAddedToSpaceInternal(PhysicsSpace physicsSpace) {
-        super.setAddedToSpaceInternal(physicsSpace);
-
-        if (physicsSpace == null) {
-            this.bodyInterface = null;
+        long result;
+        if (joltBody == null) {
+            result = settings.va();
         } else {
-            this.bodyInterface = physicsSpace.getBodyInterface();
-            if (joltBody == null) {
-                this.joltBody = bodyInterface.createBody(settings);
-                if (logger2.isLoggable(Level.INFO)) {
-                    logger2.log(Level.INFO, "Created {0}.", joltBody);
-                }
-                this.bodyId = joltBody.getId();
-                this.motionProperties = joltBody.getMotionProperties();
-            }
+            result = joltBody.va();
         }
+
+        return result;
     }
 
     /**
@@ -877,7 +873,7 @@ public class PhysicsRigidBody extends PhysicsBody {
         if (desiredShape == getCollisionShape()) {
             return;
         }
-        if (isDynamic()) {
+        if (hasAssignedNativeObject() && isDynamic()) {
             validateDynamicShape(desiredShape);
         }
 
@@ -962,64 +958,68 @@ public class PhysicsRigidBody extends PhysicsBody {
      * not null, not zero, unaffected)
      * @param oldPrb a source for additional rigid-body parameters (unaffected)
      * or null to use KK Physics defaults
-     * @return a new instance (not null)
      */
-    private static BodyCreationSettings newSettings(
-            CollisionShape shape, float mass, Vec3d location,
+    private void newSettings(CollisionShape shape, float mass, Vec3d location,
             Quaternion orientation, PhysicsRigidBody oldPrb) {
+        Shape joltShape = shape.getJoltShape();
         RVec3 rvec3 = new RVec3(location.x, location.y, location.z);
         Quat quat = new Quat(orientation.getX(), orientation.getY(),
                 orientation.getZ(), orientation.getW());
 
-        BodyCreationSettings result;
+        BodyCreationSettings newSettings;
         if (mass > 0f) {
-            result = new BodyCreationSettings(
-                    shape.getJoltShape(), rvec3, quat, EMotionType.Dynamic,
-                    PhysicsSpace.OBJ_LAYER_MOVING);
-            result.setGravityFactor(1f);
+            newSettings = new BodyCreationSettings(joltShape, rvec3, quat,
+                    EMotionType.Dynamic, PhysicsSpace.OBJ_LAYER_MOVING);
+            newSettings.setGravityFactor(1f);
         } else {
             assert mass == massForStatic : mass;
-            result = new BodyCreationSettings(
-                    shape.getJoltShape(), rvec3, quat, EMotionType.Static,
-                    PhysicsSpace.OBJ_LAYER_NON_MOVING);
-            result.setGravityFactor(0f);
+            newSettings = new BodyCreationSettings(joltShape, rvec3, quat,
+                    EMotionType.Static, PhysicsSpace.OBJ_LAYER_NON_MOVING);
+            newSettings.setGravityFactor(0f);
         }
 
         if (oldPrb == null) {
-            // override some jolt-jni defaults:
-            result.setFriction(0.5f);
+            // override some jolt-jni defaults with KK Physics defaults:
+            newSettings.setAngularDamping(0f);
+            newSettings.setFriction(0.5f);
+            newSettings.setLinearDamping(0f);
 
         } else {
             float angularDamping = oldPrb.getAngularDamping();
-            result.setAngularDamping(angularDamping);
+            newSettings.setAngularDamping(angularDamping);
 
             float friction = oldPrb.getFriction();
-            result.setFriction(friction);
+            newSettings.setFriction(friction);
 
             float gravityFactor = oldPrb.getGravityFactor();
-            result.setGravityFactor(gravityFactor);
+            newSettings.setGravityFactor(gravityFactor);
 
             float linearDamping = oldPrb.getLinearDamping();
-            result.setLinearDamping(linearDamping);
+            newSettings.setLinearDamping(linearDamping);
 
             EMotionQuality quality = oldPrb.getMotionQuality();
-            result.setMotionQuality(quality);
+            newSettings.setMotionQuality(quality);
 
             float restitution = oldPrb.getRestitution();
-            result.setRestitution(restitution);
+            newSettings.setRestitution(restitution);
 
             if (oldPrb.isDynamic()) {
                 Vector3f vec = new Vector3f();
 
                 oldPrb.getAngularVelocity(vec);
-                result.setAngularVelocity(new Vec3(vec.x, vec.y, vec.z));
+                newSettings.setAngularVelocity(new Vec3(vec.x, vec.y, vec.z));
 
                 oldPrb.getLinearVelocity(vec);
-                result.setLinearVelocity(new Vec3(vec.x, vec.y, vec.z));
+                newSettings.setLinearVelocity(new Vec3(vec.x, vec.y, vec.z));
             }
         }
 
-        return result;
+        this.settings = newSettings;
+
+        this.bodyInterface = null;
+        this.joltBody = null;
+        this.bodyId = null;
+        this.motionProperties = null;
     }
 
     /**
