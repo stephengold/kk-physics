@@ -133,6 +133,16 @@ public class MeshCollisionShape extends CollisionShape {
     // new methods exposed
 
     /**
+     * Count how many triangles are in the mesh.
+     *
+     * @return the count (&ge;0)
+     */
+    public int countMeshTriangles() {
+        int result = itList.size();
+        return result;
+    }
+
+    /**
      * Count how many vertices are in the mesh.
      *
      * @return the count (&ge;0)
