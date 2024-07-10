@@ -539,11 +539,6 @@ public class PhysicsSpace extends CollisionSpace {
         assert Validate.nonNegative(timeInterval, "time interval");
         assert Validate.nonNegative(maxSteps, "max steps");
 
-        if (addRemoveCount >= bpoThreshold) {
-            physicsSystem.optimizeBroadPhase();
-            this.addRemoveCount = 0;
-        }
-
         float timePerStep;
         int numSubSteps;
         if (maxSubSteps == 0) {
@@ -568,6 +563,11 @@ public class PhysicsSpace extends CollisionSpace {
 
         for (int i = 0; i < numSubSteps; ++i) {
             preTick(timePerStep);
+
+            if (addRemoveCount >= bpoThreshold) {
+                physicsSystem.optimizeBroadPhase();
+                this.addRemoveCount = 0;
+            }
 
             // Single-step the physics system:
             int collisionSteps = 1;
