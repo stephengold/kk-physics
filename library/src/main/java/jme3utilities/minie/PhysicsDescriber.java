@@ -119,8 +119,12 @@ public class PhysicsDescriber extends Describer {
 
         } else if (shape instanceof MeshCollisionShape) {
             MeshCollisionShape meshShape = (MeshCollisionShape) shape;
+            int numS = meshShape.countSubmeshes();
+            int numT = meshShape.countMeshTriangles();
             int numV = meshShape.countMeshVertices();
-            desc = String.format("[numV=%d]", numV);
+            desc = String.format("[numS=%s numT=%d numV=%d]",
+                    numS, numT, numV);
+
             result.append(desc);
 
         } else if (shape instanceof SphereCollisionShape) {
