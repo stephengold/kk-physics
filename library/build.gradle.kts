@@ -3,6 +3,7 @@
 import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
 
 plugins {
+    `checkstyle`  // to analyze Java sourcecode for style violations
     `java-library`  // to build JVM libraries
     `maven-publish` // to publish artifacts to Maven repositories
     `signing`       // to sign artifacts for publication
@@ -47,6 +48,10 @@ dependencies {
 
 configurations.all {
     resolutionStrategy.cacheChangingModulesFor(0, "seconds") // to disable caching of snapshots
+}
+
+checkstyle {
+    toolVersion = libs.versions.checkstyle.get()
 }
 
 tasks.withType<JavaCompile>().all { // Java compile-time options:

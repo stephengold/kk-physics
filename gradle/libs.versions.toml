@@ -2,6 +2,7 @@
 
 [versions]
 
+checkstyle = "10.17.0"
 jme = "3.6.1-stable"
 jolt-jni = "0.2.0"
 

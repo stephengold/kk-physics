@@ -4,6 +4,7 @@ import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
 
 plugins {
     `application` // to build JVM applications
+    `checkstyle`  // to analyze Java sourcecode for style violations
 }
 
 java {
@@ -51,6 +52,10 @@ dependencies {
 
 configurations.all {
     resolutionStrategy.cacheChangingModulesFor(0, "seconds") // to disable caching of snapshots
+}
+
+checkstyle {
+    toolVersion = libs.versions.checkstyle.get()
 }
 
 tasks.withType<JavaCompile>().all { // Java compile-time options:
