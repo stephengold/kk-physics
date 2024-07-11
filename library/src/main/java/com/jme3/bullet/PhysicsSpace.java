@@ -342,6 +342,7 @@ public class PhysicsSpace extends CollisionSpace {
      */
     public BodyInterface getBodyInterface() {
         BodyInterface result = physicsSystem.getBodyInterface();
+
         assert result != null;
         return result;
     }
@@ -606,8 +607,8 @@ public class PhysicsSpace extends CollisionSpace {
 
             // Single-step the physics system:
             int collisionSteps = 1;
-            physicsSystem.update(timePerStep, collisionSteps,
-                    tempAllocator, jobSystem);
+            physicsSystem.update(
+                    timePerStep, collisionSteps, tempAllocator, jobSystem);
 
             postTick(timePerStep);
         }
