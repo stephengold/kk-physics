@@ -435,8 +435,8 @@ public class PhysicsRigidBody extends PhysicsBody {
      */
     public void rebuildRigidBody() {
         if (joltBody != null) {
-            Vec3d location = getPhysicsLocationDp(null);
-            Quaternion orientation = getPhysicsRotation(null);
+            final Vec3d location = getPhysicsLocationDp(null);
+            final Quaternion orientation = getPhysicsRotation(null);
 
             PhysicsSpace removedFrom = (PhysicsSpace) getCollisionSpace();
             removedFrom.removeCollisionObject(this);
