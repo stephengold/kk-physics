@@ -31,8 +31,9 @@
  */
 package com.jme3.bullet.collision.shapes;
 
+import com.github.stephengold.joltjni.ConstShape;
 import com.github.stephengold.joltjni.ScaledShape;
-import com.github.stephengold.joltjni.Shape;
+import com.github.stephengold.joltjni.ScaledShapeSettings;
 import com.github.stephengold.joltjni.Vec3;
 import com.github.stephengold.joltjni.Vec3Arg;
 import com.jme3.math.Vector3f;
@@ -62,13 +63,13 @@ abstract public class CollisionShape {
     // fields
 
     /**
+     * underlying unscaled jolt-jni object
+     */
+    private ConstShape unscaledShape;
+    /**
      * underlying scaled jolt-jni object
      */
     private ScaledShape joltShape;
-    /**
-     * underlying unscaled jolt-jni object
-     */
-    private Shape unscaledShape;
     /**
      * copy of the scale factors, one for each local axis
      */
@@ -206,7 +207,9 @@ abstract public class CollisionShape {
         this.scale.set(scale);
 
         Vec3Arg vec3 = new Vec3(scale.x, scale.y, scale.z);
-        this.joltShape = new ScaledShape(unscaledShape, vec3);
+        ScaledShapeSettings settings
+                = new ScaledShapeSettings(unscaledShape.toRefC(), vec3);
+        this.joltShape = (ScaledShape) settings.create().get().getPtr();
 
         logger.log(Level.FINE, "Scaling {0}.", this);
     }
@@ -218,7 +221,7 @@ abstract public class CollisionShape {
      *
      * @return the pre-existing instance (not null)
      */
-    protected Shape getUnscaledShape() {
+    protected ConstShape getUnscaledShape() {
         assert unscaledShape != null;
         return unscaledShape;
     }
@@ -228,7 +231,7 @@ abstract public class CollisionShape {
      *
      * @param unscaled the unscaled shape to use
      */
-    protected void setNativeObject(Shape unscaled) {
+    protected void setNativeObject(ConstShape unscaled) {
         Validate.nonNull(unscaled, "unscaled jolt shape");
         assert this.joltShape == null : this.joltShape;
         assert this.unscaledShape == null : this.unscaledShape;
@@ -236,7 +239,9 @@ abstract public class CollisionShape {
         this.unscaledShape = unscaled;
 
         Vec3Arg vec3 = new Vec3(scale.x, scale.y, scale.z);
-        this.joltShape = new ScaledShape(unscaledShape, vec3);
+        ScaledShapeSettings settings
+                = new ScaledShapeSettings(unscaledShape.toRefC(), vec3);
+        this.joltShape = (ScaledShape) settings.create().get().getPtr();
     }
     // *************************************************************************
     // Java private methods

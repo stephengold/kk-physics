@@ -31,8 +31,8 @@
  */
 package com.jme3.bullet;
 
-import com.github.stephengold.joltjni.BodyId;
 import com.github.stephengold.joltjni.BodyInterface;
+import com.github.stephengold.joltjni.ConstBodyId;
 import com.github.stephengold.joltjni.EBodyType;
 import com.github.stephengold.joltjni.JobSystem;
 import com.github.stephengold.joltjni.JobSystemThreadPool;
@@ -807,7 +807,7 @@ public class PhysicsSpace extends CollisionSpace {
             }
 
             BodyInterface bodyInterface = getBodyInterface();
-            BodyId bodyId = rigidBody.findBodyId();
+            ConstBodyId bodyId = rigidBody.findBodyId();
             bodyInterface.removeBody(bodyId);
             ++addRemoveCount;
         }

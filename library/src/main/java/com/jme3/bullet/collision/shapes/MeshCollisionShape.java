@@ -31,11 +31,11 @@
  */
 package com.jme3.bullet.collision.shapes;
 
+import com.github.stephengold.joltjni.ConstShape;
 import com.github.stephengold.joltjni.Float3;
 import com.github.stephengold.joltjni.IndexedTriangle;
 import com.github.stephengold.joltjni.IndexedTriangleList;
 import com.github.stephengold.joltjni.MeshShapeSettings;
-import com.github.stephengold.joltjni.Shape;
 import com.github.stephengold.joltjni.VertexList;
 import com.jme3.scene.Mesh;
 import com.jme3.scene.VertexBuffer;
@@ -169,7 +169,7 @@ public class MeshCollisionShape extends CollisionShape {
      */
     private void createShape() {
         MeshShapeSettings settings = new MeshShapeSettings(vertexList, itList);
-        Shape shape = settings.createShape();
+        ConstShape shape = settings.create().get().getPtr();
         setNativeObject(shape);
     }
 }

@@ -33,8 +33,8 @@ package com.jme3.bullet.objects;
 
 import com.github.stephengold.joltjni.Body;
 import com.github.stephengold.joltjni.BodyCreationSettings;
-import com.github.stephengold.joltjni.BodyId;
 import com.github.stephengold.joltjni.BodyInterface;
+import com.github.stephengold.joltjni.ConstBodyId;
 import com.github.stephengold.joltjni.EActivation;
 import com.github.stephengold.joltjni.EMotionQuality;
 import com.github.stephengold.joltjni.EMotionType;
@@ -84,13 +84,13 @@ public class PhysicsRigidBody extends PhysicsBody {
      */
     private BodyCreationSettings settings;
     /**
-     * jolt-jni body ID, or null if not added to a space
-     */
-    private BodyId bodyId;
-    /**
      * jolt-jni interface for modifications, or null if not added to a space
      */
     private BodyInterface bodyInterface;
+    /**
+     * jolt-jni body ID, or null if not added to a space
+     */
+    private ConstBodyId bodyId;
     /**
      * copy of the mass (&gt;0) of a dynamic body, or 0 for a static body
      */
@@ -202,7 +202,7 @@ public class PhysicsRigidBody extends PhysicsBody {
      *
      * @return the pre-existing instance, or null if none
      */
-    public BodyId findBodyId() {
+    public ConstBodyId findBodyId() {
         return bodyId;
     }
 

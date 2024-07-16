@@ -31,9 +31,9 @@
  */
 package com.jme3.bullet.collision.shapes;
 
+import com.github.stephengold.joltjni.ConstShape;
 import com.github.stephengold.joltjni.ConvexHullShape;
 import com.github.stephengold.joltjni.ConvexHullShapeSettings;
-import com.github.stephengold.joltjni.Shape;
 import com.github.stephengold.joltjni.Vec3;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Mesh;
@@ -236,7 +236,7 @@ public class HullCollisionShape extends CollisionShape {
 
         ConvexHullShapeSettings settings
                 = new ConvexHullShapeSettings(numVertices, directBuffer);
-        Shape shape = settings.createShape();
+        ConstShape shape = settings.create().get().getPtr();
         setNativeObject(shape);
     }
 
