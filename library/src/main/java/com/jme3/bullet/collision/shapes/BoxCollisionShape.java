@@ -148,6 +148,6 @@ public class BoxCollisionShape extends CollisionShape {
 
         Vec3Arg vec3 = new Vec3(halfExtents.x, halfExtents.y, halfExtents.z);
         BoxShape shape = new BoxShape(vec3);
-        setNativeObject(shape);
+        setNativeObject(shape.toRefC());
     }
 }

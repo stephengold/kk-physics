@@ -41,7 +41,7 @@ import com.github.stephengold.joltjni.EMotionType;
 import com.github.stephengold.joltjni.MotionProperties;
 import com.github.stephengold.joltjni.Quat;
 import com.github.stephengold.joltjni.RVec3;
-import com.github.stephengold.joltjni.Shape;
+import com.github.stephengold.joltjni.ShapeRefC;
 import com.github.stephengold.joltjni.Vec3;
 import com.github.stephengold.joltjni.Vec3Arg;
 import com.jme3.bullet.PhysicsSpace;
@@ -1070,7 +1070,7 @@ public class PhysicsRigidBody extends PhysicsBody {
      */
     private void newSettings(CollisionShape shape, float mass, Vec3d location,
             Quaternion orientation, PhysicsRigidBody oldPrb) {
-        Shape joltShape = shape.getJoltShape();
+        ShapeRefC joltShape = shape.getJoltShape();
         RVec3 rvec3 = new RVec3(location.x, location.y, location.z);
         Quat quat = new Quat(orientation.getX(), orientation.getY(),
                 orientation.getZ(), orientation.getW());

@@ -31,9 +31,9 @@
  */
 package com.jme3.bullet.collision.shapes;
 
-import com.github.stephengold.joltjni.ConstShape;
 import com.github.stephengold.joltjni.ConvexHullShape;
 import com.github.stephengold.joltjni.ConvexHullShapeSettings;
+import com.github.stephengold.joltjni.ShapeRefC;
 import com.github.stephengold.joltjni.Vec3;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Mesh;
@@ -184,7 +184,7 @@ public class HullCollisionShape extends CollisionShape {
      * @return a new array (not null)
      */
     public float[] copyHullVertices() {
-        ConvexHullShape shape = (ConvexHullShape) getUnscaledShape();
+        ConvexHullShape shape = (ConvexHullShape) getUnscaledShape().getPtr();
         int numHullVertices = shape.getNumPoints();
         float[] result = new float[numHullVertices * numAxes];
         for (int vi = 0; vi < numHullVertices; ++vi) {
@@ -203,7 +203,7 @@ public class HullCollisionShape extends CollisionShape {
      * @return the count (&ge;0)
      */
     public int countHullVertices() {
-        ConvexHullShape shape = (ConvexHullShape) getUnscaledShape();
+        ConvexHullShape shape = (ConvexHullShape) getUnscaledShape().getPtr();
         int result = shape.getNumPoints();
 
         return result;
@@ -236,8 +236,8 @@ public class HullCollisionShape extends CollisionShape {
 
         ConvexHullShapeSettings settings
                 = new ConvexHullShapeSettings(numVertices, directBuffer);
-        ConstShape shape = settings.create().get().getPtr();
-        setNativeObject(shape);
+        ShapeRefC shapeRef = settings.create().get();
+        setNativeObject(shapeRef);
     }
 
     /**

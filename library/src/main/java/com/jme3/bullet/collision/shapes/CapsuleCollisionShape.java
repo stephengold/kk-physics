@@ -148,6 +148,6 @@ public class CapsuleCollisionShape extends CollisionShape {
 
         float halfHeight = height / 2f;
         CapsuleShape shape = new CapsuleShape(halfHeight, radius);
-        setNativeObject(shape);
+        setNativeObject(shape.toRefC());
     }
 }

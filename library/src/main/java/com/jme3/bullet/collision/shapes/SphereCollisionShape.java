@@ -118,6 +118,6 @@ public class SphereCollisionShape extends CollisionShape {
         assert radius >= 0f : radius;
 
         Shape shape = new SphereShape(radius);
-        setNativeObject(shape);
+        setNativeObject(shape.toRefC());
     }
 }
