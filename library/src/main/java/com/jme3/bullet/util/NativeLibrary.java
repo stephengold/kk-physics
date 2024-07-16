@@ -32,6 +32,7 @@
 package com.jme3.bullet.util;
 
 import com.github.stephengold.joltjni.Jolt;
+import com.github.stephengold.joltjni.JoltPhysicsObject;
 import com.jme3.system.NativeLibraryLoader;
 import com.jme3.system.Platform;
 import java.util.logging.Logger;
@@ -100,6 +101,9 @@ final public class NativeLibrary {
         }
         System.out.println(
                 "jolt-jni version " + Jolt.versionString() + " initializing");
+
+        //Jolt.setTraceAllocations(true); // to debug native memory allocation
+        JoltPhysicsObject.startCleaner();
 
         Jolt.registerDefaultAllocator();
         Jolt.installDefaultAssertCallback();
