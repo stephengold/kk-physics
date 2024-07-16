@@ -102,6 +102,8 @@ final public class NativeLibrary {
                 "jolt-jni version " + Jolt.versionString() + " initializing");
 
         Jolt.registerDefaultAllocator();
+        Jolt.installDefaultAssertCallback();
+        Jolt.installDefaultTraceCallback();
         Jolt.newFactory();
         Jolt.registerTypes();
     }
