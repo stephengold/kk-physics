@@ -567,7 +567,7 @@ public class PhysicsSpace extends CollisionSpace {
 
         float timePerStep;
         int numSubSteps;
-        if (maxSubSteps == 0) {
+        if (maxSteps == 0) {
             timePerStep = timeInterval;
             numSubSteps = 1;
 
@@ -582,8 +582,8 @@ public class PhysicsSpace extends CollisionSpace {
             this.physicsLag = timeSinceStep - numSubSteps * timePerStep;
             assert physicsLag >= 0f : physicsLag;
 
-            if (numSubSteps > maxSubSteps) {
-                numSubSteps = maxSubSteps;
+            if (numSubSteps > maxSteps) {
+                numSubSteps = maxSteps;
             }
         }
 
