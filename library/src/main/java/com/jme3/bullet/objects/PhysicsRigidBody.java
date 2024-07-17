@@ -648,6 +648,36 @@ public class PhysicsRigidBody extends PhysicsBody {
     }
 
     /**
+     * Alter the body's motion quality.
+     *
+     * @param desiredMotionQuality the desired motion quality (not null)
+     */
+    public void setMotionQuality(EMotionQuality desiredMotionQuality) {
+        Validate.nonNull(desiredMotionQuality, "desired motion quality");
+
+        EMotionQuality oldQuality = getMotionQuality();
+        if (desiredMotionQuality != oldQuality) {
+            if (joltBody == null) {
+                settings.setMotionQuality(desiredMotionQuality);
+            } else {
+                Vec3d location = getPhysicsLocationDp(null);
+                Quaternion orientation = getPhysicsRotation(null);
+
+                PhysicsSpace removedFrom = (PhysicsSpace) getCollisionSpace();
+                removedFrom.removeCollisionObject(this);
+                assert getCollisionSpace() == null;
+                logger2.log(Level.INFO, "Clearing {0}.", this);
+
+                CollisionShape shape = getCollisionShape();
+                newSettings(shape, mass, location, orientation, this);
+                settings.setMotionQuality(desiredMotionQuality);
+                removedFrom.enqueueForAdditionToSystemInternal(this);
+                assert getCollisionSpace() == removedFrom;
+            }
+        }
+    }
+
+    /**
      * Directly relocate the body's center of mass.
      *
      * @param location the desired location (in physics-space coordinates, not
