@@ -173,10 +173,10 @@ public class PhysicsRigidBody extends PhysicsBody {
         logger2.log(Level.INFO, "Created {0}.", joltBody);
 
         this.bodyId = joltBody.getId();
-        if (joltBody.getMotionType() == EMotionType.Dynamic) {
-            bodyInterface.addBody(bodyId, EActivation.Activate);
-        } else {
+        if (joltBody.getMotionType() == EMotionType.Static) {
             bodyInterface.addBody(bodyId, EActivation.DontActivate);
+        } else {
+            bodyInterface.addBody(bodyId, EActivation.Activate);
         }
         this.motionProperties = joltBody.getMotionProperties();
     }
