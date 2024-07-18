@@ -491,6 +491,36 @@ public class PhysicsRigidBody extends PhysicsBody {
     }
 
     /**
+     * Re-position a kinematic body over some interval.
+     *
+     * @param location the desired ending location (in physics-space
+     * coordinates, not null, unaffected)
+     * @param orientation the desired ending orientation (in physics-space
+     * coordinates, not null, not zero, unaffected)
+     * @param interval the time interval (in seconds, &gt;0)
+     */
+    public void repositionKinematic(
+            Vector3f location, Quaternion orientation, float interval) {
+        Validate.nonNull(location, "location");
+        Validate.nonZero(orientation, "orientation");
+        Validate.positive(interval, "time step");
+
+        RVec3 rvec3 = new RVec3(location.x, location.y, location.z);
+        float qw = orientation.getW();
+        float qx = orientation.getX();
+        float qy = orientation.getY();
+        float qz = orientation.getZ();
+        Quat quat = new Quat(qx, qy, qz, qw);
+
+        if (joltBody == null) {
+            settings.setPosition(rvec3);
+            settings.setRotation(quat);
+        } else {
+            joltBody.moveKinematic(rvec3, quat, interval);
+        }
+    }
+
+    /**
      * Alter the body's angular velocity.
      *
      * @param omega the desired angular velocity (in physics-space coordinates,
