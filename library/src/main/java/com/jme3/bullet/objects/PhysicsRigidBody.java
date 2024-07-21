@@ -560,6 +560,36 @@ public class PhysicsRigidBody extends PhysicsBody {
     }
 
     /**
+     * Alter the body's damping.
+     *
+     * @param linearDamping the desired linear damping fraction (&ge;0, &le;1,
+     * default=0)
+     * @param angularDamping the desired angular damping fraction (&ge;0, &le;1,
+     * default=0)
+     */
+    public void setDamping(float linearDamping, float angularDamping) {
+        Validate.fraction(linearDamping, "linear damping");
+        Validate.fraction(angularDamping, "angular damping");
+
+        setAngularDamping(angularDamping);
+        setLinearDamping(linearDamping);
+    }
+
+    /**
+     * Alter whether the body is allowed to fall asleep.
+     *
+     * @param setting true&rarr;enable sleeping, false&rarr;disable sleeping
+     * (default=true)
+     */
+    public void setEnableSleep(boolean setting) {
+        if (joltBody == null) {
+            settings.setAllowSleeping(setting);
+        } else {
+            joltBody.setAllowSleeping(setting);
+        }
+    }
+
+    /**
      * Alter the linear velocity of the body's center of mass.
      *
      * @param velocity the desired velocity (physics-space units per second in
