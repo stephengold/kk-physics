@@ -38,6 +38,8 @@ import com.github.stephengold.joltjni.ConstBodyId;
 import com.github.stephengold.joltjni.EActivation;
 import com.github.stephengold.joltjni.EMotionQuality;
 import com.github.stephengold.joltjni.EMotionType;
+import com.github.stephengold.joltjni.EOverrideMassProperties;
+import com.github.stephengold.joltjni.MassProperties;
 import com.github.stephengold.joltjni.MotionProperties;
 import com.github.stephengold.joltjni.Quat;
 import com.github.stephengold.joltjni.RVec3;
@@ -1140,6 +1142,12 @@ public class PhysicsRigidBody extends PhysicsBody {
             newSettings = new BodyCreationSettings(joltShape, rvec3, quat,
                     EMotionType.Dynamic, PhysicsSpace.OBJ_LAYER_MOVING);
             newSettings.setGravityFactor(1f);
+            MassProperties mp = new MassProperties();
+            mp.setMass(mass);
+            newSettings.setMassPropertiesOverride(mp);
+            newSettings.setOverrideMassProperties(
+                    EOverrideMassProperties.CalculateInertia);
+
         } else {
             assert mass == massForStatic : mass;
             newSettings = new BodyCreationSettings(joltShape, rvec3, quat,
