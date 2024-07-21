@@ -35,13 +35,17 @@ import com.github.stephengold.joltjni.Body;
 import com.github.stephengold.joltjni.BodyCreationSettings;
 import com.github.stephengold.joltjni.BodyInterface;
 import com.github.stephengold.joltjni.ConstBodyId;
+import com.github.stephengold.joltjni.ConstMassProperties;
 import com.github.stephengold.joltjni.EActivation;
 import com.github.stephengold.joltjni.EMotionQuality;
 import com.github.stephengold.joltjni.EMotionType;
 import com.github.stephengold.joltjni.EOverrideMassProperties;
 import com.github.stephengold.joltjni.MassProperties;
+import com.github.stephengold.joltjni.Mat44;
+import com.github.stephengold.joltjni.Mat44Arg;
 import com.github.stephengold.joltjni.MotionProperties;
 import com.github.stephengold.joltjni.Quat;
+import com.github.stephengold.joltjni.QuatArg;
 import com.github.stephengold.joltjni.RVec3;
 import com.github.stephengold.joltjni.ShapeRefC;
 import com.github.stephengold.joltjni.Vec3;
@@ -196,6 +200,65 @@ public class PhysicsRigidBody extends PhysicsBody {
             Vector3f velocity = getLinearVelocity(null);
             MyVector3f.accumulateScaled(velocity, impulse, 1f / mass);
             setLinearVelocity(velocity);
+        }
+    }
+
+    /**
+     * Apply an off-center impulse to the body.
+     *
+     * @param impulse the impulse vector (mass times distance per second in
+     * physics-space coordinates, not null, unaffected)
+     * @param offset where to apply the impulse (relative to the body's center
+     * of mass in physics-space coordinates, not null, unaffected)
+     */
+    public void applyImpulse(Vector3f impulse, Vector3f offset) {
+        Validate.finite(impulse, "impulse");
+        Validate.finite(offset, "offset");
+
+        if (isDynamic()) {
+            if (joltBody == null) {
+                // Adjust the linear velocity:
+                Vector3f velocity = getLinearVelocity(null);
+                float inverseMass = (mass == 0f) ? 0f : 1f / mass;
+                MyVector3f.accumulateScaled(velocity, impulse, inverseMass);
+                setLinearVelocity(velocity);
+
+                // Calculate the angular impulse:
+                Vector3f ai = offset.cross(impulse);
+                Vec3Arg angularImpulse = new Vec3(ai.x, ai.y, ai.z);
+
+                // Calculate inertiaRotation and invInertiaDiagonal:
+                Mat44 inertiaRotationMatrix = new Mat44();
+                Vec3 inertiaDiagonal = new Vec3();
+                ConstMassProperties mp = settings.getMassProperties();
+                boolean success = mp.decomposePrincipalMomentsOfInertia(
+                        inertiaRotationMatrix, inertiaDiagonal);
+                assert success;
+                QuatArg inertiaRotation = inertiaRotationMatrix.getQuaternion();
+                Vec3Arg invInertiaDiagonal = inertiaDiagonal.reciprocal();
+
+                // MultiplyWorldSpaceInverseInertiaByVector:
+                QuatArg bodyRotation = settings.getRotation();
+                QuatArg productQuat
+                        = Quat.multiply(bodyRotation, inertiaRotation);
+                Mat44Arg rotation = Mat44.sRotation(productQuat);
+                Vec3Arg rotatedImpulse
+                        = rotation.multiply3x3Transposed(angularImpulse);
+                Vec3Arg productVector
+                        = Vec3.multiply(invInertiaDiagonal, rotatedImpulse);
+                Vec3Arg dw = rotation.multiply3x3(productVector);
+
+                // Adjust the angular velocity:
+                Vector3f omega = getAngularVelocity(null);
+                omega.addLocal(dw.getX(), dw.getY(), dw.getZ());
+                setAngularVelocity(omega);
+
+            } else {
+                Vec3 imp3 = new Vec3(impulse.x, impulse.y, impulse.z);
+                RVec3 rvec3 = joltBody.getCenterOfMassPosition();
+                rvec3.addLocal(offset.x, offset.y, offset.z);
+                joltBody.addImpulse(imp3, rvec3);
+            }
         }
     }
 
