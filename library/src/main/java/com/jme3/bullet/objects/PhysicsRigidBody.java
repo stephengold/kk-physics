@@ -272,22 +272,6 @@ public class PhysicsRigidBody extends PhysicsBody {
     }
 
     /**
-     * Test whether the body is allowed to fall asleep.
-     *
-     * @return true if allowed to sleep, false if inhibited from sleeping
-     */
-    public boolean getEnableSleep() {
-        boolean result;
-
-        if (joltBody == null) {
-            result = settings.getAllowSleeping();
-        } else {
-            result = joltBody.getAllowSleeping();
-        }
-        return result;
-    }
-
-    /**
      * Return the angular damping constant.
      *
      * @return the constant (in units of 1/second, &ge;0, &le;1)
@@ -509,6 +493,23 @@ public class PhysicsRigidBody extends PhysicsBody {
         } else {
             return false;
         }
+    }
+
+    /**
+     * Test whether the body is allowed to fall asleep.
+     *
+     * @return true if allowed to sleep, otherwise false
+     */
+    public boolean isSleepingEnabled() {
+        boolean result;
+
+        if (joltBody == null) {
+            result = settings.getAllowSleeping();
+        } else {
+            result = joltBody.getAllowSleeping();
+        }
+
+        return result;
     }
 
     /**
@@ -1271,7 +1272,7 @@ public class PhysicsRigidBody extends PhysicsBody {
             newSettings.setLinearDamping(0f);
 
         } else {
-            boolean allowSleeping = oldPrb.getEnableSleep();
+            boolean allowSleeping = oldPrb.isSleepingEnabled();
             newSettings.setAllowSleeping(allowSleeping);
 
             float angularDamping = oldPrb.getAngularDamping();
