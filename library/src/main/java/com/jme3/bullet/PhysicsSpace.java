@@ -660,6 +660,25 @@ public class PhysicsSpace extends CollisionSpace {
     }
 
     /**
+     * Test whether the specified collision object is added to the space.
+     *
+     * @param pco the object to test (not null, unaffected)
+     * @return true if currently added, otherwise false
+     */
+    @Override
+    public boolean contains(PhysicsCollisionObject pco) {
+        boolean result;
+        long pcoId = pco.nativeId();
+        if (pco instanceof PhysicsRigidBody) {
+            result = rigidMap.containsKey(pcoId);
+        } else {
+            result = super.contains(pco);
+        }
+
+        return result;
+    }
+
+    /**
      * Enumerate collision objects that have been added to the space and not yet
      * removed.
      *

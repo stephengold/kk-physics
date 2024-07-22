@@ -115,6 +115,18 @@ public class CollisionSpace {
     }
 
     /**
+     * Test whether the specified collision object is added to the space.
+     *
+     * @param pco the object to test (not null, unaffected)
+     * @return true if currently added, otherwise false
+     */
+    public boolean contains(PhysicsCollisionObject pco) {
+        String typeName = pco.getClass().getCanonicalName();
+        String msg = "Unknown type of collision object: " + typeName;
+        throw new IllegalArgumentException(msg);
+    }
+
+    /**
      * Count the worker threads.
      *
      * @return the count (&ge;1, &le;64)
