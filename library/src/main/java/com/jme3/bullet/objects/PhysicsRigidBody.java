@@ -1306,6 +1306,9 @@ public class PhysicsRigidBody extends PhysicsBody {
             EMotionQuality quality = oldPrb.getMotionQuality();
             newSettings.setMotionQuality(quality);
 
+            EMotionType motionType = oldPrb.getMotionType();
+            newSettings.setMotionType(motionType);
+
             int layer = oldPrb.getObjectLayer();
             newSettings.setObjectLayer(layer);
 
