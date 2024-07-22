@@ -775,15 +775,15 @@ public class PhysicsRigidBody extends PhysicsBody {
      *
      * @param location the desired ending location (in physics-space
      * coordinates, not null, unaffected)
-     * @param timeStep the expected time step (in seconds, &gt;0)
+     * @param interval the time interval (in seconds, &gt;0)
      */
-    public void setKinematicLocation(Vector3f location, float timeStep) {
+    public void setKinematicLocation(Vector3f location, float interval) {
         Validate.nonNull(location, "location");
-        Validate.positive(timeStep, "time step");
+        Validate.positive(interval, "time step");
 
         Vector3f tmpVector = getPhysicsLocation(null); // TODO garbage
         location.subtract(tmpVector, tmpVector);
-        tmpVector.divideLocal(timeStep);
+        tmpVector.divideLocal(interval);
         setLinearVelocity(tmpVector);
     }
 
@@ -792,17 +792,17 @@ public class PhysicsRigidBody extends PhysicsBody {
      *
      * @param orientation the desired ending orientation (relative to
      * physics-space axes, not null, unaffected)
-     * @param timeStep the expected time step (in seconds, &gt;0)
+     * @param interval the time interval (in seconds, &gt;0)
      */
     public void setKinematicOrientation(
-            Quaternion orientation, float timeStep) {
+            Quaternion orientation, float interval) {
         Validate.nonZero(orientation, "orientation");
-        Validate.positive(timeStep, "time step");
+        Validate.positive(interval, "time step");
 
         Quaternion tmpQuaternion = getPhysicsRotation(null); // TODO garbage
         tmpQuaternion.inverseLocal();
         orientation.mult(tmpQuaternion, tmpQuaternion);
-        MyQuaternion.pow(tmpQuaternion, 1f / timeStep, tmpQuaternion);
+        MyQuaternion.pow(tmpQuaternion, 1f / interval, tmpQuaternion);
 
         Vector3f tmpVector = new Vector3f(); // TODO garbage
         float angle = tmpQuaternion.toAngleAxis(tmpVector);
