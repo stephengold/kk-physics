@@ -650,8 +650,7 @@ public class PhysicsRigidBody extends PhysicsBody {
         Validate.nonNull(omega, "angular velocity");
         assert !isStatic();
 
-        Vec3Arg vec3 = new Vec3(
-                (float) omega.x, (float) omega.y, (float) omega.z);
+        Vec3Arg vec3 = new Vec3(omega.x, omega.y, omega.z);
         if (bodyInterface == null) {
             joltBody.setAngularVelocity(vec3);
         } else {
@@ -750,10 +749,8 @@ public class PhysicsRigidBody extends PhysicsBody {
                 settings.setMotionType(desiredMotionType);
 
             } else {
-                Vec3d location = new Vec3d();
-                Quaternion orientation = new Quaternion();
-                getPhysicsLocationDp(location);
-                getPhysicsRotation(orientation);
+                Vec3d location = getPhysicsLocationDp(null);
+                Quaternion orientation = getPhysicsRotation(null);
 
                 PhysicsSpace removedFrom = (PhysicsSpace) getCollisionSpace();
                 removedFrom.removeCollisionObject(this);
