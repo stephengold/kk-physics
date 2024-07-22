@@ -148,8 +148,8 @@ public class PhysicsRigidBody extends PhysicsBody {
      * created (&ge;0, default=1)
      * @param location the desired initial location (in physics-space
      * coordinates, not null, unaffected)
-     * @param orientation the desired initial orientation (in physics-space
-     * coordinates, not null, unaffected)
+     * @param orientation the desired initial orientation (relative to
+     * physics-space axes, not null, not zero, unaffected)
      */
     public PhysicsRigidBody(CollisionShape shape, float mass, Vec3d location,
             Quaternion orientation) {
@@ -188,10 +188,10 @@ public class PhysicsRigidBody extends PhysicsBody {
     }
 
     /**
-     * Apply a central impulse to the body.
+     * Apply an impulse to the body's center of mass.
      *
-     * @param impulse the impulse vector (mass times physics-space units per
-     * second in physics-space coordinates, not null, unaffected)
+     * @param impulse the impulse vector (mass times distance per second in
+     * physics-space coordinates, not null, unaffected)
      */
     public void applyCentralImpulse(Vector3f impulse) {
         Validate.finite(impulse, "impulse");
@@ -290,8 +290,8 @@ public class PhysicsRigidBody extends PhysicsBody {
     /**
      * For compatibility with the jme3-jbullet library.
      *
-     * @return a new velocity vector (radians per second in physics-space
-     * coordinates, not null)
+     * @return a new angular-velocity vector (radians per second in
+     * physics-space coordinates, not null)
      */
     public Vector3f getAngularVelocity() {
         assert isDynamic();
@@ -302,7 +302,7 @@ public class PhysicsRigidBody extends PhysicsBody {
      * Copy the body's angular velocity. The body must be in dynamic mode.
      *
      * @param storeResult storage for the result (modified if not null)
-     * @return a velocity vector (radians per second in physics-space
+     * @return an angular-velocity vector (radians per second in physics-space
      * coordinates, either storeResult or a new vector, not null)
      */
     public Vector3f getAngularVelocity(Vector3f storeResult) {
@@ -324,7 +324,7 @@ public class PhysicsRigidBody extends PhysicsBody {
      * Copy the body's angular velocity. The body must be in dynamic mode.
      *
      * @param storeResult storage for the result (modified if not null)
-     * @return a velocity vector (radians per second in physics-space
+     * @return an angular-velocity vector (radians per second in physics-space
      * coordinates, either storeResult or a new vector, not null)
      */
     public Vec3d getAngularVelocityDp(Vec3d storeResult) {
@@ -377,8 +377,8 @@ public class PhysicsRigidBody extends PhysicsBody {
     /**
      * For compatibility with the jme3-jbullet library.
      *
-     * @return a new velocity vector (physics-space units per second in
-     * physics-space coordinates, not null)
+     * @return a new velocity vector (distance per second in physics-space
+     * coordinates, not null)
      */
     public Vector3f getLinearVelocity() {
         assert isDynamic();
@@ -390,8 +390,8 @@ public class PhysicsRigidBody extends PhysicsBody {
      * in dynamic mode.
      *
      * @param storeResult storage for the result (modified if not null)
-     * @return a velocity vector (physics-space units per second in
-     * physics-space coordinates, either storeResult or a new vector, not null)
+     * @return a velocity vector (distance per second in physics-space
+     * coordinates, either storeResult or a new vector, not null)
      */
     public Vector3f getLinearVelocity(Vector3f storeResult) {
         assert isDynamic();
@@ -413,8 +413,8 @@ public class PhysicsRigidBody extends PhysicsBody {
      * in dynamic mode.
      *
      * @param storeResult storage for the result (modified if not null)
-     * @return a velocity vector (physics-space units per second in
-     * physics-space coordinates, either storeResult or a new vector, not null)
+     * @return a velocity vector (distance per second in physics-space
+     * coordinates, either storeResult or a new vector, not null)
      */
     public Vec3d getLinearVelocityDp(Vec3d storeResult) {
         assert isDynamic();
@@ -553,12 +553,12 @@ public class PhysicsRigidBody extends PhysicsBody {
     }
 
     /**
-     * Rebuild the rigid body in a new position.
+     * Re-position the body.
      *
      * @param location the desired location (in physics-space coordinates, not
      * null, unaffected)
-     * @param orientation the desired orientation (in physics-space coordinates,
-     * not null, not zero, unaffected)
+     * @param orientation the desired orientation (relative to physics-space
+     * axes, not null, not zero, unaffected)
      */
     public void reposition(Vec3d location, Quaternion orientation) {
         Validate.nonNull(location, "location");
@@ -593,8 +593,8 @@ public class PhysicsRigidBody extends PhysicsBody {
      *
      * @param location the desired ending location (in physics-space
      * coordinates, not null, unaffected)
-     * @param orientation the desired ending orientation (in physics-space
-     * coordinates, not null, not zero, unaffected)
+     * @param orientation the desired ending orientation (relative to
+     * physics-space axes, not null, not zero, unaffected)
      * @param interval the time interval (in seconds, &gt;0)
      */
     public void repositionKinematic(
@@ -621,8 +621,8 @@ public class PhysicsRigidBody extends PhysicsBody {
     /**
      * Alter the body's angular velocity.
      *
-     * @param omega the desired angular velocity (in physics-space coordinates,
-     * not null, finite, unaffected)
+     * @param omega the desired angular velocity (radians per second in
+     * physics-space coordinates, not null, finite, unaffected)
      */
     public void setAngularVelocity(Vector3f omega) {
         Validate.finite(omega, "angular velocity");
@@ -639,8 +639,8 @@ public class PhysicsRigidBody extends PhysicsBody {
     /**
      * Alter the body's angular velocity.
      *
-     * @param omega the desired angular velocity (in physics-space coordinates,
-     * not null, unaffected)
+     * @param omega the desired angular velocity (radians per second in
+     * physics-space coordinates, not null, unaffected)
      */
     public void setAngularVelocityDp(Vec3d omega) {
         Validate.nonNull(omega, "angular velocity");
@@ -688,7 +688,7 @@ public class PhysicsRigidBody extends PhysicsBody {
     /**
      * Alter the linear velocity of the body's center of mass.
      *
-     * @param velocity the desired velocity (physics-space units per second in
+     * @param velocity the desired velocity (distance per second in
      * physics-space coordinates, not null, finite, unaffected)
      */
     public void setLinearVelocity(Vector3f velocity) {
@@ -706,7 +706,7 @@ public class PhysicsRigidBody extends PhysicsBody {
     /**
      * Alter the linear velocity of the body's center of mass.
      *
-     * @param velocity the desired velocity (physics-space units per second in
+     * @param velocity the desired velocity (distance per second in
      * physics-space coordinates, not null, unaffected)
      */
     public void setLinearVelocityDp(Vec3d velocity) {
@@ -722,7 +722,7 @@ public class PhysicsRigidBody extends PhysicsBody {
     }
 
     /**
-     * Put the body into kinematic mode or take it out of kinematic mode.
+     * Put the body into (or take it out of) kinematic mode.
      * <p>
      * In kinematic mode, the body is not influenced by physics but can affect
      * other physics objects. Its kinetic force is calculated based on its mass
@@ -766,10 +766,10 @@ public class PhysicsRigidBody extends PhysicsBody {
     }
 
     /**
-     * Relocate a kinematic body by altering its linear velocity.
+     * Relocate a kinematic body over a specified interval.
      *
-     * @param location the desired location (in physics-space coordinates, not
-     * null, unaffected)
+     * @param location the desired ending location (in physics-space
+     * coordinates, not null, unaffected)
      * @param timeStep the expected time step (in seconds, &gt;0)
      */
     public void setKinematicLocation(Vector3f location, float timeStep) {
@@ -783,10 +783,10 @@ public class PhysicsRigidBody extends PhysicsBody {
     }
 
     /**
-     * Reorient a kinematic body by altering its angular velocity.
+     * Reorient a kinematic body over a specified interval.
      *
-     * @param orientation the desired orientation (relative to physics-space
-     * coordinates, not null, unaffected)
+     * @param orientation the desired ending orientation (relative to
+     * physics-space axes, not null, unaffected)
      * @param timeStep the expected time step (in seconds, &gt;0)
      */
     public void setKinematicOrientation(
@@ -852,7 +852,7 @@ public class PhysicsRigidBody extends PhysicsBody {
      * Directly alter the body's orientation.
      *
      * @param orientation the desired orientation (rotation matrix relative to
-     * physics-space coordinates, not null, unaffected)
+     * physics-space axes, not null, unaffected)
      */
     public void setPhysicsRotation(Matrix3f orientation) {
         Validate.nonNull(orientation, "orientation");
@@ -867,7 +867,7 @@ public class PhysicsRigidBody extends PhysicsBody {
      * Directly reorient the body.
      *
      * @param orientation the desired orientation (relative to physics-space
-     * coordinates, not null, not zero, unaffected)
+     * axes, not null, not zero, unaffected)
      */
     public void setPhysicsRotation(Quaternion orientation) {
         Validate.nonZero(orientation, "orientation");
@@ -880,7 +880,7 @@ public class PhysicsRigidBody extends PhysicsBody {
      * Directly reorient the body.
      *
      * @param orientation the desired orientation (relative to physics-space
-     * coordinates, not null, unaffected)
+     * axes, not null, unaffected)
      */
     public void setPhysicsRotationDp(Quatd orientation) {
         Validate.nonNull(orientation, "orientation");
@@ -895,7 +895,7 @@ public class PhysicsRigidBody extends PhysicsBody {
      *
      * @param storeResult storage for the result (modified if not null)
      * @return the total force (either storeResult or a new vector, mass times
-     * physics-space units per second squared in physics-space coordinates)
+     * distance per second squared in physics-space coordinates)
      */
     public Vector3f totalAppliedForce(Vector3f storeResult) {
         Vector3f result = (storeResult == null) ? new Vector3f() : storeResult;
@@ -915,8 +915,7 @@ public class PhysicsRigidBody extends PhysicsBody {
      *
      * @param storeResult storage for the result (modified if not null)
      * @return the total torque (either storeResult or a new vector, mass times
-     * physics-space units squared per second squared in physics-space
-     * coordinates)
+     * distance squared per second squared in physics-space coordinates)
      */
     public Vector3f totalAppliedTorque(Vector3f storeResult) {
         Vector3f result = (storeResult == null) ? new Vector3f() : storeResult;
@@ -1024,7 +1023,7 @@ public class PhysicsRigidBody extends PhysicsBody {
      * Copy the orientation (rotation) of the body to a {@code Quaternion}.
      *
      * @param storeResult storage for the result (modified if not null)
-     * @return a rotation Quaternion (in physics-space coordinates, either
+     * @return a rotation Quaternion (relative to physics-space axes, either
      * storeResult or a new instance, not null)
      */
     @Override
@@ -1047,7 +1046,7 @@ public class PhysicsRigidBody extends PhysicsBody {
      * Copy the orientation (rotation) of the body to a {@code Matrix3f}.
      *
      * @param storeResult storage for the result (modified if not null)
-     * @return a rotation matrix (in physics-space coordinates, either
+     * @return a rotation matrix (relative to physics-space axes, either
      * storeResult or a new matrix, not null)
      */
     @Override
@@ -1251,8 +1250,8 @@ public class PhysicsRigidBody extends PhysicsBody {
      * created (&ge;0, default=1)
      * @param location the desired location (in physics-space coordinates, not
      * null, unaffected)
-     * @param orientation the desired orientation (in physics-space coordinates,
-     * not null, not zero, unaffected)
+     * @param orientation the desired orientation (relative to physics-space
+     * axes, not null, not zero, unaffected)
      * @param oldPrb a source for additional rigid-body parameters (unaffected)
      * or null to use the KK Physics defaults
      */

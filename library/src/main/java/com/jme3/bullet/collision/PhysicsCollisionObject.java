@@ -163,7 +163,7 @@ abstract public class PhysicsCollisionObject
     }
 
     /**
-     * Copy the location of the collision object's center to a Vector3f.
+     * Locate the collision object's center.
      *
      * @param storeResult storage for the result (modified if not null)
      * @return a location vector (in physics-space coordinates, either
@@ -172,7 +172,7 @@ abstract public class PhysicsCollisionObject
     abstract public Vector3f getPhysicsLocation(Vector3f storeResult);
 
     /**
-     * Copy the location of the collision object's center to a Vec3d.
+     * Locate the collision object's center in double precision.
      *
      * @param storeResult storage for the result (modified if not null)
      * @return a location vector (in physics-space coordinates, either
