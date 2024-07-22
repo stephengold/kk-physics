@@ -623,6 +623,22 @@ public class PhysicsRigidBody extends PhysicsBody {
     }
 
     /**
+     * Alter the angular damping constant.
+     *
+     * @param damping the desired constant (in units of 1/second, &ge;0, &le;1,
+     * default=0)
+     */
+    public void setAngularDamping(float damping) {
+        Validate.fraction(damping, "damping");
+
+        if (motionProperties == null) {
+            settings.setAngularDamping(damping);
+        } else {
+            motionProperties.setAngularDamping(damping);
+        }
+    }
+
+    /**
      * Alter the body's angular velocity.
      *
      * @param omega the desired angular velocity (radians per second in
@@ -685,6 +701,22 @@ public class PhysicsRigidBody extends PhysicsBody {
             settings.setAllowSleeping(setting);
         } else {
             joltBody.setAllowSleeping(setting);
+        }
+    }
+
+    /**
+     * Alter the linear damping constant.
+     *
+     * @param damping the desired constant (in units of 1/second, &ge;0, &le;1,
+     * default=0)
+     */
+    public void setLinearDamping(float damping) {
+        Validate.fraction(damping, "damping");
+
+        if (motionProperties == null) {
+            settings.setLinearDamping(damping);
+        } else {
+            motionProperties.setLinearDamping(damping);
         }
     }
 
@@ -1147,22 +1179,6 @@ public class PhysicsRigidBody extends PhysicsBody {
     }
 
     /**
-     * Alter the angular damping constant.
-     *
-     * @param damping the desired constant (in units of 1/second, &ge;0, &le;1,
-     * default=0)
-     */
-    public void setAngularDamping(float damping) {
-        Validate.fraction(damping, "damping");
-
-        if (motionProperties == null) {
-            settings.setAngularDamping(damping);
-        } else {
-            motionProperties.setAngularDamping(damping);
-        }
-    }
-
-    /**
      * Apply the specified CollisionShape to the body. The body gets rebuilt on
      * the jolt-jni side.
      *
@@ -1196,22 +1212,6 @@ public class PhysicsRigidBody extends PhysicsBody {
             settings.setFriction(friction);
         } else {
             joltBody.setFriction(friction);
-        }
-    }
-
-    /**
-     * Alter the linear damping constant.
-     *
-     * @param damping the desired constant (in units of 1/second, &ge;0, &le;1,
-     * default=0)
-     */
-    public void setLinearDamping(float damping) {
-        Validate.fraction(damping, "damping");
-
-        if (motionProperties == null) {
-            settings.setLinearDamping(damping);
-        } else {
-            motionProperties.setLinearDamping(damping);
         }
     }
 
