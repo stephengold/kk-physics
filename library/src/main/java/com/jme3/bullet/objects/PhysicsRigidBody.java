@@ -464,6 +464,22 @@ public class PhysicsRigidBody extends PhysicsBody {
     }
 
     /**
+     * Return the Jolt object layer.
+     *
+     * @return the layer index (&ge;0)
+     */
+    public int getObjectLayer() {
+        int result;
+        if (joltBody == null) {
+            result = settings.getObjectLayer();
+        } else {
+            result = joltBody.getObjectLayer();
+        }
+
+        return result;
+    }
+
+    /**
      * Test whether the body is in dynamic mode.
      *
      * @return true if in dynamic mode, otherwise false (static/kinematic mode)
@@ -1289,6 +1305,9 @@ public class PhysicsRigidBody extends PhysicsBody {
 
             EMotionQuality quality = oldPrb.getMotionQuality();
             newSettings.setMotionQuality(quality);
+
+            int layer = oldPrb.getObjectLayer();
+            newSettings.setObjectLayer(layer);
 
             float restitution = oldPrb.getRestitution();
             newSettings.setRestitution(restitution);
