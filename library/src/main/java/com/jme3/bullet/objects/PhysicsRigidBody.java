@@ -197,9 +197,14 @@ public class PhysicsRigidBody extends PhysicsBody {
         Validate.finite(impulse, "impulse");
 
         if (isDynamic()) {
-            Vector3f velocity = getLinearVelocity(null);
-            MyVector3f.accumulateScaled(velocity, impulse, 1f / mass);
-            setLinearVelocity(velocity);
+            if (joltBody == null) {
+                Vector3f velocity = getLinearVelocity(null);
+                MyVector3f.accumulateScaled(velocity, impulse, 1f / mass);
+                setLinearVelocity(velocity);
+            } else {
+                Vec3 vec3 = new Vec3(impulse.x, impulse.y, impulse.z);
+                joltBody.addImpulse(vec3);
+            }
         }
     }
 
