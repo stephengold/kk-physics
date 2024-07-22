@@ -60,7 +60,6 @@ import com.simsilica.mathd.Vec3d;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import jme3utilities.Validate;
-import jme3utilities.math.MyQuaternion;
 import jme3utilities.math.MyVector3f;
 
 /**
@@ -779,12 +778,15 @@ public class PhysicsRigidBody extends PhysicsBody {
      */
     public void setKinematicLocation(Vector3f location, float interval) {
         Validate.nonNull(location, "location");
-        Validate.positive(interval, "time step");
+        Validate.positive(interval, "interval");
 
-        Vector3f tmpVector = getPhysicsLocation(null); // TODO garbage
-        location.subtract(tmpVector, tmpVector);
-        tmpVector.divideLocal(interval);
-        setLinearVelocity(tmpVector);
+        RVec3 rvec3 = new RVec3(location.x, location.y, location.z);
+        if (bodyId == null) {
+            settings.setPosition(rvec3);
+        } else {
+            Quat orientation = bodyInterface.getRotation(bodyId);
+            bodyInterface.moveKinematic(bodyId, rvec3, orientation, interval);
+        }
     }
 
     /**
@@ -797,17 +799,19 @@ public class PhysicsRigidBody extends PhysicsBody {
     public void setKinematicOrientation(
             Quaternion orientation, float interval) {
         Validate.nonZero(orientation, "orientation");
-        Validate.positive(interval, "time step");
+        Validate.positive(interval, "interval");
 
-        Quaternion tmpQuaternion = getPhysicsRotation(null); // TODO garbage
-        tmpQuaternion.inverseLocal();
-        orientation.mult(tmpQuaternion, tmpQuaternion);
-        MyQuaternion.pow(tmpQuaternion, 1f / interval, tmpQuaternion);
-
-        Vector3f tmpVector = new Vector3f(); // TODO garbage
-        float angle = tmpQuaternion.toAngleAxis(tmpVector);
-        tmpVector.multLocal(angle);
-        setAngularVelocity(tmpVector);
+        float qw = orientation.getW();
+        float qx = orientation.getX();
+        float qy = orientation.getY();
+        float qz = orientation.getZ();
+        Quat quat = new Quat(qx, qy, qz, qw);
+        if (bodyId == null) {
+            settings.setRotation(quat);
+        } else {
+            RVec3 location = bodyInterface.getPosition(bodyId);
+            bodyInterface.moveKinematic(bodyId, location, quat, interval);
+        }
     }
 
     /**
