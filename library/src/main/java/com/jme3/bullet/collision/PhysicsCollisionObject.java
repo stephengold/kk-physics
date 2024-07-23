@@ -34,6 +34,7 @@ package com.jme3.bullet.collision;
 import com.jme3.bullet.CollisionSpace;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.collision.shapes.CollisionShape;
+import com.jme3.material.Material;
 import com.jme3.math.Matrix3f;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
@@ -66,6 +67,10 @@ abstract public class PhysicsCollisionObject
      * shape of this object, or null if none
      */
     private CollisionShape collisionShape;
+    /**
+     * custom material for the debug shape, or null to use the default material
+     */
+    private Material debugMaterial = null;
     /**
      * which normals to generate for new debug meshes
      */
@@ -144,6 +149,15 @@ abstract public class PhysicsCollisionObject
      */
     public CollisionSpace getCollisionSpace() {
         return addedToSpace;
+    }
+
+    /**
+     * Access the custom debug material, if specified.
+     *
+     * @return the pre-existing instance, or null for default materials
+     */
+    public Material getDebugMaterial() {
+        return debugMaterial;
     }
 
     /**
@@ -290,6 +304,16 @@ abstract public class PhysicsCollisionObject
     public void setCollisionShape(CollisionShape collisionShape) {
         Validate.nonNull(collisionShape, "collision shape");
         this.collisionShape = collisionShape;
+    }
+
+    /**
+     * Apply or remove a custom debug material.
+     *
+     * @param material the Material to use (alias created) or null to use the
+     * default debug materials (default=null)
+     */
+    public void setDebugMaterial(Material material) {
+        this.debugMaterial = material;
     }
 
     /**
