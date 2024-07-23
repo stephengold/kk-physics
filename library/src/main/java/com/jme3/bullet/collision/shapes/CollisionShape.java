@@ -43,6 +43,7 @@ import java.nio.FloatBuffer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import jme3utilities.Validate;
+import jme3utilities.math.MyBuffer;
 import jme3utilities.math.MyVector3f;
 
 /**
@@ -119,6 +120,7 @@ abstract public class CollisionShape {
         int numFloats = 9 * numTriangles;
         FloatBuffer result = BufferUtils.createFloatBuffer(numFloats);
         joltShape.copyDebugTriangles(result);
+        MyBuffer.scale(result, 0, numFloats, scale);
 
         return result;
     }
