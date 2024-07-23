@@ -680,6 +680,19 @@ public class PhysicsSpace extends CollisionSpace {
     }
 
     /**
+     * Remove all collision objects and physics joints.
+     */
+    @Override
+    public void destroy() {
+        super.destroy();
+
+        for (PhysicsRigidBody rigidBody : rigidMap.values()) {
+            removeRigidBody(rigidBody);
+        }
+        queuedMap.clear();
+    }
+
+    /**
      * Enumerate collision objects that have been added to the space and not yet
      * removed.
      *
@@ -691,6 +704,17 @@ public class PhysicsSpace extends CollisionSpace {
         result.addAll(queuedMap.values());
         result.addAll(rigidMap.values());
 
+        return result;
+    }
+
+    /**
+     * Test whether the space is empty.
+     *
+     * @return true if empty, otherwise false
+     */
+    @Override
+    public boolean isEmpty() {
+        boolean result = super.isEmpty() && rigidMap.isEmpty();
         return result;
     }
 

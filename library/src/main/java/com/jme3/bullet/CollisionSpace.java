@@ -138,6 +138,13 @@ public class CollisionSpace {
     }
 
     /**
+     * Remove all collision objects. Meant to be overridden.
+     */
+    public void destroy() {
+        // do nothing
+    }
+
+    /**
      * Access the CollisionSpace associated with the current thread.
      *
      * @return the pre-existing CollisionSpace, or {@code null} if none
@@ -156,6 +163,15 @@ public class CollisionSpace {
     public Collection<PhysicsCollisionObject> getPcoList() {
         Collection<PhysicsCollisionObject> result = new TreeSet<>();
         return result;
+    }
+
+    /**
+     * Test whether the space is empty. Meant to be overridden.
+     *
+     * @return true if empty, otherwise false
+     */
+    public boolean isEmpty() {
+        return true;
     }
 
     /**
