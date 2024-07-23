@@ -513,6 +513,11 @@ public class BulletDebugAppState extends BaseAppState {
         this.assetManager = app.getAssetManager();
         setupMaterials(assetManager);
 
+        DebugInitListener listener = configuration.getInitListener();
+        if (listener != null) {
+            listener.bulletDebugInit(root);
+        }
+
         RenderQueue.ShadowMode mode = configuration.shadowMode();
         root.setShadowMode(mode);
     }

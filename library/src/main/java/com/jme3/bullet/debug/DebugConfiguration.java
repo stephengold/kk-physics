@@ -81,6 +81,11 @@ public class DebugConfiguration {
      */
     private Camera camera;
     /**
+     * callback to be invoked just before the (debug) scene is added to
+     * viewports, or null if none
+     */
+    private DebugInitListener initListener;
+    /**
      * length of each axis arrow (in physics-space units, &gt;0) or 0 for no
      * axis arrows
      */
@@ -169,6 +174,16 @@ public class DebugConfiguration {
      */
     BulletDebugAppState.DebugAppStateFilter getFilter() {
         return filter;
+    }
+
+    /**
+     * Access the callback invoked just before the (debug) scene is added to
+     * viewports.
+     *
+     * @return the pre-existing instance, or null
+     */
+    DebugInitListener getInitListener() {
+        return initListener;
     }
 
     /**
@@ -326,6 +341,16 @@ public class DebugConfiguration {
      */
     public void setFilter(BulletDebugAppState.DebugAppStateFilter filter) {
         this.filter = filter;
+    }
+
+    /**
+     * Replace or remove the init listener for the BulletDebugAppState.
+     *
+     * @param listener the listener to register (alias created) or null to
+     * de-register the current listener (default=null)
+     */
+    public void setInitListener(DebugInitListener listener) {
+        this.initListener = listener;
     }
 
     /**

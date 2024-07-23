@@ -36,6 +36,7 @@ import com.jme3.app.state.AppStateManager;
 import com.jme3.app.state.BaseAppState;
 import com.jme3.bullet.debug.BulletDebugAppState;
 import com.jme3.bullet.debug.DebugConfiguration;
+import com.jme3.bullet.debug.DebugInitListener;
 import com.jme3.bullet.util.NativeLibrary;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.RenderManager;
@@ -249,6 +250,16 @@ public class BulletAppState
      */
     public void setDebugFilter(BulletDebugAppState.DebugAppStateFilter filter) {
         debugConfig.setFilter(filter);
+    }
+
+    /**
+     * Replace or remove the init listener for the BulletDebugAppState.
+     *
+     * @param listener the listener to register, or null to de-register the
+     * current listener (default=null)
+     */
+    public void setDebugInitListener(DebugInitListener listener) {
+        debugConfig.setInitListener(listener);
     }
 
     /**
