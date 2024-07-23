@@ -187,6 +187,24 @@ public class PhysicsRigidBody extends PhysicsBody {
     }
 
     /**
+     * Apply a force to the body's center of mass.
+     * <p>
+     * To apply an impulse, use
+     * {@link #applyCentralImpulse(com.jme3.math.Vector3f)}.
+     *
+     * @param force the force vector (mass times distance per second squared in
+     * physics-space coordinates, not null, finite, unaffected)
+     */
+    public void applyCentralForce(Vector3f force) {
+        Validate.finite(force, "force");
+
+        if (isDynamic()) {
+            Vec3 vec3 = new Vec3(force.x, force.y, force.z);
+            joltBody.addForce(vec3);
+        }
+    }
+
+    /**
      * Apply an impulse to the body's center of mass.
      *
      * @param impulse the impulse vector (mass times distance per second in
@@ -204,6 +222,29 @@ public class PhysicsRigidBody extends PhysicsBody {
                 Vec3 vec3 = new Vec3(impulse.x, impulse.y, impulse.z);
                 joltBody.addImpulse(vec3);
             }
+        }
+    }
+
+    /**
+     * Apply a force to the body.
+     * <p>
+     * To apply an impulse, use
+     * {@link #applyImpulse(com.jme3.math.Vector3f, com.jme3.math.Vector3f)}.
+     *
+     * @param force the force vector (mass times distance per second squared in
+     * physics-space coordinates, not null, finite, unaffected)
+     * @param offset the location to apply the force (relative to the body's
+     * center in physics-space coordinates, not null, finite, unaffected)
+     */
+    public void applyForce(Vector3f force, Vector3f offset) {
+        Validate.finite(force, "force");
+        Validate.finite(offset, "offset");
+
+        if (isDynamic()) {
+            Vec3 force3 = new Vec3(force.x, force.y, force.z);
+            RVec3 rvec3 = joltBody.getCenterOfMassPosition();
+            rvec3.addLocal(offset.x, offset.y, offset.z);
+            joltBody.addForce(force3, rvec3);
         }
     }
 
@@ -264,6 +305,48 @@ public class PhysicsRigidBody extends PhysicsBody {
                 joltBody.addImpulse(imp3, rvec3);
             }
         }
+    }
+
+    /**
+     * Apply a torque to the body.
+     * <p>
+     * To apply a torque impulse, use
+     * {@link #applyTorqueImpulse(com.jme3.math.Vector3f)}.
+     *
+     * @param torque the torque vector (mass times distance squared per second
+     * squared in physics-space coordinates, not null, finite, unaffected)
+     */
+    public void applyTorque(Vector3f torque) {
+        Validate.finite(torque, "torque");
+
+        if (isDynamic()) {
+            Vec3 vec3 = new Vec3(torque.x, torque.y, torque.z);
+            joltBody.addTorque(vec3);
+        }
+    }
+
+    /**
+     * Apply a torque impulse to the body.
+     *
+     * @param torqueImpulse the torque impulse vector (mass times distance
+     * squared per second in physics-space coordinates, not null, unaffected)
+     */
+    public void applyTorqueImpulse(Vector3f torqueImpulse) {
+        Validate.finite(torqueImpulse, "torque impulse");
+
+        if (isDynamic()) {
+            Vec3 vec3 = new Vec3(torqueImpulse.x, torqueImpulse.y,
+                    torqueImpulse.z);
+            joltBody.addAngularImpulse(vec3);
+        }
+    }
+
+    /**
+     * Clear all forces and torques acting on the body.
+     */
+    public void clearForces() {
+        motionProperties.resetForce();
+        motionProperties.resetTorque();
     }
 
     /**
