@@ -670,7 +670,8 @@ public class PhysicsSpace extends CollisionSpace {
         boolean result;
         long pcoId = pco.nativeId();
         if (pco instanceof PhysicsRigidBody) {
-            result = rigidMap.containsKey(pcoId);
+            result =
+                    rigidMap.containsKey(pcoId) || queuedMap.containsKey(pcoId);
         } else {
             result = super.contains(pco);
         }
