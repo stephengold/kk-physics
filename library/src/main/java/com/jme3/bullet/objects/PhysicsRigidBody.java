@@ -172,6 +172,11 @@ public class PhysicsRigidBody extends PhysicsBody {
      * Internal use only.
      */
     public void addToSystemInternal() {
+        assert bodyId == null : bodyId;
+        assert bodyInterface == null : bodyInterface;
+        assert joltBody == null : joltBody;
+        assert motionProperties == null : motionProperties;
+
         PhysicsSpace space = (PhysicsSpace) getCollisionSpace();
         this.bodyInterface = space.getBodyInterface();
         this.joltBody = bodyInterface.createBody(settings);
@@ -1259,6 +1264,22 @@ public class PhysicsRigidBody extends PhysicsBody {
         }
 
         return result;
+    }
+
+    /**
+     * Alter the {@code addedToSpace} field. Internal use only.
+     *
+     * @param physicsSpace (may be null, alias created)
+     */
+    @Override
+    public void setAddedToSpaceInternal(PhysicsSpace physicsSpace) {
+        super.setAddedToSpaceInternal(physicsSpace);
+        if (physicsSpace == null) {
+            this.bodyId = null;
+            this.bodyInterface = null;
+            this.joltBody = null;
+            this.motionProperties = null;
+        }
     }
 
     /**

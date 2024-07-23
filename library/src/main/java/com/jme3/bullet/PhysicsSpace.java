@@ -773,13 +773,12 @@ public class PhysicsSpace extends CollisionSpace {
     private void addRigidBody(PhysicsRigidBody rigidBody) {
         assert rigidBody.getCollisionSpace() == null;
 
-        rigidBody.setAddedToSpaceInternal(this);
-
         if (logger.isLoggable(Level.FINE)) {
             logger.log(Level.FINE, "Adding {0} to {1}.",
                     new Object[]{rigidBody, this});
         }
         enqueueForAdditionToSystemInternal(rigidBody);
+        rigidBody.setAddedToSpaceInternal(this);
     }
 
     /**
