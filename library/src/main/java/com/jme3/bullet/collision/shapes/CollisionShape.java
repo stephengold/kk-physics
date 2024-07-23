@@ -31,6 +31,7 @@
  */
 package com.jme3.bullet.collision.shapes;
 
+import com.github.stephengold.joltjni.ConvexShape;
 import com.github.stephengold.joltjni.ScaledShape;
 import com.github.stephengold.joltjni.ScaledShapeSettings;
 import com.github.stephengold.joltjni.ShapeRefC;
@@ -146,6 +147,16 @@ abstract public class CollisionShape {
         result.set(scale);
 
         assert MyVector3f.isAllPositive(result);
+        return result;
+    }
+
+    /**
+     * Test whether the shape has convex type.
+     *
+     * @return true if convex type, false otherwise
+     */
+    public boolean isConvex() {
+        boolean result = (unscaledShape.getPtr() instanceof ConvexShape);
         return result;
     }
 
