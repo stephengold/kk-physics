@@ -65,6 +65,10 @@ abstract public class CollisionShape {
     // fields
 
     /**
+     * default margin (in physics-space units, &gt;0)
+     */
+    private static float defaultMargin = 0.04f;
+    /**
      * underlying scaled jolt-jni object
      */
     private ShapeRefC joltShape;
@@ -126,6 +130,16 @@ abstract public class CollisionShape {
     }
 
     /**
+     * Return the default margin for new shapes.
+     *
+     * @return the margin thickness (in physics-space units, &gt;0)
+     */
+    public static float getDefaultMargin() {
+        assert defaultMargin > 0f : defaultMargin;
+        return defaultMargin;
+    }
+
+    /**
      * Access the underlying jolt-jni ScaledShape.
      *
      * @return the pre-existing instance (not null)
@@ -180,6 +194,17 @@ abstract public class CollisionShape {
     public long nativeId() {
         long result = unscaledShape.va();
         return result;
+    }
+
+    /**
+     * Alter the default margin for new shapes.
+     *
+     * @param margin the desired margin thickness (in physics-space units,
+     * &gt;0, default=0.04)
+     */
+    public static void setDefaultMargin(float margin) {
+        Validate.positive(margin, "margin");
+        defaultMargin = margin;
     }
 
     /**
