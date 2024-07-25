@@ -236,6 +236,8 @@ public class HullCollisionShape extends CollisionShape {
 
         ConvexHullShapeSettings settings
                 = new ConvexHullShapeSettings(numVertices, directBuffer);
+        float margin = getDefaultMargin();
+        settings.setMaxConvexRadius(margin);
         ShapeRefC shapeRef = settings.create().get();
         setNativeObject(shapeRef);
     }

@@ -147,7 +147,8 @@ public class BoxCollisionShape extends CollisionShape {
         assert MyVector3f.isAllNonNegative(halfExtents) : halfExtents;
 
         Vec3Arg vec3 = new Vec3(halfExtents.x, halfExtents.y, halfExtents.z);
-        BoxShape shape = new BoxShape(vec3);
+        float margin = getDefaultMargin();
+        BoxShape shape = new BoxShape(vec3, margin);
         setNativeObject(shape.toRefC());
     }
 }
