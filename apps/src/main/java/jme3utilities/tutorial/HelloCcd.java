@@ -110,6 +110,7 @@ public class HelloCcd extends SimpleApplication {
         // Create a thin, static disc and add it to the space.
         float discRadius = 2f;
         float discThickness = 0.05f;
+        CollisionShape.setDefaultMargin(0.02f); // less than half the thickness
         CollisionShape discShape = new CylinderCollisionShape(
                 discRadius, discThickness, PhysicsSpace.AXIS_Y);
         PhysicsRigidBody disc
