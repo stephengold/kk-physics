@@ -36,6 +36,8 @@ dependencies {
     testRuntimeOnly(libs.jme3.testdata)
     if (os.isLinux()) {
         testRuntimeOnly(variantOf(libs.jolt.jni.linux64){ classifier(btf) })
+        testRuntimeOnly(variantOf(libs.jolt.jni.linuxarm32hf){ classifier(btf) })
+        testRuntimeOnly(variantOf(libs.jolt.jni.linuxarm64){ classifier(btf) })
     }
     if (os.isMacOsX()) {
         testRuntimeOnly(variantOf(libs.jolt.jni.macosx64){ classifier(btf) })

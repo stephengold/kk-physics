@@ -17,6 +17,8 @@ jme3-lwjgl3 = { module = "org.jmonkeyengine:jme3-lwjgl3", version.ref = "jme" }
 jme3-testdata = { module = "org.jmonkeyengine:jme3-testdata", version.ref = "jme" }
 
 jolt-jni-linux64 = { module = "com.github.stephengold:jolt-jni-Linux64", version.ref = "jolt-jni" }
+jolt-jni-linuxarm32hf = { module = "com.github.stephengold:jolt-jni-Linux_ARM32hf", version.ref = "jolt-jni" }
+jolt-jni-linuxarm64 = { module = "com.github.stephengold:jolt-jni-Linux_ARM64", version.ref = "jolt-jni" }
 jolt-jni-macosx64 = { module = "com.github.stephengold:jolt-jni-MacOSX64", version.ref = "jolt-jni" }
 jolt-jni-macosxarm64 = { module = "com.github.stephengold:jolt-jni-MacOSX_ARM64", version.ref = "jolt-jni" }
 jolt-jni-windows64 = { module = "com.github.stephengold:jolt-jni-Windows64", version.ref = "jolt-jni" }

@@ -38,6 +38,8 @@ dependencies {
 
     if (os.isLinux()) {
         runtimeOnly(variantOf(libs.jolt.jni.linux64){ classifier(btf) })
+        runtimeOnly(variantOf(libs.jolt.jni.linuxarm32hf){ classifier(btf) })
+        runtimeOnly(variantOf(libs.jolt.jni.linuxarm64){ classifier(btf) })
     }
     if (os.isMacOsX()) {
         runtimeOnly(variantOf(libs.jolt.jni.macosx64){ classifier(btf) })
