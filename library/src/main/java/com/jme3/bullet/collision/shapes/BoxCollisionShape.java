@@ -33,7 +33,7 @@ package com.jme3.bullet.collision.shapes;
 
 import com.github.stephengold.joltjni.BoxShape;
 import com.github.stephengold.joltjni.Vec3;
-import com.github.stephengold.joltjni.Vec3Arg;
+import com.github.stephengold.joltjni.readonly.Vec3Arg;
 import com.jme3.math.Vector3f;
 import java.util.logging.Logger;
 import jme3utilities.Validate;

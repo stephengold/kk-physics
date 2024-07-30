@@ -36,7 +36,7 @@ import com.github.stephengold.joltjni.ScaledShape;
 import com.github.stephengold.joltjni.ScaledShapeSettings;
 import com.github.stephengold.joltjni.ShapeRefC;
 import com.github.stephengold.joltjni.Vec3;
-import com.github.stephengold.joltjni.Vec3Arg;
+import com.github.stephengold.joltjni.readonly.Vec3Arg;
 import com.jme3.math.Vector3f;
 import com.jme3.util.BufferUtils;
 import java.nio.FloatBuffer;
