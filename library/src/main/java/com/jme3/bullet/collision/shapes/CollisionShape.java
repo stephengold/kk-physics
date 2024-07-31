@@ -315,9 +315,9 @@ abstract public class CollisionShape {
      */
     protected void setNativeObject(ShapeRefC undecorated) {
         Validate.nonNull(undecorated, "undecorated jolt-jni shape");
-        assert this.joltShapeRef == null : this.joltShapeRef;
+        assert joltShapeRef == null : joltShapeRef;
         assert rotatedShapeRef == null : rotatedShapeRef;
-        assert this.undecoratedShapeRef == null : this.undecoratedShapeRef;
+        assert undecoratedShapeRef == null : undecoratedShapeRef;
 
         this.undecoratedShapeRef = undecorated;
 

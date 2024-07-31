@@ -246,6 +246,7 @@ public class CylinderCollisionShape extends CollisionShape {
 
         float halfHeight = halfExtents.get(axis);
         CylinderShape shape = new CylinderShape(halfHeight, radius, margin);
-        setNativeObject(shape.toRefC());
+        ShapeRefC shapeRef = shape.toRefC();
+        setNativeObject(shapeRef);
     }
 }

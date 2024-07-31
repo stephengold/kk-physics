@@ -158,8 +158,7 @@ public class MeshCollisionShape extends CollisionShape {
      * @return 1
      */
     public int countSubmeshes() {
-        int result = 1;
-        return result;
+        return 1;
     }
 
     /**

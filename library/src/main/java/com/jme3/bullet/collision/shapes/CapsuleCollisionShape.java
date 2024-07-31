@@ -32,6 +32,7 @@
 package com.jme3.bullet.collision.shapes;
 
 import com.github.stephengold.joltjni.CapsuleShape;
+import com.github.stephengold.joltjni.ShapeRefC;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
@@ -203,6 +204,7 @@ public class CapsuleCollisionShape extends CollisionShape {
 
         float halfHeight = height / 2f;
         CapsuleShape shape = new CapsuleShape(halfHeight, radius);
-        setNativeObject(shape.toRefC());
+        ShapeRefC shapeRef = shape.toRefC();
+        setNativeObject(shapeRef);
     }
 }
