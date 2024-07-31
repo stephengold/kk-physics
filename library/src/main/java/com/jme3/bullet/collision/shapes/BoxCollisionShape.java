@@ -32,6 +32,7 @@
 package com.jme3.bullet.collision.shapes;
 
 import com.github.stephengold.joltjni.BoxShape;
+import com.github.stephengold.joltjni.ShapeRefC;
 import com.github.stephengold.joltjni.Vec3;
 import com.github.stephengold.joltjni.readonly.Vec3Arg;
 import com.jme3.math.Vector3f;
@@ -135,6 +136,22 @@ public class BoxCollisionShape extends CollisionShape {
         } else {
             result = storeResult.set(halfExtents);
         }
+        return result;
+    }
+    // *************************************************************************
+    // CollisionShape methods
+
+    /**
+     * Return the collision margin of the shape, according to Jolt Physics.
+     *
+     * @return the margin thickness (in physics-space units, &ge;0)
+     */
+    @Override
+    protected float nativeMargin() {
+        ShapeRefC ref = getUnscaledShape();
+        BoxShape boxShape = (BoxShape) ref.getPtr();
+        float result = boxShape.getConvexRadius();
+
         return result;
     }
     // *************************************************************************

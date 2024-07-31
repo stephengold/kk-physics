@@ -32,6 +32,7 @@
 package com.jme3.bullet.collision.shapes;
 
 import com.github.stephengold.joltjni.CylinderShape;
+import com.github.stephengold.joltjni.ShapeRefC;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.math.Vector3f;
 import java.util.logging.Logger;
@@ -165,6 +166,22 @@ public class CylinderCollisionShape extends CollisionShape {
         }
 
         return canScale;
+    }
+    // *************************************************************************
+    // CollisionShape methods
+
+    /**
+     * Return the collision margin of the shape, according to Jolt Physics.
+     *
+     * @return the margin thickness (in physics-space units, &ge;0)
+     */
+    @Override
+    protected float nativeMargin() {
+        ShapeRefC ref = getUnscaledShape();
+        CylinderShape cylinderShape = (CylinderShape) ref.getPtr();
+        float result = cylinderShape.getConvexRadius();
+
+        return result;
     }
     // *************************************************************************
     // Java private methods

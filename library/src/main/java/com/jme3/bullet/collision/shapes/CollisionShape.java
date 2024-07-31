@@ -69,6 +69,10 @@ abstract public class CollisionShape {
      */
     private static float defaultMargin = 0.04f;
     /**
+     * copy of collision margin (in physics-space units, &ge;0, default=0.04)
+     */
+    protected float margin = defaultMargin;
+    /**
      * underlying scaled jolt-jni object
      */
     private ShapeRefC joltShape;
@@ -147,6 +151,17 @@ abstract public class CollisionShape {
     public ShapeRefC getJoltShape() {
         assert joltShape != null;
         return joltShape;
+    }
+
+    /**
+     * Return the (copied) collision margin of the shape.
+     *
+     * @return the margin thickness (in physics-space units, &ge;0)
+     */
+    public float getMargin() {
+        assert margin >= 0f : margin;
+        assert margin == nativeMargin() : margin + " != " + nativeMargin();
+        return margin;
     }
 
     /**
@@ -263,6 +278,13 @@ abstract public class CollisionShape {
         assert unscaledShape != null;
         return unscaledShape;
     }
+
+    /**
+     * Return the collision margin of the shape, according to Jolt Physics.
+     *
+     * @return the margin thickness (in physics-space units, &ge;0)
+     */
+    abstract protected float nativeMargin();
 
     /**
      * Initialize the underlying jolt-jni objects.

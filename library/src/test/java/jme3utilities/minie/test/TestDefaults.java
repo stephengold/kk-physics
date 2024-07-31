@@ -221,12 +221,14 @@ public class TestDefaults {
         // BoxCollisionShape
         box = new BoxCollisionShape(1f);
         testConvexShape(box);
+        Assert.assertEquals(0.04f, box.getMargin(), 0f);
 
         // CapsuleCollisionShape
         CapsuleCollisionShape capsule = new CapsuleCollisionShape(1f, 1f);
         testConvexShape(capsule);
         Assert.assertEquals(PhysicsSpace.AXIS_Y, capsule.getAxis());
         Assert.assertEquals(1f, capsule.getHeight(), 0f);
+        Assert.assertEquals(0f, capsule.getMargin(), 0f);
 
         // CylinderCollisionShape
         CylinderCollisionShape cylinder = new CylinderCollisionShape(
@@ -234,6 +236,7 @@ public class TestDefaults {
         testConvexShape(cylinder);
         Assert.assertEquals(PhysicsSpace.AXIS_Y, cylinder.getAxis());
         Assert.assertEquals(2f, cylinder.getHeight(), 0f);
+        Assert.assertEquals(0.04f, cylinder.getMargin(), 0f);
 
         // HullCollisionShape
         List<Vector3f> prismVertices = new ArrayList<>(6);
@@ -247,11 +250,13 @@ public class TestDefaults {
         testConvexShape(hull);
         Assert.assertEquals(6, hull.countHullVertices());
         Assert.assertEquals(6, hull.countMeshVertices());
+        Assert.assertEquals(0.0345f, hull.getMargin(), 0.0001f);
     }
 
     private static void testShapesConvex2() {
         // SphereCollisionShape
         SphereCollisionShape sphere = new SphereCollisionShape(1f);
         testConvexShape(sphere);
+        Assert.assertEquals(0f, sphere.getMargin(), 0f);
     }
 }

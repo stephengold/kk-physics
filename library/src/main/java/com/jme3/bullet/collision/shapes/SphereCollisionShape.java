@@ -108,6 +108,16 @@ public class SphereCollisionShape extends CollisionShape {
                 = super.canScale(scale) && MyVector3f.isScaleUniform(scale);
         return canScale;
     }
+
+    /**
+     * Return the collision margin of the shape, according to Jolt Physics.
+     *
+     * @return the margin thickness (in physics-space units, &ge;0)
+     */
+    @Override
+    protected float nativeMargin() {
+        return 0f;
+    }
     // *************************************************************************
     // Java private methods
 
@@ -118,6 +128,7 @@ public class SphereCollisionShape extends CollisionShape {
         assert radius >= 0f : radius;
 
         Shape shape = new SphereShape(radius);
+        this.margin = 0f;
         setNativeObject(shape.toRefC());
     }
 }

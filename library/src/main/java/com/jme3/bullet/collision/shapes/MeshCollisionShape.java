@@ -161,6 +161,16 @@ public class MeshCollisionShape extends CollisionShape {
         int result = 1;
         return result;
     }
+
+    /**
+     * Return the collision margin of the shape, according to Jolt Physics.
+     *
+     * @return the margin thickness (in physics-space units, &ge;0)
+     */
+    @Override
+    protected float nativeMargin() {
+        return 0f;
+    }
     // *************************************************************************
     // Java private methods
 

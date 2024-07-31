@@ -223,6 +223,22 @@ public class HullCollisionShape extends CollisionShape {
         return result;
     }
     // *************************************************************************
+    // CollisionShape methods
+
+    /**
+     * Return the collision margin of the shape, according to Jolt Physics.
+     *
+     * @return the margin thickness (in physics-space units, &ge;0)
+     */
+    @Override
+    protected float nativeMargin() {
+        ShapeRefC ref = getUnscaledShape();
+        ConvexHullShape hullShape = (ConvexHullShape) ref.getPtr();
+        float result = hullShape.getConvexRadius();
+
+        return result;
+    }
+    // *************************************************************************
     // Java private methods
 
     /**
@@ -236,9 +252,11 @@ public class HullCollisionShape extends CollisionShape {
 
         ConvexHullShapeSettings settings
                 = new ConvexHullShapeSettings(numVertices, directBuffer);
-        float margin = getDefaultMargin();
-        settings.setMaxConvexRadius(margin);
+        float defaultMargin = getDefaultMargin();
+        settings.setMaxConvexRadius(defaultMargin);
         ShapeRefC shapeRef = settings.create().get();
+        ConvexHullShape hullShape = (ConvexHullShape) shapeRef.getPtr();
+        this.margin = hullShape.getConvexRadius();
         setNativeObject(shapeRef);
     }
 

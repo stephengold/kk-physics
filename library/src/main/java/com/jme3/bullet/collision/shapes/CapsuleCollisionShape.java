@@ -136,6 +136,16 @@ public class CapsuleCollisionShape extends CollisionShape {
                 = super.canScale(scale) && MyVector3f.isScaleUniform(scale);
         return canScale;
     }
+
+    /**
+     * Return the collision margin of the shape, according to Jolt Physics.
+     *
+     * @return the margin thickness (in physics-space units, &ge;0)
+     */
+    @Override
+    protected float nativeMargin() {
+        return 0f;
+    }
     // *************************************************************************
     // Java private methods
 
@@ -148,6 +158,7 @@ public class CapsuleCollisionShape extends CollisionShape {
 
         float halfHeight = height / 2f;
         CapsuleShape shape = new CapsuleShape(halfHeight, radius);
+        this.margin = 0f;
         setNativeObject(shape.toRefC());
     }
 }
