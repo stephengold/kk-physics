@@ -268,7 +268,9 @@ abstract public class CollisionShape {
      * components positive, unaffected, default=(1,1,1))
      */
     public void setScale(Vector3f scale) {
-        if (!canScale(scale)) {
+        if (this.scale.equals(scale)) {
+            return;
+        } else if (!canScale(scale)) {
             String typeName = getClass().getCanonicalName();
             String message = String.format("%s cannot be scaled to (%s,%s,%s)",
                     typeName, scale.x, scale.y, scale.z);
