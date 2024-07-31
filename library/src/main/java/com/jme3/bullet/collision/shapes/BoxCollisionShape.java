@@ -148,7 +148,7 @@ public class BoxCollisionShape extends CollisionShape {
      */
     @Override
     protected float nativeMargin() {
-        ShapeRefC ref = getUnscaledShape();
+        ShapeRefC ref = getUndecoratedShapeRef();
         BoxShape boxShape = (BoxShape) ref.getPtr();
         float result = boxShape.getConvexRadius();
 

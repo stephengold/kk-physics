@@ -184,7 +184,8 @@ public class HullCollisionShape extends CollisionShape {
      * @return a new array (not null)
      */
     public float[] copyHullVertices() {
-        ConvexHullShape shape = (ConvexHullShape) getUnscaledShape().getPtr();
+        ShapeRefC shapeRef = getUndecoratedShapeRef();
+        ConvexHullShape shape = (ConvexHullShape) shapeRef.getPtr();
         int numHullVertices = shape.getNumPoints();
         float[] result = new float[numHullVertices * numAxes];
         for (int vi = 0; vi < numHullVertices; ++vi) {
@@ -203,7 +204,8 @@ public class HullCollisionShape extends CollisionShape {
      * @return the count (&ge;0)
      */
     public int countHullVertices() {
-        ConvexHullShape shape = (ConvexHullShape) getUnscaledShape().getPtr();
+        ShapeRefC shapeRef = getUndecoratedShapeRef();
+        ConvexHullShape shape = (ConvexHullShape) shapeRef.getPtr();
         int result = shape.getNumPoints();
 
         return result;
@@ -232,7 +234,7 @@ public class HullCollisionShape extends CollisionShape {
      */
     @Override
     protected float nativeMargin() {
-        ShapeRefC ref = getUnscaledShape();
+        ShapeRefC ref = getUndecoratedShapeRef();
         ConvexHullShape hullShape = (ConvexHullShape) ref.getPtr();
         float result = hullShape.getConvexRadius();
 

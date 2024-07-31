@@ -73,13 +73,13 @@ abstract public class CollisionShape {
      */
     protected float margin = defaultMargin;
     /**
-     * underlying scaled jolt-jni object
+     * reference to the scaled jolt-jni shape
      */
-    private ShapeRefC joltShape;
+    private ShapeRefC joltShapeRef;
     /**
-     * underlying unscaled jolt-jni object
+     * reference to the undecorated jolt-jni shape
      */
-    private ShapeRefC unscaledShape;
+    private ShapeRefC undecoratedShapeRef;
     /**
      * copy of the scale factors, one for each local axis
      */
@@ -124,10 +124,10 @@ abstract public class CollisionShape {
      * (capacity a multiple of 9)
      */
     public FloatBuffer copyTriangles() {
-        int numTriangles = joltShape.countDebugTriangles();
+        int numTriangles = joltShapeRef.countDebugTriangles();
         int numFloats = 9 * numTriangles;
         FloatBuffer result = BufferUtils.createFloatBuffer(numFloats);
-        joltShape.copyDebugTriangles(result);
+        joltShapeRef.copyDebugTriangles(result);
         MyBuffer.scale(result, 0, numFloats, scale);
 
         return result;
@@ -144,13 +144,13 @@ abstract public class CollisionShape {
     }
 
     /**
-     * Access the underlying jolt-jni ScaledShape.
+     * Access the underlying jolt-jni {@code Shape}.
      *
-     * @return the pre-existing instance (not null)
+     * @return the pre-existing reference (not null)
      */
-    public ShapeRefC getJoltShape() {
-        assert joltShape != null;
-        return joltShape;
+    public ShapeRefC getJoltShapeRef() {
+        assert joltShapeRef != null;
+        return joltShapeRef;
     }
 
     /**
@@ -187,7 +187,7 @@ abstract public class CollisionShape {
      * @return true if convex type, false otherwise
      */
     public boolean isConvex() {
-        boolean result = (unscaledShape.getPtr() instanceof ConvexShape);
+        boolean result = (undecoratedShapeRef.getPtr() instanceof ConvexShape);
         return result;
     }
 
@@ -197,7 +197,7 @@ abstract public class CollisionShape {
      * @return true if non-moving, false otherwise
      */
     public boolean isNonMoving() {
-        boolean result = joltShape.mustBeStatic();
+        boolean result = joltShapeRef.mustBeStatic();
         return result;
     }
 
@@ -207,7 +207,7 @@ abstract public class CollisionShape {
      * @return the raw long value associated with the unscaled shape
      */
     public long nativeId() {
-        long result = unscaledShape.va();
+        long result = undecoratedShapeRef.va();
         return result;
     }
 
@@ -261,8 +261,8 @@ abstract public class CollisionShape {
 
         Vec3Arg vec3 = new Vec3(scale.x, scale.y, scale.z);
         ScaledShapeSettings settings
-                = new ScaledShapeSettings(unscaledShape, vec3);
-        this.joltShape = settings.create().get();
+                = new ScaledShapeSettings(undecoratedShapeRef, vec3);
+        this.joltShapeRef = settings.create().get();
 
         logger.log(Level.FINE, "Scaling {0}.", this);
     }
@@ -270,13 +270,13 @@ abstract public class CollisionShape {
     // new protected methods
 
     /**
-     * Access the underlying jolt-jni Shape.
+     * Access the undecorated jolt-jni {@code Shape}.
      *
-     * @return the pre-existing instance (not null)
+     * @return the pre-existing reference (not null)
      */
-    protected ShapeRefC getUnscaledShape() {
-        assert unscaledShape != null;
-        return unscaledShape;
+    protected ShapeRefC getUndecoratedShapeRef() {
+        assert undecoratedShapeRef != null;
+        return undecoratedShapeRef;
     }
 
     /**
@@ -289,19 +289,19 @@ abstract public class CollisionShape {
     /**
      * Initialize the underlying jolt-jni objects.
      *
-     * @param unscaled the unscaled shape to use
+     * @param undecorated a reference to the undecorated shape to use (not null)
      */
-    protected void setNativeObject(ShapeRefC unscaled) {
-        Validate.nonNull(unscaled, "unscaled jolt shape");
-        assert this.joltShape == null : this.joltShape;
-        assert this.unscaledShape == null : this.unscaledShape;
+    protected void setNativeObject(ShapeRefC undecorated) {
+        Validate.nonNull(undecorated, "undecorated jolt-jni shape");
+        assert this.joltShapeRef == null : this.joltShapeRef;
+        assert this.undecoratedShapeRef == null : this.undecoratedShapeRef;
 
-        this.unscaledShape = unscaled;
+        this.undecoratedShapeRef = undecorated;
 
         Vec3Arg vec3 = new Vec3(scale.x, scale.y, scale.z);
         ScaledShapeSettings settings
-                = new ScaledShapeSettings(unscaledShape, vec3);
-        this.joltShape = settings.create().get();
+                = new ScaledShapeSettings(undecoratedShapeRef, vec3);
+        this.joltShapeRef = settings.create().get();
     }
     // *************************************************************************
     // Java private methods
@@ -312,7 +312,7 @@ abstract public class CollisionShape {
      * @return true if the factors match exactly, otherwise false
      */
     private boolean checkScale() {
-        ScaledShape ss = (ScaledShape) joltShape.getPtr();
+        ScaledShape ss = (ScaledShape) joltShapeRef.getPtr();
         Vec3Arg joltScale = ss.getScale();
 
         boolean result = (joltScale.getX() == scale.x

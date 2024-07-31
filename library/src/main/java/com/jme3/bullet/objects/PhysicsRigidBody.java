@@ -1367,7 +1367,7 @@ public class PhysicsRigidBody extends PhysicsBody {
      */
     private void newSettings(CollisionShape shape, float mass, Vec3d location,
             Quaternion orientation, PhysicsRigidBody oldPrb) {
-        ShapeRefC joltShape = shape.getJoltShape();
+        ShapeRefC joltShape = shape.getJoltShapeRef();
         RVec3 rvec3 = new RVec3(location.x, location.y, location.z);
         Quat quat = new Quat(orientation.getX(), orientation.getY(),
                 orientation.getZ(), orientation.getW());

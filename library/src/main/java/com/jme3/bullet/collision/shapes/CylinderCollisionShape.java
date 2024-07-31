@@ -177,7 +177,7 @@ public class CylinderCollisionShape extends CollisionShape {
      */
     @Override
     protected float nativeMargin() {
-        ShapeRefC ref = getUnscaledShape();
+        ShapeRefC ref = getUndecoratedShapeRef();
         CylinderShape cylinderShape = (CylinderShape) ref.getPtr();
         float result = cylinderShape.getConvexRadius();
 
