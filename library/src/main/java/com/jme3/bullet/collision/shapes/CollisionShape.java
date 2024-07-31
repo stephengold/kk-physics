@@ -124,10 +124,10 @@ abstract public class CollisionShape {
      * (capacity a multiple of 9)
      */
     public FloatBuffer copyTriangles() {
-        int numTriangles = joltShapeRef.countDebugTriangles();
+        int numTriangles = undecoratedShapeRef.countDebugTriangles();
         int numFloats = 9 * numTriangles;
         FloatBuffer result = BufferUtils.createFloatBuffer(numFloats);
-        joltShapeRef.copyDebugTriangles(result);
+        undecoratedShapeRef.copyDebugTriangles(result);
         MyBuffer.scale(result, 0, numFloats, scale);
 
         return result;
