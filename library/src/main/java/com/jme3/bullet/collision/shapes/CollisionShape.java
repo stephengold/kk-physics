@@ -32,11 +32,16 @@
 package com.jme3.bullet.collision.shapes;
 
 import com.github.stephengold.joltjni.ConvexShape;
+import com.github.stephengold.joltjni.Quat;
+import com.github.stephengold.joltjni.RotatedTranslatedShapeSettings;
 import com.github.stephengold.joltjni.ScaledShape;
 import com.github.stephengold.joltjni.ScaledShapeSettings;
 import com.github.stephengold.joltjni.ShapeRefC;
 import com.github.stephengold.joltjni.Vec3;
+import com.github.stephengold.joltjni.readonly.ConstShape;
+import com.github.stephengold.joltjni.readonly.QuatArg;
 import com.github.stephengold.joltjni.readonly.Vec3Arg;
+import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.util.BufferUtils;
 import java.nio.FloatBuffer;
@@ -44,6 +49,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import jme3utilities.Validate;
 import jme3utilities.math.MyBuffer;
+import jme3utilities.math.MyQuaternion;
 import jme3utilities.math.MyVector3f;
 
 /**
@@ -73,9 +79,19 @@ abstract public class CollisionShape {
      */
     protected float margin = defaultMargin;
     /**
-     * reference to the scaled jolt-jni shape
+     * copy of the shape rotation
+     */
+    protected Quaternion rotation = new Quaternion();
+    /**
+     * reference to the rotated-and-scaled jolt-jni shape, which might be the
+     * rotated shape or the undecorated shape
      */
     private ShapeRefC joltShapeRef;
+    /**
+     * reference to the rotated-but-unscaled jolt-jni shape, which might be the
+     * undecorated shape
+     */
+    private ShapeRefC rotatedShapeRef;
     /**
      * reference to the undecorated jolt-jni shape
      */
@@ -128,6 +144,8 @@ abstract public class CollisionShape {
         int numFloats = 9 * numTriangles;
         FloatBuffer result = BufferUtils.createFloatBuffer(numFloats);
         undecoratedShapeRef.copyDebugTriangles(result);
+
+        MyBuffer.rotate(result, 0, numFloats, rotation);
         MyBuffer.scale(result, 0, numFloats, scale);
 
         return result;
@@ -259,10 +277,14 @@ abstract public class CollisionShape {
 
         this.scale.set(scale);
 
-        Vec3Arg vec3 = new Vec3(scale.x, scale.y, scale.z);
-        ScaledShapeSettings settings
-                = new ScaledShapeSettings(undecoratedShapeRef, vec3);
-        this.joltShapeRef = settings.create().get();
+        if (MyVector3f.isScaleIdentity(scale)) {
+            this.joltShapeRef = rotatedShapeRef;
+        } else {
+            Vec3Arg vec3 = new Vec3(scale.x, scale.y, scale.z);
+            ScaledShapeSettings settings
+                    = new ScaledShapeSettings(rotatedShapeRef, vec3);
+            this.joltShapeRef = settings.create().get();
+        }
 
         logger.log(Level.FINE, "Scaling {0}.", this);
     }
@@ -294,14 +316,31 @@ abstract public class CollisionShape {
     protected void setNativeObject(ShapeRefC undecorated) {
         Validate.nonNull(undecorated, "undecorated jolt-jni shape");
         assert this.joltShapeRef == null : this.joltShapeRef;
+        assert rotatedShapeRef == null : rotatedShapeRef;
         assert this.undecoratedShapeRef == null : this.undecoratedShapeRef;
 
         this.undecoratedShapeRef = undecorated;
 
-        Vec3Arg vec3 = new Vec3(scale.x, scale.y, scale.z);
-        ScaledShapeSettings settings
-                = new ScaledShapeSettings(undecoratedShapeRef, vec3);
-        this.joltShapeRef = settings.create().get();
+        if (MyQuaternion.isRotationIdentity(rotation)) {
+            this.rotatedShapeRef = undecoratedShapeRef;
+        } else {
+            QuatArg quat = new Quat(rotation.getX(), rotation.getY(),
+                    rotation.getZ(), rotation.getW());
+            Vec3Arg zeroOffset = new Vec3();
+            RotatedTranslatedShapeSettings settings
+                    = new RotatedTranslatedShapeSettings(
+                            zeroOffset, quat, undecoratedShapeRef);
+            this.rotatedShapeRef = settings.create().get();
+        }
+
+        if (MyVector3f.isScaleIdentity(scale)) {
+            this.joltShapeRef = rotatedShapeRef;
+        } else {
+            Vec3Arg vec3 = new Vec3(scale.x, scale.y, scale.z);
+            ScaledShapeSettings settings
+                    = new ScaledShapeSettings(rotatedShapeRef, vec3);
+            this.joltShapeRef = settings.create().get();
+        }
     }
     // *************************************************************************
     // Java private methods
@@ -312,8 +351,14 @@ abstract public class CollisionShape {
      * @return true if the factors match exactly, otherwise false
      */
     private boolean checkScale() {
-        ScaledShape ss = (ScaledShape) joltShapeRef.getPtr();
-        Vec3Arg joltScale = ss.getScale();
+        ConstShape shape = joltShapeRef.getPtr();
+        Vec3Arg joltScale;
+        if (shape instanceof ScaledShape) {
+            ScaledShape ss = (ScaledShape) joltShapeRef.getPtr();
+            joltScale = ss.getScale();
+        } else {
+            joltScale = new Vec3(1f, 1f, 1f);
+        }
 
         boolean result = (joltScale.getX() == scale.x
                 && joltScale.getY() == scale.y
