@@ -230,11 +230,11 @@ public class TestDefaults {
         Assert.assertEquals(1f, capsule.getHeight(), 0f);
         Assert.assertEquals(0f, capsule.getMargin(), 0f);
 
-        // CylinderCollisionShape
-        CylinderCollisionShape cylinder = new CylinderCollisionShape(
-                new Vector3f(1f, 1f, 1f), PhysicsSpace.AXIS_Y);
+        // Z-axis CylinderCollisionShape
+        CylinderCollisionShape cylinder
+                = new CylinderCollisionShape(new Vector3f(1f, 1f, 1f));
         testConvexShape(cylinder);
-        Assert.assertEquals(PhysicsSpace.AXIS_Y, cylinder.getAxis());
+        Assert.assertEquals(PhysicsSpace.AXIS_Z, cylinder.getAxis());
         Assert.assertEquals(2f, cylinder.getHeight(), 0f);
         Assert.assertEquals(0.04f, cylinder.getMargin(), 0f);
 

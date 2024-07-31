@@ -34,6 +34,7 @@ package com.jme3.bullet.collision.shapes;
 import com.github.stephengold.joltjni.CylinderShape;
 import com.github.stephengold.joltjni.ShapeRefC;
 import com.jme3.bullet.PhysicsSpace;
+import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import java.util.logging.Logger;
 import jme3utilities.Validate;
@@ -57,6 +58,10 @@ public class CylinderCollisionShape extends CollisionShape {
     // fields
 
     /**
+     * index of the main (height) axis (0&rarr;X, 1&rarr;Y, 2&rarr;Z)
+     */
+    private int axis;
+    /**
      * copy of the unscaled half extents for each local axis (not null, no
      * negative component)
      */
@@ -75,32 +80,50 @@ public class CylinderCollisionShape extends CollisionShape {
      *
      * @param radius the desired unscaled radius (&ge;0)
      * @param height the desired unscaled height (&ge;0)
-     * @param axisIndex 1
+     * @param axisIndex which local axis to use for the height: 0&rarr;X,
+     * 1&rarr;Y, 2&rarr;Z (default=2)
      */
     public CylinderCollisionShape(float radius, float height, int axisIndex) {
         Validate.nonNegative(radius, "radius");
         Validate.nonNegative(height, "height");
-        Validate.inRange(axisIndex, "axis index", 1, 1);
+        Validate.axisIndex(axisIndex, "axis index");
 
-        float halfHeight = height / 2f;
-        halfExtents.set(radius, halfHeight, radius);
+        this.axis = axisIndex;
+        halfExtents.set(radius, radius, radius);
+        halfExtents.set(axisIndex, height / 2f);
         createShape();
     }
 
     /**
-     * Instantiate a cylinder shape around the specified axis.
+     * Instantiate a Z-axis cylinder shape with the specified half extents.
      *
      * @param halfExtents the desired unscaled half extents (not null, no
      * negative component, unaffected)
-     * @param axisIndex 1
+     */
+    public CylinderCollisionShape(Vector3f halfExtents) {
+        Validate.nonNegative(halfExtents, "half extents");
+
+        this.halfExtents.set(halfExtents);
+        this.axis = PhysicsSpace.AXIS_Z;
+        createShape();
+    }
+
+    /**
+     * Instantiate a cylinder shape around the specified main (height) axis.
+     *
+     * @param halfExtents the desired unscaled half extents (not null, no
+     * negative component, unaffected)
+     * @param axisIndex which local axis to use for the height: 0&rarr;X,
+     * 1&rarr;Y, 2&rarr;Z (default=2)
      */
     public CylinderCollisionShape(Vector3f halfExtents, int axisIndex) {
         Validate.nonNegative(halfExtents, "half extents");
         Validate.require(
                 halfExtents.x == halfExtents.z, "equal X and Z extents");
-        Validate.inRange(axisIndex, "axis index", 1, 1);
+        Validate.axisIndex(axisIndex, "axis index");
 
         this.halfExtents.set(halfExtents);
+        this.axis = axisIndex;
         createShape();
     }
     // *************************************************************************
@@ -109,10 +132,13 @@ public class CylinderCollisionShape extends CollisionShape {
     /**
      * Return the main (height) axis of the cylinder.
      *
-     * @return 1
+     * @return the axis index: 0&rarr;X, 1&rarr;Y, 2&rarr;Z
      */
     public int getAxis() {
-        return PhysicsSpace.AXIS_Y;
+        assert axis == PhysicsSpace.AXIS_X
+                || axis == PhysicsSpace.AXIS_Y
+                || axis == PhysicsSpace.AXIS_Z : axis;
+        return axis;
     }
 
     /**
@@ -140,7 +166,7 @@ public class CylinderCollisionShape extends CollisionShape {
      * @return the unscaled height (&ge;0)
      */
     public float getHeight() {
-        float result = 2f * halfExtents.get(PhysicsSpace.AXIS_Y);
+        float result = 2f * halfExtents.get(axis);
 
         assert result >= 0f : result;
         return result;
@@ -160,7 +186,11 @@ public class CylinderCollisionShape extends CollisionShape {
     public boolean canScale(Vector3f scale) {
         boolean canScale = super.canScale(scale);
         if (canScale) {
-            if (scale.x != scale.z) {
+            if (axis == PhysicsSpace.AXIS_X && scale.y != scale.z) {
+                canScale = false;
+            } else if (axis == PhysicsSpace.AXIS_Y && scale.z != scale.x) {
+                canScale = false;
+            } else if (axis == PhysicsSpace.AXIS_Z && scale.x != scale.y) {
                 canScale = false;
             }
         }
@@ -191,11 +221,30 @@ public class CylinderCollisionShape extends CollisionShape {
      */
     private void createShape() {
         assert MyVector3f.isAllNonNegative(halfExtents) : halfExtents;
-        assert halfExtents.x == halfExtents.z : halfExtents;
 
-        float halfHeight = halfExtents.y;
-        float radius = halfExtents.x;
-        float margin = getDefaultMargin();
+        this.margin = getDefaultMargin();
+
+        float radius;
+        switch (axis) {
+            case PhysicsSpace.AXIS_X:
+                rotation.fromAngles(0f, 0f, -FastMath.HALF_PI);
+                radius = halfExtents.y;
+                assert radius == halfExtents.z;
+                break;
+            case PhysicsSpace.AXIS_Y:
+                radius = halfExtents.z;
+                assert radius == halfExtents.x;
+                break;
+            case PhysicsSpace.AXIS_Z:
+                rotation.fromAngles(FastMath.HALF_PI, 0f, 0f);
+                radius = halfExtents.x;
+                assert radius == halfExtents.y;
+                break;
+            default:
+                throw new IllegalStateException("axis = " + axis);
+        }
+
+        float halfHeight = halfExtents.get(axis);
         CylinderShape shape = new CylinderShape(halfHeight, radius, margin);
         setNativeObject(shape.toRefC());
     }
