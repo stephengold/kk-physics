@@ -21,7 +21,7 @@ tasks.named<Jar>("jar") {
     }
 }
 
-val btf = "ReleaseSp"
+val btf = "DebugSp"
 val os = DefaultNativePlatform.getCurrentOperatingSystem()
 
 dependencies {
