@@ -33,6 +33,7 @@ package com.jme3.bullet.collision.shapes;
 
 import com.github.stephengold.joltjni.CapsuleShape;
 import com.jme3.bullet.PhysicsSpace;
+import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import java.util.logging.Logger;
 import jme3utilities.Validate;
@@ -64,6 +65,11 @@ public class CapsuleCollisionShape extends CollisionShape {
      * copy of the unscaled radius (in shape units, &ge;0)
      */
     private float radius;
+    /**
+     * copy of the index of the main (height) axis (0&rarr;X, 1&rarr;Y,
+     * 2&rarr;Z)
+     */
+    private int axis;
     // *************************************************************************
     // constructors
 
@@ -86,6 +92,27 @@ public class CapsuleCollisionShape extends CollisionShape {
 
         this.radius = radius;
         this.height = height;
+        this.axis = PhysicsSpace.AXIS_Y;
+        createShape();
+    }
+
+    /**
+     * Instantiate a capsule shape around the specified main (height) axis.
+     *
+     * @param radius the desired radius (in shape units, &ge;0)
+     * @param height the desired height of the cylindrical portion (in shape
+     * units, &ge;0)
+     * @param axisIndex which local axis to use for the height: 0&rarr;X,
+     * 1&rarr;Y, 2&rarr;Z (default=1)
+     */
+    public CapsuleCollisionShape(float radius, float height, int axisIndex) {
+        Validate.nonNegative(radius, "radius");
+        Validate.nonNegative(height, "height");
+        Validate.axisIndex(axisIndex, "axis index");
+
+        this.radius = radius;
+        this.height = height;
+        this.axis = axisIndex;
         createShape();
     }
     // *************************************************************************
@@ -94,10 +121,13 @@ public class CapsuleCollisionShape extends CollisionShape {
     /**
      * Return the main (height) axis of the capsule.
      *
-     * @return 1
+     * @return the axis index: 0&rarr;X, 1&rarr;Y, 2&rarr;Z
      */
     public int getAxis() {
-        return PhysicsSpace.AXIS_Y;
+        assert axis == PhysicsSpace.AXIS_X
+                || axis == PhysicsSpace.AXIS_Y
+                || axis == PhysicsSpace.AXIS_Z : axis;
+        return axis;
     }
 
     /**
@@ -156,9 +186,23 @@ public class CapsuleCollisionShape extends CollisionShape {
         assert radius >= 0f : radius;
         assert height >= 0f : height;
 
+        this.margin = 0f;
+
+        switch (axis) {
+            case PhysicsSpace.AXIS_X:
+                rotation.fromAngles(0f, 0f, -FastMath.HALF_PI);
+                break;
+            case PhysicsSpace.AXIS_Y:
+                break;
+            case PhysicsSpace.AXIS_Z:
+                rotation.fromAngles(FastMath.HALF_PI, 0f, 0f);
+                break;
+            default:
+                throw new IllegalStateException("axis = " + axis);
+        }
+
         float halfHeight = height / 2f;
         CapsuleShape shape = new CapsuleShape(halfHeight, radius);
-        this.margin = 0f;
         setNativeObject(shape.toRefC());
     }
 }
