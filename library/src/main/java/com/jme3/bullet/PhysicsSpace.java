@@ -540,7 +540,7 @@ public class PhysicsSpace extends CollisionSpace {
      * <p>
      * Typically, when a body is added to a space, the body's gravity gets set
      * to that of the space. Thus, it is preferable to set the space's gravity
-     * before adding any bodies to the space.
+     * before adding any bodies.
      *
      * @param gravity the desired acceleration vector (in physics-space
      * coordinates, not null, unaffected, default=(0,-9.81,0))
@@ -720,8 +720,8 @@ public class PhysicsSpace extends CollisionSpace {
         boolean result;
         long pcoId = pco.nativeId();
         if (pco instanceof PhysicsRigidBody) {
-            result =
-                    rigidMap.containsKey(pcoId) || queuedMap.containsKey(pcoId);
+            result = rigidMap.containsKey(pcoId)
+                    || queuedMap.containsKey(pcoId);
         } else {
             result = super.contains(pco);
         }

@@ -71,7 +71,7 @@ abstract public class CollisionShape {
     // fields
 
     /**
-     * default margin (in physics-space units, &gt;0)
+     * default collision margin for most shapes (in physics-space units, &ge;0)
      */
     private static float defaultMargin = 0.04f;
     /**
@@ -152,7 +152,7 @@ abstract public class CollisionShape {
     }
 
     /**
-     * Return the default margin for new shapes.
+     * Return the default collision margin for most new shapes.
      *
      * @return the margin thickness (in physics-space units, &gt;0)
      */

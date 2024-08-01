@@ -39,7 +39,7 @@ import java.util.logging.Logger;
 import jme3utilities.math.MyMath;
 
 /**
- * Static interface to the jolt-jni library.
+ * Static interface to the jolt-jni native library.
  *
  * @author Stephen Gold sgold@sonic.net
  */

@@ -241,7 +241,7 @@ public class TestDefaults {
         testConvexShape(box);
         Assert.assertEquals(0.04f, box.getMargin(), 0f);
 
-        // CapsuleCollisionShape
+        // Y-axis CapsuleCollisionShape
         CapsuleCollisionShape capsule = new CapsuleCollisionShape(1f, 1f);
         testConvexShape(capsule);
         Assert.assertEquals(PhysicsSpace.AXIS_Y, capsule.getAxis());

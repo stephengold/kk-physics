@@ -81,7 +81,7 @@ public class RigidBodyControl
      */
     private boolean enabled = true;
     /**
-     * PhysicsSpace to which the body is (or would be) added
+     * space to which the body is (or would be) added
      */
     private PhysicsSpace space = null;
     /**

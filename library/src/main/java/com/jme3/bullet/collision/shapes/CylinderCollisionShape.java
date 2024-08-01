@@ -78,8 +78,8 @@ public class CylinderCollisionShape extends CollisionShape {
     /**
      * Instantiate a cylinder shape around the specified main (height) axis.
      *
-     * @param radius the desired unscaled radius (&ge;0)
-     * @param height the desired unscaled height (&ge;0)
+     * @param radius the desired unscaled radius (in shape units, &ge;0)
+     * @param height the desired unscaled height (in shape units, &ge;0)
      * @param axisIndex which local axis to use for the height: 0&rarr;X,
      * 1&rarr;Y, 2&rarr;Z (default=2)
      */
@@ -176,7 +176,8 @@ public class CylinderCollisionShape extends CollisionShape {
 
     /**
      * Test whether the specified scale factors can be applied to this shape.
-     * For cylinder shapes, radial scaling must be uniform.
+     * For cylinder shapes, radial scaling must be uniform. The shape is
+     * unaffected.
      *
      * @param scale the desired scale factor for each local axis (may be null,
      * unaffected)
@@ -197,8 +198,6 @@ public class CylinderCollisionShape extends CollisionShape {
 
         return canScale;
     }
-    // *************************************************************************
-    // CollisionShape methods
 
     /**
      * Return the collision margin of the shape, according to Jolt Physics.
