@@ -69,10 +69,22 @@ public class TestDefaults {
      */
     @Test
     public void testDefaults() {
+        PhysicsSpace pSpace = new PhysicsSpace(1);
+        // deactivation deadline
+        float deadline = pSpace.getDeactivationDeadline();
+        Assert.assertEquals(2f, deadline, 0f);
+
+        // deactivation enabled flag
+        boolean enabled = pSpace.isDeactivationEnabled();
+        Assert.assertTrue(enabled);
+
+        pSpace.setDeactivationEnabled(false);
+        enabled = pSpace.isDeactivationEnabled();
+        Assert.assertFalse(enabled);
+
         CollisionSpace cSpace = new CollisionSpace(1);
         testCollisionSpace(cSpace);
 
-        PhysicsSpace pSpace = new PhysicsSpace(1);
         testPhysicsSpace(pSpace);
 
         testShapes();

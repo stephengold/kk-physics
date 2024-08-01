@@ -39,6 +39,7 @@ import com.github.stephengold.joltjni.Jolt;
 import com.github.stephengold.joltjni.MapObj2Bp;
 import com.github.stephengold.joltjni.ObjVsBpFilter;
 import com.github.stephengold.joltjni.ObjVsObjFilter;
+import com.github.stephengold.joltjni.PhysicsSettings;
 import com.github.stephengold.joltjni.PhysicsSystem;
 import com.github.stephengold.joltjni.TempAllocator;
 import com.github.stephengold.joltjni.TempAllocatorImpl;
@@ -221,6 +222,7 @@ public class PhysicsSpace extends CollisionSpace {
                 maxBodies, numBodyMutexes, maxBodyPairs, maxContactConstraints,
                 mapObj2Bp, objVsBpFilter, objVsObjFilter);
 
+        setDeactivationDeadline(2f);
         Vec3Arg defaultGravity = new Vec3(gravity.x, gravity.y, gravity.z);
         physicsSystem.setGravity(defaultGravity);
 
@@ -368,6 +370,18 @@ public class PhysicsSpace extends CollisionSpace {
     }
 
     /**
+     * Return the deactivation deadline.
+     *
+     * @return the deadline (in simulated seconds, &gt;0)
+     */
+    public float getDeactivationDeadline() {
+        PhysicsSettings settings = physicsSystem.getPhysicsSettings();
+        float result = settings.getTimeBeforeSleep();
+
+        return result;
+    }
+
+    /**
      * Copy the gravitational acceleration for newly-added bodies.
      *
      * @param storeResult storage for the result (modified if not null)
@@ -417,6 +431,18 @@ public class PhysicsSpace extends CollisionSpace {
      */
     public SolverType getSolverType() {
         return SolverType.SI;
+    }
+
+    /**
+     * Test the deactivation enable flag.
+     *
+     * @return true if deactivation is enabled, otherwise false
+     */
+    public boolean isDeactivationEnabled() {
+        PhysicsSettings settings = physicsSystem.getPhysicsSettings();
+        boolean result = settings.getAllowSleeping();
+
+        return result;
     }
 
     /**
@@ -483,6 +509,30 @@ public class PhysicsSpace extends CollisionSpace {
     public void setContactManager(ContactManager manager) {
         Validate.nonNull(manager, "manager");
         this.manager = manager;
+    }
+
+    /**
+     * Alter the deactivation deadline.
+     *
+     * @param newDeadline the desired deadline (in simulated seconds, &gt;0,
+     * default=2)
+     */
+    final public void setDeactivationDeadline(float newDeadline) {
+        PhysicsSettings settings = physicsSystem.getPhysicsSettings();
+        settings.setTimeBeforeSleep(newDeadline);
+        physicsSystem.setPhysicsSettings(settings);
+    }
+
+    /**
+     * Alter the deactivation enable flag.
+     *
+     * @param newSetting true to enable deactivation, false to disable it
+     * (default=true)
+     */
+    public void setDeactivationEnabled(boolean newSetting) {
+        PhysicsSettings settings = physicsSystem.getPhysicsSettings();
+        settings.setAllowSleeping(newSetting);
+        physicsSystem.setPhysicsSettings(settings);
     }
 
     /**
