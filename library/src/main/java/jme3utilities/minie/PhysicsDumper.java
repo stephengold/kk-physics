@@ -26,6 +26,7 @@
  */
 package jme3utilities.minie;
 
+import com.github.stephengold.joltjni.EMotionQuality;
 import com.jme3.app.state.AppState;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.PhysicsSpace;
@@ -206,6 +207,7 @@ public class PhysicsDumper extends Dumper {
 
         // 2nd line: activation state and contact parameters
         addLine(indent);
+        addActivationState(body);
         addContactParameters(body);
 
         if (body.isDynamic()) {
@@ -486,6 +488,17 @@ public class PhysicsDumper extends Dumper {
     // private methods
 
     /**
+     * Print the activation state of the specified rigid body.
+     *
+     * @param body (not null, unaffected)
+     */
+    private void addActivationState(PhysicsRigidBody body) {
+        boolean isActive = body.isActive();
+        stream.print(" act=");
+        stream.print(isActive);
+    }
+
+    /**
      * Print the contact parameters of the specified rigid body.
      *
      * @param body (not null, unaffected)
@@ -510,7 +523,26 @@ public class PhysicsDumper extends Dumper {
      */
     private void addDynamicProperties(
             PhysicsRigidBody rigidBody, String indent) {
-        // first line: linear velocity, applied force
+        // first line: gravity factor, motion quality, and damping
+        addLine(indent);
+
+        float fFactor = rigidBody.getGravityFactor();
+        stream.print(" gFactor=");
+        stream.print(MyString.describe(fFactor));
+
+        EMotionQuality quality = rigidBody.getMotionQuality();
+        stream.print(" quality=");
+        stream.print(quality);
+
+        float angularDamping = rigidBody.getAngularDamping();
+        float linearDamping = rigidBody.getLinearDamping();
+        stream.print(" damp[l=");
+        stream.print(MyString.describe(linearDamping));
+        stream.print(" a=");
+        stream.print(MyString.describe(angularDamping));
+        stream.print(']');
+
+        // 2nd line: linear velocity, applied force
         addLine(indent);
 
         Vector3f v = rigidBody.getLinearVelocity(null);
