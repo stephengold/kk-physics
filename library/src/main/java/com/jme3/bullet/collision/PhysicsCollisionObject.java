@@ -31,6 +31,7 @@
  */
 package com.jme3.bullet.collision;
 
+import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.CollisionSpace;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.collision.shapes.CollisionShape;
@@ -111,6 +112,27 @@ abstract public class PhysicsCollisionObject
      * @param forceFlag true to force activation
      */
     abstract public void activate(boolean forceFlag);
+
+    /**
+     * Calculate an axis-aligned bounding box for this object, based on its
+     * collision shape. Note: the calculated bounds are seldom minimal; they are
+     * typically larger than necessary due to centering constraints and
+     * collision margins.
+     *
+     * @param storeResult storage for the result (modified if not null)
+     * @return a bounding box in physics-space coordinates (either storeResult
+     * or a new instance)
+     */
+    public BoundingBox boundingBox(BoundingBox storeResult) {
+        BoundingBox result
+                = (storeResult == null) ? new BoundingBox() : storeResult;
+
+        Vector3f translation = getPhysicsLocation(null);
+        Matrix3f rotation = getPhysicsRotationMatrix(null);
+        collisionShape.boundingBox(translation, rotation, result);
+
+        return result;
+    }
 
     /**
      * Determine which normals to include in new debug meshes.
