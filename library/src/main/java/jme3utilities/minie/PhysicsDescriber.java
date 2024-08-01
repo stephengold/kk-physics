@@ -33,6 +33,7 @@ import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.collision.shapes.CylinderCollisionShape;
 import com.jme3.bullet.collision.shapes.HullCollisionShape;
 import com.jme3.bullet.collision.shapes.MeshCollisionShape;
+import com.jme3.bullet.collision.shapes.SimplexCollisionShape;
 import com.jme3.bullet.collision.shapes.SphereCollisionShape;
 import com.jme3.material.Material;
 import com.jme3.math.Vector3f;
@@ -125,6 +126,11 @@ public class PhysicsDescriber extends Describer {
             desc = String.format("[numS=%s numT=%d numV=%d]",
                     numS, numT, numV);
 
+            result.append(desc);
+
+        } else if (shape instanceof SimplexCollisionShape) {
+            int numV = ((SimplexCollisionShape) shape).countMeshVertices();
+            desc = String.format("[%d]", numV);
             result.append(desc);
 
         } else if (shape instanceof SphereCollisionShape) {

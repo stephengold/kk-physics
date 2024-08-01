@@ -35,6 +35,7 @@ import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.collision.shapes.CylinderCollisionShape;
 import com.jme3.bullet.collision.shapes.HullCollisionShape;
 import com.jme3.bullet.collision.shapes.MeshCollisionShape;
+import com.jme3.bullet.collision.shapes.SimplexCollisionShape;
 import com.jme3.bullet.collision.shapes.SphereCollisionShape;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.bullet.objects.PhysicsBody;
@@ -254,9 +255,67 @@ public class TestDefaults {
     }
 
     private static void testShapesConvex2() {
+        // SimplexCollisionShape of 1 vertex
+        SimplexCollisionShape simplex1
+                = new SimplexCollisionShape(new Vector3f(0f, 0f, 0f));
+        testSimplexShape(simplex1);
+        Assert.assertEquals(1, simplex1.countMeshVertices());
+        Utils.assertEquals(0f, 0f, 0f, simplex1.copyVertex(0, null), 0f);
+        Utils.assertEquals(0f, 0f, 0f, simplex1.getHalfExtents(null), 0f);
+        Assert.assertEquals(0f, simplex1.unscaledVolume(), 0f);
+
+        // SimplexCollisionShape of 2 vertices
+        SimplexCollisionShape simplex2 = new SimplexCollisionShape(
+                new Vector3f(1f, 0f, 0f), new Vector3f(-1, 0f, 0f));
+        testSimplexShape(simplex2);
+        Assert.assertEquals(2, simplex2.countMeshVertices());
+        Utils.assertEquals(1f, 0f, 0f, simplex2.copyVertex(0, null), 0f);
+        Utils.assertEquals(-1f, 0f, 0f, simplex2.copyVertex(1, null), 0f);
+        Utils.assertEquals(1f, 0f, 0f, simplex2.getHalfExtents(null), 0f);
+        Assert.assertEquals(0f, simplex2.unscaledVolume(), 0f);
+
+        // SimplexCollisionShape of 3 vertices
+        SimplexCollisionShape simplex3 = new SimplexCollisionShape(
+                new Vector3f(0f, 1f, 1f),
+                new Vector3f(1f, 1f, 0f),
+                new Vector3f(1f, 0f, 1f)
+        );
+        testSimplexShape(simplex3);
+        Assert.assertEquals(3, simplex3.countMeshVertices());
+        Utils.assertEquals(0f, 1f, 1f, simplex3.copyVertex(0, null), 0f);
+        Utils.assertEquals(1f, 1f, 0f, simplex3.copyVertex(1, null), 0f);
+        Utils.assertEquals(1f, 0f, 1f, simplex3.copyVertex(2, null), 0f);
+        Utils.assertEquals(1f, 1f, 1f, simplex3.getHalfExtents(null), 0f);
+        Assert.assertEquals(0f, simplex3.unscaledVolume(), 0f);
+
+        // SimplexCollisionShape of 4 vertices
+        SimplexCollisionShape simplex4 = new SimplexCollisionShape(
+                new Vector3f(0f, 1f, 1f),
+                new Vector3f(0f, 1f, -1f),
+                new Vector3f(1f, -1f, 0f),
+                new Vector3f(-1f, -1f, 0f)
+        );
+        testSimplexShape(simplex4);
+        Assert.assertEquals(4, simplex4.countMeshVertices());
+        Utils.assertEquals(0f, 1f, 1f, simplex4.copyVertex(0, null), 0f);
+        Utils.assertEquals(0f, 1f, -1f, simplex4.copyVertex(1, null), 0f);
+        Utils.assertEquals(1f, -1f, 0f, simplex4.copyVertex(2, null), 0f);
+        Utils.assertEquals(-1f, -1f, 0f, simplex4.copyVertex(3, null), 0f);
+        Utils.assertEquals(1f, 1f, 1f, simplex4.getHalfExtents(null), 0f);
+        Assert.assertEquals(4f / 3f, simplex4.unscaledVolume(), 1e-6f);
+
         // SphereCollisionShape
         SphereCollisionShape sphere = new SphereCollisionShape(1f);
         testConvexShape(sphere);
         Assert.assertEquals(0f, sphere.getMargin(), 0f);
+    }
+
+    /**
+     * Test the defaults that are common to all newly-created simplex shapes.
+     *
+     * @param simplex the shape to test (not null, unaffected)
+     */
+    private static void testSimplexShape(SimplexCollisionShape simplex) {
+        testConvexShape(simplex);
     }
 }
