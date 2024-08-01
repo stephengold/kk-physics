@@ -526,9 +526,9 @@ public class PhysicsDumper extends Dumper {
         // first line: gravity factor, motion quality, and damping
         addLine(indent);
 
-        float fFactor = rigidBody.getGravityFactor();
+        float gFactor = rigidBody.getGravityFactor();
         stream.print(" gFactor=");
-        stream.print(MyString.describe(fFactor));
+        stream.print(MyString.describe(gFactor));
 
         EMotionQuality quality = rigidBody.getMotionQuality();
         stream.print(" quality=");
