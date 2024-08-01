@@ -70,6 +70,11 @@ public class TestDefaults {
     @Test
     public void testDefaults() {
         PhysicsSpace pSpace = new PhysicsSpace(1);
+
+        // default margin for collision shapes
+        float defaultMargin = CollisionShape.getDefaultMargin();
+        Assert.assertEquals(0.04f, defaultMargin, 0f);
+
         // deactivation deadline
         float deadline = pSpace.getDeactivationDeadline();
         Assert.assertEquals(2f, deadline, 0f);
