@@ -32,15 +32,20 @@
 package com.jme3.bullet.collision.shapes;
 
 import com.github.stephengold.joltjni.ConvexShape;
+import com.github.stephengold.joltjni.Mat44;
 import com.github.stephengold.joltjni.Quat;
 import com.github.stephengold.joltjni.RotatedTranslatedShapeSettings;
 import com.github.stephengold.joltjni.ScaledShape;
 import com.github.stephengold.joltjni.ScaledShapeSettings;
 import com.github.stephengold.joltjni.ShapeRefC;
 import com.github.stephengold.joltjni.Vec3;
+import com.github.stephengold.joltjni.readonly.ConstAaBox;
 import com.github.stephengold.joltjni.readonly.ConstShape;
 import com.github.stephengold.joltjni.readonly.QuatArg;
 import com.github.stephengold.joltjni.readonly.Vec3Arg;
+import com.jme3.bounding.BoundingBox;
+import com.jme3.math.Matrix3f;
+import com.jme3.math.Matrix4f;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.util.BufferUtils;
@@ -67,6 +72,10 @@ abstract public class CollisionShape {
      */
     final public static Logger logger
             = Logger.getLogger(CollisionShape.class.getName());
+    /**
+     * local copy of {@link com.jme3.math.Vector3f#UNIT_XYZ}
+     */
+    final private static Vector3f scaleIdentity = new Vector3f(1f, 1f, 1f);
     // *************************************************************************
     // fields
 
@@ -113,6 +122,43 @@ abstract public class CollisionShape {
     }
     // *************************************************************************
     // new methods exposed
+
+    /**
+     * Calculate an axis-aligned bounding box with the specified translation and
+     * rotation applied. Rotation is applied first. Collision margin is
+     * included.
+     *
+     * @param translation the translation to apply (not null, unaffected)
+     * @param rotation the rotation to apply (not null, unaffected)
+     * @param storeResult storage for the result (modified if not null)
+     * @return a bounding box (either storeResult or a new instance, not null)
+     */
+    public BoundingBox boundingBox(
+            Vector3f translation, Matrix3f rotation, BoundingBox storeResult) {
+        Validate.finite(translation, "translation");
+        Validate.nonNull(rotation, "rotation");
+        BoundingBox result
+                = (storeResult == null) ? new BoundingBox() : storeResult;
+
+        Matrix4f ctMatrix4f = new Matrix4f();
+        ctMatrix4f.setTransform(translation, scaleIdentity, rotation);
+        float[] ctFloats = new float[16];
+        ctMatrix4f.get(ctFloats, false);
+        Mat44 comTransform = new Mat44(ctFloats);
+
+        Vec3Arg siVec3 = new Vec3(1f, 1f, 1f);
+        ConstAaBox cab = joltShapeRef.getWorldSpaceBounds(comTransform, siVec3);
+
+        Vec3Arg cabMax = cab.getMax();
+        Vec3Arg cabMin = cab.getMin();
+        Vector3f maxima
+                = new Vector3f(cabMax.getX(), cabMax.getY(), cabMax.getZ());
+        Vector3f minima
+                = new Vector3f(cabMin.getX(), cabMin.getY(), cabMin.getZ());
+        result.setMinMax(minima, maxima);
+
+        return result;
+    }
 
     /**
      * Test whether the specified scale factors can be applied to the shape.
