@@ -222,6 +222,21 @@ public class BulletAppState
     }
 
     /**
+     * Alter which bounding boxes are included in the debug visualization.
+     *
+     * @param filter the filter to use (alias created) or null to visualize no
+     * bounding boxes (default=null)
+     */
+    public void setDebugBoundingBoxFilter(
+            BulletDebugAppState.DebugAppStateFilter filter) {
+        if (debugAppState == null) {
+            debugConfig.setBoundingBoxFilter(filter);
+        } else {
+            debugAppState.setBoundingBoxFilter(filter);
+        }
+    }
+
+    /**
      * Replace the Camera used for debug visualization.
      *
      * @param camera the Camera to use (alias created) or null for unknown

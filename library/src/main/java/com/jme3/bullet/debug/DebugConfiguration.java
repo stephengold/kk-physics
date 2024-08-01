@@ -68,6 +68,11 @@ public class DebugConfiguration {
      */
     private BulletDebugAppState.DebugAppStateFilter angularVelocityFilter;
     /**
+     * limit which bounding boxes are visualized, or null to visualize no
+     * bounding boxes
+     */
+    private BulletDebugAppState.DebugAppStateFilter boundingBoxFilter;
+    /**
      * limit which objects are visualized, or null to visualize all objects
      */
     private BulletDebugAppState.DebugAppStateFilter filter;
@@ -156,6 +161,15 @@ public class DebugConfiguration {
      */
     BulletDebugAppState.DebugAppStateFilter getAngularVelocityFilter() {
         return angularVelocityFilter;
+    }
+
+    /**
+     * Access the filter that limits which bounding boxes are visualized.
+     *
+     * @return the pre-existing instance, or null
+     */
+    BulletDebugAppState.DebugAppStateFilter getBoundingBoxFilter() {
+        return boundingBoxFilter;
     }
 
     /**
@@ -311,6 +325,17 @@ public class DebugConfiguration {
     public void setAxisLineWidth(float width) {
         Validate.inRange(width, "width", 0f, Float.MAX_VALUE);
         this.axisLineWidth = width;
+    }
+
+    /**
+     * Alter which bounding boxes are included in the visualization.
+     *
+     * @param filter the filter to use (alias created) or null to visualize no
+     * bounding boxes (default=null)
+     */
+    public void setBoundingBoxFilter(
+            BulletDebugAppState.DebugAppStateFilter filter) {
+        this.boundingBoxFilter = filter;
     }
 
     /**

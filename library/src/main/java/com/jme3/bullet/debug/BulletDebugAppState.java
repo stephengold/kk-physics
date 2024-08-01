@@ -219,6 +219,16 @@ public class BulletDebugAppState extends BaseAppState {
     }
 
     /**
+     * Access the Material for visualizing bounding boxes.
+     *
+     * @return the pre-existing Material (not null)
+     */
+    Material getBoundingBoxMaterial() {
+        assert white != null;
+        return white;
+    }
+
+    /**
      * Access a Material for coloring the indexed child of a
      * CompoundCollisionShape.
      *
@@ -280,6 +290,21 @@ public class BulletDebugAppState extends BaseAppState {
             Node parent = transformedNode.getParent();
             Control control
                     = parent.getControl(AngularVelocityDebugControl.class);
+            parent.removeControl(control);
+        }
+    }
+
+    /**
+     * Alter which bounding boxes are visualized. For internal use only.
+     *
+     * @param filter the desired filter, or null to visualize no bounding boxes
+     */
+    public void setBoundingBoxFilter(DebugAppStateFilter filter) {
+        configuration.setBoundingBoxFilter(filter);
+
+        for (Node transformedNode : pcoMap.values()) {
+            Node parent = transformedNode.getParent();
+            Control control = parent.getControl(BoundingBoxDebugControl.class);
             parent.removeControl(control);
         }
     }
@@ -570,6 +595,7 @@ public class BulletDebugAppState extends BaseAppState {
 
         updatePcoMap();
         updateShapes();
+        updateBoundingBoxes();
         updateVelocities();
 
         // Update the (debug) root node.
@@ -611,6 +637,35 @@ public class BulletDebugAppState extends BaseAppState {
             if (control == null && display) {
                 logger.log(Level.FINE, "Create AngularVelocityDebugControl");
                 control = new AngularVelocityDebugControl(this, pco);
+                parent.addControl(control);
+            } else if (control != null && !display) {
+                parent.removeControl(control);
+            }
+        }
+    }
+
+    /**
+     * Synchronize the bounding-box debug controls with the collision objects in
+     * the PhysicsSpace.
+     */
+    private void updateBoundingBoxes() {
+        DebugAppStateFilter filter = configuration.getBoundingBoxFilter();
+        if (filter == null) {
+            return;
+        }
+
+        for (Map.Entry<PhysicsCollisionObject, Node> entry
+                : pcoMap.entrySet()) {
+            PhysicsCollisionObject pco = entry.getKey();
+            boolean display = filter.displayObject(pco);
+
+            Node transformedNode = entry.getValue();
+            Node parent = transformedNode.getParent();
+            Control control = parent.getControl(BoundingBoxDebugControl.class);
+
+            if (control == null && display) {
+                logger.log(Level.FINE, "Create new BoundingBoxDebugControl");
+                control = new BoundingBoxDebugControl(this, pco);
                 parent.addControl(control);
             } else if (control != null && !display) {
                 parent.removeControl(control);
