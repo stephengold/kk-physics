@@ -30,7 +30,6 @@ import com.jme3.asset.AssetManager;
 import com.jme3.asset.DesktopAssetManager;
 import com.jme3.asset.ModelKey;
 import com.jme3.asset.plugins.ClasspathLocator;
-import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.collision.shapes.CollisionShape;
@@ -40,6 +39,7 @@ import com.jme3.bullet.collision.shapes.HullCollisionShape;
 import com.jme3.bullet.collision.shapes.MeshCollisionShape;
 import com.jme3.bullet.collision.shapes.SimplexCollisionShape;
 import com.jme3.bullet.collision.shapes.SphereCollisionShape;
+import com.jme3.bullet.util.NativeLibrary;
 import com.jme3.export.binary.BinaryLoader;
 import com.jme3.material.plugins.J3MLoader;
 import com.jme3.math.Vector3f;
@@ -92,7 +92,8 @@ public class TestSetScale {
      */
     @Test
     public void testSetScale() {
-        new PhysicsSpace(1);
+        NativeLibrary.load();
+
         assetManager.registerLoader(AWTLoader.class, "jpg", "png");
         assetManager.registerLoader(BinaryLoader.class, "j3o");
         assetManager.registerLoader(J3MLoader.class, "j3m", "j3md");
