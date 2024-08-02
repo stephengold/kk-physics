@@ -44,6 +44,7 @@ import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Mesh;
+import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.Control;
 import com.jme3.scene.shape.Box;
@@ -52,6 +53,7 @@ import com.simsilica.mathd.Vec3d;
 import java.io.IOException;
 import java.util.logging.Logger;
 import jme3utilities.MySpatial;
+import jme3utilities.math.MyMath;
 
 /**
  * A PhysicsControl to link a PhysicsRigidBody to a Spatial.
@@ -77,9 +79,19 @@ public class RigidBodyControl
      */
     private boolean added = false;
     /**
+     * true&rarr;enable shape scaling (to the extent that the CollisionShape
+     * supports it), false&rarr;disable shape scaling
+     */
+    private boolean applyScale = false;
+    /**
      * true&rarr;Control is enabled, false&rarr;Control is disabled
      */
     private boolean enabled = true;
+    /**
+     * true&rarr; kinematic body follows Spatial, false&rarr;Spatial follows
+     * kinematic body
+     */
+    private boolean kinematicSpatial = true;
     /**
      * space to which the body is (or would be) added
      */
@@ -135,6 +147,54 @@ public class RigidBodyControl
      */
     public Spatial getSpatial() {
         return spatial;
+    }
+
+    /**
+     * Test whether the collision-shape scale should match the spatial's scale.
+     *
+     * @return true if matching scales, otherwise false
+     */
+    public boolean isApplyScale() {
+        return applyScale;
+    }
+
+    /**
+     * Test whether this Control is in kinematic mode. Kinematic mode has no
+     * effect when the body isn't kinematic.
+     *
+     * @return true if the spatial's location and rotation would be applied to a
+     * kinematic body, otherwise false
+     */
+    final public boolean isKinematicSpatial() {
+        return kinematicSpatial;
+    }
+
+    /**
+     * Alter whether the collision-shape scale should match the spatial's scale.
+     * CAUTION: Not all shapes can be scaled arbitrarily.
+     * <p>
+     * Note that if the shape is shared (between collision objects and/or
+     * compound shapes) scaling can have unintended consequences.
+     *
+     * @param setting true &rarr; enable shape scaling (to the extent the
+     * CollisionShape supports it), false &rarr; disable shape scaling
+     * (default=false)
+     */
+    public void setApplyScale(boolean setting) {
+        this.applyScale = setting;
+    }
+
+    /**
+     * Enable or disable kinematic mode for this Control. If both the rigid body
+     * and controlled spatial are kinematic, the spatial's location and rotation
+     * will be applied to the body during each update. Kinematic mode has no
+     * effect when the body isn't kinematic.
+     *
+     * @param kinematicSpatial true&rarr;kinematic, false&rarr;dynamic
+     * (default=true)
+     */
+    public void setKinematicSpatial(boolean kinematicSpatial) {
+        this.kinematicSpatial = kinematicSpatial;
     }
     // *************************************************************************
     // new protected methods
@@ -324,10 +384,22 @@ public class RigidBodyControl
             return;
         }
 
-        if (isKinematic()) {
+        if (isKinematic() && kinematicSpatial) {
             Vector3f location = spatial.getWorldTranslation();
             Quaternion orientation = spatial.getWorldRotation();
             repositionKinematic(location, orientation, tpf);
+            if (applyScale) {
+                CollisionShape shape = getCollisionShape();
+                Vector3f newScale = spatial.getWorldScale();
+                if (!shape.canScale(newScale)) {
+                    float factor = MyMath.cubeRoot(
+                            newScale.x * newScale.y * newScale.z);
+                    newScale.set(factor, factor, factor);
+                }
+                if (shape.canScale(newScale)) {
+                    shape.setScale(newScale);
+                }
+            }
 
         } else if (!MySpatial.isIgnoringTransforms(spatial)) {
             Vector3f location = getPhysicsLocation(null);
@@ -335,6 +407,10 @@ public class RigidBodyControl
 
             Quaternion orientation = getPhysicsRotation(null);
             MySpatial.setWorldOrientation(spatial, orientation);
+
+            if (applyScale) {
+                applySpatialScale();
+            }
         }
     }
 
@@ -348,5 +424,24 @@ public class RigidBodyControl
     @Override
     public void write(JmeExporter exporter) throws IOException {
         throw new UnsupportedOperationException("write() isn't implemented.");
+    }
+    // *************************************************************************
+    // private methods
+
+    /**
+     * Update whichever scale vector corresponds to the shape scale.
+     */
+    private void applySpatialScale() {
+        Vector3f scale = spatial.getWorldScale(); // alias
+        Node parent = spatial.getParent();
+        if (parent != null) {
+            Vector3f parentScale = parent.getWorldScale(); // alias
+            if (parentScale.x == 0f || parentScale.y == 0f
+                    || parentScale.z == 0f) {
+                throw new IllegalStateException("Zero in parent scale.");
+            }
+            scale.divideLocal(parentScale); // convert world to local
+        }
+        spatial.setLocalScale(scale);
     }
 }
