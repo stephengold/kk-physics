@@ -37,6 +37,7 @@ import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.collision.shapes.CylinderCollisionShape;
 import com.jme3.bullet.collision.shapes.HeightfieldCollisionShape;
+import com.jme3.bullet.collision.shapes.HullCollisionShape;
 import com.jme3.bullet.collision.shapes.MeshCollisionShape;
 import com.jme3.bullet.collision.shapes.SimplexCollisionShape;
 import com.jme3.bullet.collision.shapes.SphereCollisionShape;
@@ -110,11 +111,16 @@ public class TestStaticBody {
         PhysicsRigidBody hcsBody = new PhysicsRigidBody(hcs, 0f);
         space.addCollisionObject(hcsBody);
 
-        // MeshCollisionShape without compression
+        // HullCollisionShape
         ModelKey key = new ModelKey("Models/Jaime/Jaime.j3o");
         Node model = (Node) assetManager.loadModel(key);
         Geometry geo = (Geometry) model.getChild(0);
         Mesh mesh = geo.getMesh();
+        CollisionShape hull = new HullCollisionShape(mesh);
+        PhysicsRigidBody hullBody = new PhysicsRigidBody(hull, 0f);
+        space.addCollisionObject(hullBody);
+
+        // MeshCollisionShape without compression
         CollisionShape uncompressed = new MeshCollisionShape(mesh, false);
         PhysicsRigidBody uncompressedBody
                 = new PhysicsRigidBody(uncompressed, 0f);
