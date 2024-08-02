@@ -177,6 +177,7 @@ public class MeshCollisionShape extends CollisionShape {
      * Instantiate the configured {@code MeshShape}.
      */
     private void createShape() {
+        this.margin = 0f;
         MeshShapeSettings settings = new MeshShapeSettings(vertexList, itList);
         ShapeRefC shape = settings.create().get();
         setNativeObject(shape);
