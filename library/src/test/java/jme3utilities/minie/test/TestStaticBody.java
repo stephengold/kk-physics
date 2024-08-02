@@ -38,6 +38,7 @@ import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.collision.shapes.CylinderCollisionShape;
 import com.jme3.bullet.collision.shapes.HeightfieldCollisionShape;
 import com.jme3.bullet.collision.shapes.MeshCollisionShape;
+import com.jme3.bullet.collision.shapes.SimplexCollisionShape;
 import com.jme3.bullet.collision.shapes.SphereCollisionShape;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.export.binary.BinaryLoader;
@@ -118,6 +119,14 @@ public class TestStaticBody {
         PhysicsRigidBody uncompressedBody
                 = new PhysicsRigidBody(uncompressed, 0f);
         space.addCollisionObject(uncompressedBody);
+
+        // SimplexCollisionShape
+        Vector3f p1 = new Vector3f(0f, 1f, 1f);
+        Vector3f p2 = new Vector3f(1f, 0f, 1f);
+        Vector3f p3 = new Vector3f(1f, 1f, 0f);
+        CollisionShape simplex = new SimplexCollisionShape(p1, p2, p3);
+        PhysicsRigidBody simplexBody = new PhysicsRigidBody(simplex, 0f);
+        space.addCollisionObject(simplexBody);
 
         // SphereCollisionShape
         CollisionShape sphere = new SphereCollisionShape(1f);
