@@ -32,7 +32,6 @@
 package com.jme3.bullet;
 
 import com.github.stephengold.joltjni.BodyInterface;
-import com.github.stephengold.joltjni.EBodyType;
 import com.github.stephengold.joltjni.JobSystem;
 import com.github.stephengold.joltjni.JobSystemThreadPool;
 import com.github.stephengold.joltjni.Jolt;
@@ -44,6 +43,7 @@ import com.github.stephengold.joltjni.PhysicsSystem;
 import com.github.stephengold.joltjni.TempAllocator;
 import com.github.stephengold.joltjni.TempAllocatorImpl;
 import com.github.stephengold.joltjni.Vec3;
+import com.github.stephengold.joltjni.enumerate.EBodyType;
 import com.github.stephengold.joltjni.readonly.ConstBodyId;
 import com.github.stephengold.joltjni.readonly.Vec3Arg;
 import com.jme3.bullet.collision.PhysicsCollisionObject;

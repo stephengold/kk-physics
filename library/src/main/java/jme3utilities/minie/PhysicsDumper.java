@@ -26,7 +26,7 @@
  */
 package jme3utilities.minie;
 
-import com.github.stephengold.joltjni.EMotionQuality;
+import com.github.stephengold.joltjni.enumerate.EMotionQuality;
 import com.jme3.app.state.AppState;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.PhysicsSpace;

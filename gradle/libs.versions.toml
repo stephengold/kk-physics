@@ -4,7 +4,7 @@
 
 checkstyle = "10.17.0"
 jme = "3.6.1-stable"
-jolt-jni = "0.4.1"
+jolt-jni = "0.5.0"
 
 [libraries]
 
