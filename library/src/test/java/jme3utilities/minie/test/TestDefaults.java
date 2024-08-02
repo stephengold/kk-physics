@@ -41,6 +41,7 @@ import com.jme3.bullet.collision.shapes.SphereCollisionShape;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.bullet.objects.PhysicsBody;
 import com.jme3.bullet.objects.PhysicsRigidBody;
+import com.jme3.bullet.util.NativeLibrary;
 import com.jme3.math.Matrix3f;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Mesh;
@@ -70,13 +71,14 @@ public class TestDefaults {
      */
     @Test
     public void testDefaults() {
-        PhysicsSpace pSpace = new PhysicsSpace(1);
+        NativeLibrary.load();
 
         // default margin for collision shapes
         float defaultMargin = CollisionShape.getDefaultMargin();
         Assert.assertEquals(0.04f, defaultMargin, 0f);
 
         // deactivation deadline
+        PhysicsSpace pSpace = new PhysicsSpace(1);
         float deadline = pSpace.getDeactivationDeadline();
         Assert.assertEquals(2f, deadline, 0f);
 
