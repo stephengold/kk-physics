@@ -122,6 +122,9 @@ public class PhysicsRigidBody extends PhysicsBody {
      */
     public PhysicsRigidBody(CollisionShape shape) {
         this(shape, 1f);
+
+        assert !isKinematic();
+        assert !isStatic();
         assert mass == 1f : mass;
     }
 
@@ -176,6 +179,7 @@ public class PhysicsRigidBody extends PhysicsBody {
         assert bodyInterface == null : bodyInterface;
         assert joltBody == null : joltBody;
         assert motionProperties == null : motionProperties;
+        assert settings != null;
 
         PhysicsSpace space = (PhysicsSpace) getCollisionSpace();
         this.bodyInterface = space.getBodyInterface();
@@ -189,6 +193,11 @@ public class PhysicsRigidBody extends PhysicsBody {
             bodyInterface.addBody(bodyId, EActivation.Activate);
         }
         this.motionProperties = joltBody.getMotionProperties();
+
+        assert bodyId != null;
+        assert bodyInterface != null;
+        assert joltBody != null;
+        assert settings != null;
     }
 
     /**
@@ -1263,6 +1272,7 @@ public class PhysicsRigidBody extends PhysicsBody {
             result = joltBody.va();
         }
 
+        assert result != 0L;
         return result;
     }
 

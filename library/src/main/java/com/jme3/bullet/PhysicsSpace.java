@@ -356,6 +356,7 @@ public class PhysicsSpace extends CollisionSpace {
      * @return the threshold value (&ge;0)
      */
     public int getBpoThreshold() {
+        assert bpoThreshold >= 0 : bpoThreshold;
         return bpoThreshold;
     }
 
@@ -804,6 +805,7 @@ public class PhysicsSpace extends CollisionSpace {
 
         if (pco instanceof PhysicsRigidBody) {
             removeRigidBody((PhysicsRigidBody) pco);
+            assert pco.getCollisionSpace() == null;
         } else {
             super.removeCollisionObject(pco);
         }
@@ -822,6 +824,8 @@ public class PhysicsSpace extends CollisionSpace {
      */
     private void addRigidBody(PhysicsRigidBody rigidBody) {
         assert rigidBody.getCollisionSpace() == null;
+        assert !queuedMap.containsKey(rigidBody.nativeId());
+        assert !rigidMap.containsKey(rigidBody.nativeId());
 
         if (logger.isLoggable(Level.FINE)) {
             logger.log(Level.FINE, "Adding {0} to {1}.",
@@ -829,6 +833,10 @@ public class PhysicsSpace extends CollisionSpace {
         }
         enqueueForAdditionToSystemInternal(rigidBody);
         rigidBody.setAddedToSpaceInternal(this);
+
+        assert rigidBody.getCollisionSpace() == this;
+        assert queuedMap.containsKey(rigidBody.nativeId());
+        assert !rigidMap.containsKey(rigidBody.nativeId());
     }
 
     /**
@@ -907,5 +915,6 @@ public class PhysicsSpace extends CollisionSpace {
 
         assert removedBody == rigidBody : removedBody;
         rigidBody.setAddedToSpaceInternal(null);
+        assert rigidBody.getCollisionSpace() == null;
     }
 }
