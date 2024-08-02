@@ -69,6 +69,10 @@ abstract public class PhysicsCollisionObject
      */
     private CollisionShape collisionShape;
     /**
+     * number of visible sides for default debug materials (&ge;0, &le;2)
+     */
+    private int debugNumSides = 1;
+    /**
      * custom material for the debug shape, or null to use the default material
      */
     private Material debugMaterial = null;
@@ -142,6 +146,18 @@ abstract public class PhysicsCollisionObject
     public MeshNormals debugMeshNormals() {
         assert debugMeshNormals != null;
         return debugMeshNormals;
+    }
+
+    /**
+     * Determine how many sides of this object's default debug materials are
+     * visible.
+     *
+     * @return the number of sides (&ge;0, &le;2)
+     */
+    public int debugNumSides() {
+        assert debugNumSides >= 0 : debugNumSides;
+        assert debugNumSides <= 2 : debugNumSides;
+        return debugNumSides;
     }
 
     /**
@@ -346,6 +362,17 @@ abstract public class PhysicsCollisionObject
     public void setDebugMeshNormals(MeshNormals newSetting) {
         Validate.nonNull(newSetting, "new setting");
         this.debugMeshNormals = newSetting;
+    }
+
+    /**
+     * Alter how many sides of this object's default debug materials are
+     * visible. This setting has no effect on custom debug materials.
+     *
+     * @param numSides the desired number of sides (&ge;0, &le;2, default=1)
+     */
+    public void setDebugNumSides(int numSides) {
+        Validate.inRange(numSides, "number of sides", 0, 2);
+        this.debugNumSides = numSides;
     }
 
     /**

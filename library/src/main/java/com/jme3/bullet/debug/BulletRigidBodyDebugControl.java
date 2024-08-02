@@ -152,7 +152,7 @@ public class BulletRigidBodyDebugControl extends CollisionShapeDebugControl {
         Material material = body.getDebugMaterial();
 
         if (material == null) { // use one of the default materials
-            int numSides = 1;
+            int numSides = body.debugNumSides();
             if (body.isDynamic() && body.isActive()) {
                 material = debugAppState.getActiveMaterial(numSides);
             } else {
