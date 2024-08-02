@@ -27,6 +27,7 @@ val os = DefaultNativePlatform.getCurrentOperatingSystem()
 
 dependencies {
     api(libs.jme3.core)
+    api(libs.jme3.terrain)
     api(libs.jolt.jni.windows64)
     api(libs.sim.math)
     implementation(libs.heart)

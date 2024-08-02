@@ -14,6 +14,7 @@ jme3-awt-dialogs = { module = "org.jmonkeyengine:jme3-awt-dialogs", version.ref 
 jme3-core = { module = "org.jmonkeyengine:jme3-core", version.ref = "jme" }
 jme3-desktop = { module = "org.jmonkeyengine:jme3-desktop", version.ref = "jme" }
 jme3-lwjgl3 = { module = "org.jmonkeyengine:jme3-lwjgl3", version.ref = "jme" }
+jme3-terrain = { module = "org.jmonkeyengine:jme3-terrain", version.ref = "jme" }
 jme3-testdata = { module = "org.jmonkeyengine:jme3-testdata", version.ref = "jme" }
 
 jolt-jni-linux64 = { module = "com.github.stephengold:jolt-jni-Linux64", version.ref = "jolt-jni" }

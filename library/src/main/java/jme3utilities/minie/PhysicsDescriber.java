@@ -31,6 +31,7 @@ import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.collision.shapes.CylinderCollisionShape;
+import com.jme3.bullet.collision.shapes.HeightfieldCollisionShape;
 import com.jme3.bullet.collision.shapes.HullCollisionShape;
 import com.jme3.bullet.collision.shapes.MeshCollisionShape;
 import com.jme3.bullet.collision.shapes.SimplexCollisionShape;
@@ -111,6 +112,15 @@ public class PhysicsDescriber extends Describer {
 
             Vector3f he = cylinder.getHalfExtents(null);
             desc = describeHalfExtents(he);
+            result.append(desc);
+
+        } else if (shape instanceof HeightfieldCollisionShape) {
+            HeightfieldCollisionShape hcs = (HeightfieldCollisionShape) shape;
+            int numRows = hcs.countRows();
+            int numColumns = hcs.countColumns();
+            int upAxis = hcs.upAxis();
+            String up = MyString.axisName(upAxis);
+            desc = String.format("[%dx%d %sup]", numRows, numColumns, up);
             result.append(desc);
 
         } else if (shape instanceof HullCollisionShape) {

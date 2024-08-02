@@ -33,6 +33,7 @@ import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.collision.shapes.CylinderCollisionShape;
+import com.jme3.bullet.collision.shapes.HeightfieldCollisionShape;
 import com.jme3.bullet.collision.shapes.HullCollisionShape;
 import com.jme3.bullet.collision.shapes.MeshCollisionShape;
 import com.jme3.bullet.collision.shapes.SimplexCollisionShape;
@@ -225,6 +226,18 @@ public class TestDefaults {
     }
 
     private static void testShapesConcave() {
+        // Heightfield
+        float[] nineHeights = {1f, 0f, 1f, 0f, 0.5f, 0f, 1f, 0f, 1f};
+        HeightfieldCollisionShape hcs
+                = new HeightfieldCollisionShape(nineHeights);
+        testShape(hcs);
+        Assert.assertEquals(3, hcs.countColumns());
+        Assert.assertEquals(9, hcs.countMeshVertices());
+        Assert.assertEquals(3, hcs.countRows());
+        Assert.assertEquals(0f, hcs.getMargin(), 0f);
+        Assert.assertTrue(hcs.isNonMoving());
+        Assert.assertEquals(PhysicsSpace.AXIS_Y, hcs.upAxis());
+
         // MeshCollisionShape:
         Mesh quad = new CenterQuad(1f, 1f);
         MeshCollisionShape mesh2 = new MeshCollisionShape(quad, false);

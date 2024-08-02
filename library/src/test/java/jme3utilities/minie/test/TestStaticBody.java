@@ -36,6 +36,7 @@ import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.collision.shapes.CylinderCollisionShape;
+import com.jme3.bullet.collision.shapes.HeightfieldCollisionShape;
 import com.jme3.bullet.collision.shapes.MeshCollisionShape;
 import com.jme3.bullet.collision.shapes.SphereCollisionShape;
 import com.jme3.bullet.objects.PhysicsRigidBody;
@@ -45,7 +46,12 @@ import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Mesh;
 import com.jme3.scene.Node;
+import com.jme3.terrain.heightmap.HeightMap;
+import com.jme3.terrain.heightmap.ImageBasedHeightMap;
+import com.jme3.texture.Image;
+import com.jme3.texture.Texture;
 import com.jme3.texture.plugins.AWTLoader;
+import jme3utilities.MyAsset;
 import org.junit.Test;
 
 /**
@@ -58,7 +64,7 @@ public class TestStaticBody {
     // fields
 
     /**
-     * AssetManager to load Jaime
+     * AssetManager to load Jaime and Simple_height.png
      */
     final private static AssetManager assetManager = new DesktopAssetManager();
     // *************************************************************************
@@ -92,6 +98,16 @@ public class TestStaticBody {
                 new Vector3f(1f, 1f, 1f), PhysicsSpace.AXIS_Y);
         PhysicsRigidBody cylinderBody = new PhysicsRigidBody(cylinder, 0f);
         space.addCollisionObject(cylinderBody);
+
+        // HeightfieldCollisionShape
+        Texture heightTexture = MyAsset.loadTexture(
+                assetManager, "Textures/BumpMapTest/Simple_height.png", false);
+        Image heightImage = heightTexture.getImage();
+        float heightScale = 1f;
+        HeightMap heightMap = new ImageBasedHeightMap(heightImage, heightScale);
+        CollisionShape hcs = new HeightfieldCollisionShape(heightMap);
+        PhysicsRigidBody hcsBody = new PhysicsRigidBody(hcs, 0f);
+        space.addCollisionObject(hcsBody);
 
         // MeshCollisionShape without compression
         ModelKey key = new ModelKey("Models/Jaime/Jaime.j3o");
