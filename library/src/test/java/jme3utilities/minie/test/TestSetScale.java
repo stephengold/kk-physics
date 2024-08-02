@@ -35,7 +35,10 @@ import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.collision.shapes.CylinderCollisionShape;
+import com.jme3.bullet.collision.shapes.HeightfieldCollisionShape;
+import com.jme3.bullet.collision.shapes.HullCollisionShape;
 import com.jme3.bullet.collision.shapes.MeshCollisionShape;
+import com.jme3.bullet.collision.shapes.SimplexCollisionShape;
 import com.jme3.bullet.collision.shapes.SphereCollisionShape;
 import com.jme3.export.binary.BinaryLoader;
 import com.jme3.material.plugins.J3MLoader;
@@ -43,7 +46,12 @@ import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Mesh;
 import com.jme3.scene.Node;
+import com.jme3.terrain.heightmap.HeightMap;
+import com.jme3.terrain.heightmap.ImageBasedHeightMap;
+import com.jme3.texture.Image;
+import com.jme3.texture.Texture;
 import com.jme3.texture.plugins.AWTLoader;
+import jme3utilities.MyAsset;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -97,6 +105,21 @@ public class TestSetScale {
     // private methods
 
     private static void setScaleConcave() {
+        // HeightfieldCollisionShape
+        Texture heightTexture = MyAsset.loadTexture(
+                assetManager, "Textures/BumpMapTest/Simple_height.png", false);
+        Image heightImage = heightTexture.getImage();
+        float heightScale = 1f;
+        HeightMap heightMap = new ImageBasedHeightMap(heightImage, heightScale);
+        CollisionShape hcs = new HeightfieldCollisionShape(heightMap);
+        Utils.assertEquals(ident, hcs.getScale(null), 0f);
+        hcs.setScale(uni);
+        Utils.assertEquals(uni, hcs.getScale(null), 0f);
+        hcs.setScale(non);
+        Utils.assertEquals(non, hcs.getScale(null), 0f);
+        hcs.setScale(non2);
+        Utils.assertEquals(non2, hcs.getScale(null), 0f);
+
         // MeshCollisionShape
         ModelKey key = new ModelKey("Models/Jaime/Jaime.j3o");
         Node model = (Node) assetManager.loadModel(key);
@@ -137,6 +160,27 @@ public class TestSetScale {
         Assert.assertEquals(uni, cylinder.getScale(null));
         cylinder.setScale(non);
         Assert.assertEquals(non, cylinder.getScale(null));
+
+        // HullCollisionShape
+        ModelKey key = new ModelKey("Models/Jaime/Jaime.j3o");
+        Node model = (Node) assetManager.loadModel(key);
+        Geometry geo = (Geometry) model.getChild(0);
+        Mesh mesh = geo.getMesh();
+        CollisionShape hull = new HullCollisionShape(mesh);
+        Utils.assertEquals(ident, hull.getScale(null), 0f);
+        hull.setScale(uni);
+        Utils.assertEquals(uni, hull.getScale(null), 0f);
+        hull.setScale(non);
+        Utils.assertEquals(non, hull.getScale(null), 0f);
+        hull.setScale(non2);
+        Utils.assertEquals(non2, hull.getScale(null), 0f);
+
+        // SimplexCollisionShape of 3 vertices
+        Vector3f p1 = new Vector3f(0f, 1f, 1f);
+        Vector3f p2 = new Vector3f(1f, 0f, 1f);
+        Vector3f p3 = new Vector3f(1f, 1f, 0f);
+        CollisionShape simplex = new SimplexCollisionShape(p1, p2, p3);
+        Utils.assertEquals(ident, simplex.getScale(null), 0f);
 
         // SphereCollisionShape
         CollisionShape sphere = new SphereCollisionShape(1f);
