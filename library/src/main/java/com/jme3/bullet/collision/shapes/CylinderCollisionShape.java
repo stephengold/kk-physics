@@ -118,8 +118,6 @@ public class CylinderCollisionShape extends CollisionShape {
      */
     public CylinderCollisionShape(Vector3f halfExtents, int axisIndex) {
         Validate.nonNegative(halfExtents, "half extents");
-        Validate.require(
-                halfExtents.x == halfExtents.z, "equal X and Z extents");
         Validate.axisIndex(axisIndex, "axis index");
 
         this.halfExtents.set(halfExtents);
