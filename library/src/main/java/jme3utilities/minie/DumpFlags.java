@@ -44,6 +44,10 @@ public enum DumpFlags {
      */
     Buckets,
     /**
+     * children in compound collision shapes
+     */
+    ChildShapes,
+    /**
      * cull hints in spatials
      */
     CullHints,

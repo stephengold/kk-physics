@@ -30,6 +30,7 @@ import com.jme3.bullet.collision.PhysicsCollisionObject;
 import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.collision.shapes.CollisionShape;
+import com.jme3.bullet.collision.shapes.CompoundCollisionShape;
 import com.jme3.bullet.collision.shapes.CylinderCollisionShape;
 import com.jme3.bullet.collision.shapes.HeightfieldCollisionShape;
 import com.jme3.bullet.collision.shapes.HullCollisionShape;
@@ -102,6 +103,12 @@ public class PhysicsDescriber extends Describer {
             float height = capsule.getHeight();
             float radius = capsule.getRadius();
             desc = describeHeightAndRadius(height, radius);
+            result.append(desc);
+
+        } else if (shape instanceof CompoundCollisionShape) {
+            CompoundCollisionShape compound = (CompoundCollisionShape) shape;
+            int numChildren = compound.countChildren();
+            desc = String.format("[%d]", numChildren);
             result.append(desc);
 
         } else if (shape instanceof CylinderCollisionShape) {

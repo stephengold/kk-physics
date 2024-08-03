@@ -32,6 +32,7 @@ import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.SolverType;
 import com.jme3.bullet.collision.shapes.CollisionShape;
+import com.jme3.bullet.collision.shapes.CompoundCollisionShape;
 import com.jme3.bullet.debug.BulletDebugAppState;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Quaternion;
@@ -168,6 +169,11 @@ public class PhysicsDumper extends Dumper {
 
         long objectId = shape.nativeId();
         addNativeId(objectId);
+
+        if (dumpChildShapes && shape instanceof CompoundCollisionShape) {
+            String moreIndent = indent + indentIncrement();
+            dumpChildren((CompoundCollisionShape) shape, moreIndent);
+        }
     }
 
     /**
@@ -337,6 +343,10 @@ public class PhysicsDumper extends Dumper {
                 result = isDumpBucket();
                 break;
 
+            case ChildShapes:
+                result = dumpChildShapes;
+                break;
+
             case CullHints:
                 result = isDumpCull();
                 break;
@@ -395,6 +405,10 @@ public class PhysicsDumper extends Dumper {
 
             case Buckets:
                 setDumpBucket(newValue);
+                break;
+
+            case ChildShapes:
+                this.dumpChildShapes = newValue;
                 break;
 
             case CullHints:
@@ -586,5 +600,45 @@ public class PhysicsDumper extends Dumper {
         String locString = MyVector3f.describe(vector);
 
         return locString;
+    }
+
+    /**
+     * Dump all children of the specified CompoundCollisionShape.
+     *
+     * @param parent the shape to dump (not null, unaffected)
+     * @param indent (not null)
+     */
+    private void dumpChildren(CompoundCollisionShape parent, String indent) {
+        PhysicsDescriber describer = getDescriber();
+        ChildCollisionShape[] children = parent.listChildren();
+        for (ChildCollisionShape child : children) {
+            addLine(indent);
+            CollisionShape baseShape = child.getShape();
+            String desc = describer.describe(baseShape);
+            stream.print(desc);
+
+            Vector3f offset = child.copyOffset(null);
+            if (!MyVector3f.isZero(offset)) {
+                stream.print(" offset[");
+                desc = MyVector3f.describe(offset);
+                stream.print(desc);
+                stream.print(']');
+            }
+
+            Quaternion rot = child.copyRotation(null);
+            if (!MyQuaternion.isRotationIdentity(rot)) {
+                stream.print(" rot[");
+                desc = MyQuaternion.describe(rot);
+                stream.print(desc);
+                stream.print(']');
+            }
+
+            Vector3f scale = baseShape.getScale(null);
+            desc = describer.describeScale(scale);
+            addDescription(desc);
+
+            long objectId = baseShape.nativeId();
+            addNativeId(objectId);
+        }
     }
 }
