@@ -39,6 +39,7 @@ import com.jme3.math.Vector3f;
 import java.util.logging.Logger;
 import jme3utilities.Validate;
 import jme3utilities.math.MyVector3f;
+import jme3utilities.math.MyVolume;
 
 /**
  * An axis-aligned, rectangular-solid collision shape based on jolt-jni's
@@ -136,6 +137,18 @@ public class BoxCollisionShape extends CollisionShape {
         } else {
             result = storeResult.set(halfExtents);
         }
+        return result;
+    }
+
+    /**
+     * Return the unscaled volume of the box.
+     *
+     * @return the volume (in shape units cubed, &ge;0)
+     */
+    public float unscaledVolume() {
+        float result = MyVolume.boxVolume(halfExtents);
+
+        assert result >= 0f : result;
         return result;
     }
     // *************************************************************************

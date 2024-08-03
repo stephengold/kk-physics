@@ -39,6 +39,7 @@ import com.jme3.math.Vector3f;
 import java.util.logging.Logger;
 import jme3utilities.Validate;
 import jme3utilities.math.MyVector3f;
+import jme3utilities.math.MyVolume;
 
 /**
  * A cylindrical collision shape based on jolt-jni's {@code CylinderShape}.
@@ -165,6 +166,18 @@ public class CylinderCollisionShape extends CollisionShape {
      */
     public float getHeight() {
         float result = 2f * halfExtents.get(axis);
+
+        assert result >= 0f : result;
+        return result;
+    }
+
+    /**
+     * Return the unscaled volume of the cylinder.
+     *
+     * @return the volume (in shape units cubed, &ge;0)
+     */
+    public float unscaledVolume() {
+        float result = MyVolume.cylinderVolume(halfExtents);
 
         assert result >= 0f : result;
         return result;
