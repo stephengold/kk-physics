@@ -123,6 +123,8 @@ public class TestDefaults {
      */
     private static void testCollisionSpace(CollisionSpace space) {
         Assert.assertNotNull(space);
+        Assert.assertTrue(space.isEmpty());
+        Assert.assertTrue(space.getPcoList().isEmpty());
     }
 
     /**
@@ -133,6 +135,7 @@ public class TestDefaults {
     private static void testConvexShape(CollisionShape shape) {
         testShape(shape);
 
+        Assert.assertTrue(shape.isConvex());
         Assert.assertFalse(shape.isNonMoving());
     }
 
@@ -146,7 +149,9 @@ public class TestDefaults {
 
         Assert.assertNull(pco.getCollisionSpace());
 
+        Assert.assertNull(pco.getDebugMaterial());
         Assert.assertSame(MeshNormals.None, pco.debugMeshNormals());
+        Assert.assertEquals(0.5f, pco.getFriction(), 0f);
 
         Utils.assertEquals(0f, 0f, 0f, pco.getPhysicsLocation(null), 0f);
         Utils.assertEquals(0., 0., 0., pco.getPhysicsLocationDp(null), 0.);
@@ -166,6 +171,7 @@ public class TestDefaults {
     private static void testPhysicsSpace(PhysicsSpace space) {
         testCollisionSpace(space);
 
+        Assert.assertEquals(0, space.countRigidBodies());
         Assert.assertEquals(0, space.countTickListeners());
 
         Assert.assertEquals(1 / 60f, space.getAccuracy(), 0f);
@@ -204,6 +210,8 @@ public class TestDefaults {
         if (prb instanceof RigidBodyControl) {
             RigidBodyControl rbc = (RigidBodyControl) prb;
             Assert.assertNull(rbc.getSpatial());
+            Assert.assertFalse(rbc.isApplyScale());
+            Assert.assertTrue(rbc.isKinematicSpatial());
         }
     }
 
@@ -237,6 +245,7 @@ public class TestDefaults {
         Assert.assertEquals(9, hcs.countMeshVertices());
         Assert.assertEquals(3, hcs.countRows());
         Assert.assertEquals(0f, hcs.getMargin(), 0f);
+        Assert.assertFalse(hcs.isConvex());
         Assert.assertTrue(hcs.isNonMoving());
         Assert.assertEquals(PhysicsSpace.AXIS_Y, hcs.upAxis());
 
@@ -247,6 +256,7 @@ public class TestDefaults {
         Assert.assertEquals(2, mesh2.countMeshTriangles());
         Assert.assertEquals(4, mesh2.countMeshVertices());
         Assert.assertEquals(1, mesh2.countSubmeshes());
+        Assert.assertFalse(mesh2.isConvex());
         Assert.assertTrue(mesh2.isNonMoving());
     }
 
