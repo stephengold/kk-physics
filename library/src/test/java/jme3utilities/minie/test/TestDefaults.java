@@ -100,6 +100,8 @@ public class TestDefaults {
 
         RigidBodyControl dynamicRbc = new RigidBodyControl(box);
         testRigidBody(dynamicRbc);
+
+        System.gc();
     }
     // *************************************************************************
     // private methods

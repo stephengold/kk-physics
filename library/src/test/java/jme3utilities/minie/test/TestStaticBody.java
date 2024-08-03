@@ -138,5 +138,7 @@ public class TestStaticBody {
         CollisionShape sphere = new SphereCollisionShape(1f);
         PhysicsRigidBody sphereBody = new PhysicsRigidBody(sphere, 0f);
         space.addCollisionObject(sphereBody);
+
+        System.gc();
     }
 }

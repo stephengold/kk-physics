@@ -101,6 +101,8 @@ public class TestSetScale {
 
         setScaleConcave();
         setScaleConvex();
+
+        System.gc();
     }
     // *************************************************************************
     // private methods
