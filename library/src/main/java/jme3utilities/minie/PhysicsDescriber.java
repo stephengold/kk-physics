@@ -153,6 +153,10 @@ public class PhysicsDescriber extends Describer {
             result.append('?');
         }
 
+        result.append(" marg=");
+        float margin = shape.getMargin();
+        result.append(MyString.describe(margin));
+
         return result.toString();
     }
 
