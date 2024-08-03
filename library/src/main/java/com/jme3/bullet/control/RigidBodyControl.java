@@ -36,6 +36,7 @@ import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.collision.shapes.SphereCollisionShape;
 import com.jme3.bullet.objects.PhysicsRigidBody;
+import com.jme3.bullet.util.CollisionShapeFactory;
 import com.jme3.export.JmeExporter;
 import com.jme3.export.JmeImporter;
 import com.jme3.math.Quaternion;
@@ -109,7 +110,8 @@ public class RigidBodyControl
      *
      * Its shape will be auto-generated when it is added to a Spatial. If the
      * controlled spatial is a Geometry with a box or sphere mesh, a matching
-     * box or sphere {@code CollisionShape} will be generated.
+     * box or sphere {@code CollisionShape} will be generated. Otherwise
+     * {@link com.jme3.bullet.util.CollisionShapeFactory} will be used.
      *
      * @param mass the desired mass (&ge;0)
      */
@@ -200,7 +202,8 @@ public class RigidBodyControl
     // new protected methods
 
     /**
-     * Set the body's CollisionShape based on the controlled spatial.
+     * Set the body's CollisionShape based on the controlled spatial and its
+     * descendants.
      */
     protected void createCollisionShape() {
         if (spatial == null) {
@@ -220,7 +223,11 @@ public class RigidBodyControl
             }
         }
         if (shape == null) {
-            assert false; // TODO use CollisionShapeFactory
+            if (mass > massForStatic) {
+                shape = CollisionShapeFactory.createDynamicMeshShape(spatial);
+            } else {
+                shape = CollisionShapeFactory.createMeshShape(spatial);
+            }
         }
         setCollisionShape(shape);
     }
