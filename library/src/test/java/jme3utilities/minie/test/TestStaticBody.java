@@ -35,6 +35,7 @@ import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.collision.shapes.CollisionShape;
+import com.jme3.bullet.collision.shapes.CompoundCollisionShape;
 import com.jme3.bullet.collision.shapes.CylinderCollisionShape;
 import com.jme3.bullet.collision.shapes.HeightfieldCollisionShape;
 import com.jme3.bullet.collision.shapes.HullCollisionShape;
@@ -94,6 +95,12 @@ public class TestStaticBody {
         CollisionShape capsule = new CapsuleCollisionShape(1f, 1f);
         PhysicsRigidBody capsuleBody = new PhysicsRigidBody(capsule, 0f);
         space.addCollisionObject(capsuleBody);
+
+        // CompoundCollisionShape of a capsule
+        CompoundCollisionShape compound = new CompoundCollisionShape(1);
+        compound.addChildShape(capsule, 0f, 1f, 0f);
+        PhysicsRigidBody compoundBody = new PhysicsRigidBody(compound, 0f);
+        space.addCollisionObject(compoundBody);
 
         // CylinderCollisionShape
         CollisionShape cylinder

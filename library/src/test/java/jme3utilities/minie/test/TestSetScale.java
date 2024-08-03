@@ -33,6 +33,7 @@ import com.jme3.asset.plugins.ClasspathLocator;
 import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.collision.shapes.CollisionShape;
+import com.jme3.bullet.collision.shapes.CompoundCollisionShape;
 import com.jme3.bullet.collision.shapes.CylinderCollisionShape;
 import com.jme3.bullet.collision.shapes.HeightfieldCollisionShape;
 import com.jme3.bullet.collision.shapes.HullCollisionShape;
@@ -101,6 +102,12 @@ public class TestSetScale {
 
         setScaleConcave();
         setScaleConvex();
+
+        // CompoundCollisionShape of a box
+        CollisionShape childBox = new BoxCollisionShape(1f);
+        CompoundCollisionShape compound = new CompoundCollisionShape(1);
+        compound.addChildShape(childBox, 0f, 1f, 0f);
+        Utils.assertEquals(ident, compound.getScale(null), 0f);
 
         System.gc();
     }

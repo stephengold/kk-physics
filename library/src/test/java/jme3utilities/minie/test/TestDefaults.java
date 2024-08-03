@@ -32,6 +32,7 @@ import com.jme3.bullet.collision.PhysicsCollisionObject;
 import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.collision.shapes.CollisionShape;
+import com.jme3.bullet.collision.shapes.CompoundCollisionShape;
 import com.jme3.bullet.collision.shapes.CylinderCollisionShape;
 import com.jme3.bullet.collision.shapes.HeightfieldCollisionShape;
 import com.jme3.bullet.collision.shapes.HullCollisionShape;
@@ -235,6 +236,14 @@ public class TestDefaults {
         testShapesConcave();
         testShapesConvex1();
         testShapesConvex2();
+
+        // empty CompoundCollisionShape:
+        CompoundCollisionShape compound = new CompoundCollisionShape();
+        testShape(compound);
+        Assert.assertEquals(0, compound.countChildren());
+        Assert.assertEquals(0f, compound.getMargin(), 0f);
+        Assert.assertFalse(compound.isConvex());
+        Assert.assertFalse(compound.isNonMoving());
     }
 
     private static void testShapesConcave() {
