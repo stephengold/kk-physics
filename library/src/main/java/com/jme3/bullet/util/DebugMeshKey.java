@@ -32,6 +32,7 @@
 package com.jme3.bullet.util;
 
 import com.jme3.bullet.collision.shapes.CollisionShape;
+import com.jme3.bullet.collision.shapes.CompoundCollisionShape;
 import com.jme3.math.Vector3f;
 import java.util.logging.Logger;
 import jme3utilities.MeshNormals;
@@ -77,6 +78,7 @@ class DebugMeshKey {
     DebugMeshKey(CollisionShape shape, MeshNormals normals) {
         assert normals != null;
         assert shape != null;
+        assert !(shape instanceof CompoundCollisionShape);
 
         this.normals = normals;
         this.shapeId = shape.nativeId();

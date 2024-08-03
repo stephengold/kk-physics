@@ -33,10 +33,17 @@ package com.jme3.bullet.util;
 
 import com.jme3.bullet.collision.PhysicsCollisionObject;
 import com.jme3.bullet.collision.shapes.CollisionShape;
+import com.jme3.bullet.collision.shapes.CompoundCollisionShape;
+import com.jme3.bullet.collision.shapes.infos.ChildCollisionShape;
+import com.jme3.math.Matrix3f;
+import com.jme3.math.Transform;
+import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Mesh;
+import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.VertexBuffer;
+import com.jme3.util.BufferUtils;
 import java.nio.FloatBuffer;
 import java.util.Collections;
 import java.util.Map;
@@ -45,6 +52,7 @@ import java.util.logging.Logger;
 import jme3utilities.MeshNormals;
 import jme3utilities.MyMesh;
 import jme3utilities.Validate;
+import jme3utilities.math.MyBuffer;
 
 /**
  * A utility class to generate debug meshes for jolt-jni collision shapes.
@@ -109,7 +117,8 @@ final public class DebugShapeFactory {
     }
 
     /**
-     * Determine vertex locations for the specified collision shape.
+     * Determine vertex locations for the specified collision shape. Note:
+     * recursive!
      *
      * @param shape the input shape (not null, unaffected)
      * @param meshResolution ignored
@@ -119,7 +128,14 @@ final public class DebugShapeFactory {
     public static FloatBuffer debugVertices(
             CollisionShape shape, int meshResolution) {
         Validate.nonNull(shape, "shape");
-        FloatBuffer result = shape.copyTriangles();
+
+        FloatBuffer result;
+        if (shape instanceof CompoundCollisionShape) {
+            CompoundCollisionShape ccs = (CompoundCollisionShape) shape;
+            result = createCompoundVertices(ccs);
+        } else {
+            result = shape.copyTriangles();
+        }
 
         assert (result.capacity() % numAxes) == 0 : result.capacity();
         return result;
@@ -128,7 +144,7 @@ final public class DebugShapeFactory {
     /**
      * For compatibility with the jme3-jbullet library.
      *
-     * @param shape the shape to visualize (not null, unaffected)
+     * @param shape the shape to visualize (not null, not compound, unaffected)
      * @return a new Triangles-mode Mesh (no indices, no normals)
      */
     public static Mesh getDebugMesh(CollisionShape shape) {
@@ -152,6 +168,10 @@ final public class DebugShapeFactory {
         Spatial result;
         if (shape == null) {
             result = null;
+
+        } else if (shape instanceof CompoundCollisionShape) {
+            result = createNode(
+                    (CompoundCollisionShape) shape, MeshNormals.None);
         } else {
             result = createGeometry(shape, MeshNormals.None);
         }
@@ -171,14 +191,21 @@ final public class DebugShapeFactory {
     public static Spatial getDebugShape(PhysicsCollisionObject pco) {
         CollisionShape shape = pco.getCollisionShape();
         MeshNormals normals = pco.debugMeshNormals();
-        Spatial result = createGeometry(shape, normals);
+
+        Spatial result;
+        if (shape instanceof CompoundCollisionShape) {
+            CompoundCollisionShape compound = (CompoundCollisionShape) shape;
+            result = createNode(compound, normals);
+        } else {
+            result = createGeometry(shape, normals);
+        }
 
         return result;
     }
 
     /**
      * Generate vertex locations for triangles to visualize the specified
-     * collision shape.
+     * collision shape. Note: recursive!
      *
      * @param shape the shape to visualize (not null, unaffected)
      * @return a new, unflipped, direct buffer full of scaled shape coordinates
@@ -186,7 +213,14 @@ final public class DebugShapeFactory {
      */
     public static FloatBuffer getDebugTriangles(CollisionShape shape) {
         Validate.nonNull(shape, "shape");
-        FloatBuffer result = shape.copyTriangles();
+
+        FloatBuffer result;
+        if (shape instanceof CompoundCollisionShape) {
+            CompoundCollisionShape ccs = (CompoundCollisionShape) shape;
+            result = createCompoundTriangles(ccs);
+        } else {
+            result = shape.copyTriangles();
+        }
 
         assert (result.capacity() % 9) == 0 : result.capacity();
         return result;
@@ -234,6 +268,87 @@ final public class DebugShapeFactory {
     // private methods
 
     /**
+     * Generate vertex locations for triangles to visualize the specified
+     * CompoundCollisionShape.
+     *
+     * @param compoundShape (not null, unaffected)
+     * @return a new, unflipped, direct buffer full of scaled shape coordinates
+     * (capacity a multiple of 9)
+     */
+    private static FloatBuffer createCompoundTriangles(
+            CompoundCollisionShape compoundShape) {
+        ChildCollisionShape[] children = compoundShape.listChildren();
+        int numChildren = children.length;
+
+        FloatBuffer[] bufferArray = new FloatBuffer[numChildren];
+        Transform tmpTransform = new Transform();
+        int totalFloats = 0;
+
+        for (int childIndex = 0; childIndex < numChildren; ++childIndex) {
+            ChildCollisionShape child = children[childIndex];
+            CollisionShape baseShape = child.getShape();
+            child.copyTransform(tmpTransform);
+            FloatBuffer buffer = getDebugTriangles(baseShape);
+
+            int numFloats = buffer.capacity();
+            MyBuffer.transform(buffer, 0, numFloats, tmpTransform);
+            bufferArray[childIndex] = buffer;
+            totalFloats += numFloats;
+        }
+
+        FloatBuffer result = BufferUtils.createFloatBuffer(totalFloats);
+        for (FloatBuffer buffer : bufferArray) {
+            for (int position = 0; position < buffer.capacity(); ++position) {
+                float value = buffer.get(position);
+                result.put(value);
+            }
+        }
+        assert result.position() == result.capacity();
+
+        return result;
+    }
+
+    /**
+     * Determine vertex locations for the specified CompoundCollisionShape.
+     *
+     * @param compoundShape (not null, unaffected)
+     * @return a new, unflipped, direct buffer full of scaled shape coordinates
+     * (capacity a multiple of 3)
+     */
+    private static FloatBuffer createCompoundVertices(
+            CompoundCollisionShape compoundShape) {
+        ChildCollisionShape[] children = compoundShape.listChildren();
+        int numChildren = children.length;
+
+        FloatBuffer[] bufferArray = new FloatBuffer[numChildren];
+        Transform tmpTransform = new Transform();
+        int totalFloats = 0;
+
+        for (int childIndex = 0; childIndex < numChildren; ++childIndex) {
+            ChildCollisionShape child = children[childIndex];
+            CollisionShape baseShape = child.getShape();
+            child.copyTransform(tmpTransform);
+            FloatBuffer buffer = debugVertices(baseShape, 0);
+
+            int numFloats = buffer.capacity();
+            MyBuffer.transform(buffer, 0, numFloats, tmpTransform);
+            bufferArray[childIndex] = buffer;
+            totalFloats += numFloats;
+        }
+
+        FloatBuffer result = BufferUtils.createFloatBuffer(totalFloats);
+        for (FloatBuffer buffer : bufferArray) {
+            for (int position = 0; position < buffer.capacity(); ++position) {
+                float value = buffer.get(position);
+                result.put(value);
+            }
+        }
+        assert result.position() == result.capacity();
+
+        return result;
+    }
+
+    /**
      * Create a Geometry for visualizing the specified collision shape.
      *
      * @param shape (not null, unaffected)
@@ -262,9 +377,10 @@ final public class DebugShapeFactory {
     }
 
     /**
-     * Create a Mesh for visualizing the specified collision shape.
+     * Create a Mesh for visualizing the specified (non-compound) collision
+     * shape.
      *
-     * @param shape (not null, unaffected)
+     * @param shape (not null, not compound, unaffected)
      * @param normals which normals to generate (not null)
      * @return a new Mesh (not null)
      */
@@ -305,5 +421,42 @@ final public class DebugShapeFactory {
         mesh.setStatic();
 
         return mesh;
+    }
+
+    /**
+     * Create a Node for visualizing the specified CompoundCollisionShape.
+     *
+     * @param compoundShape (not null, unaffected)
+     * @param normals which normals to generate (not null)
+     * @return a new Node (not null)
+     */
+    private static Node createNode(
+            CompoundCollisionShape compoundShape, MeshNormals normals) {
+        assert normals != null;
+
+        Node node = new Node("CompoundCollisionShape debug");
+
+        Vector3f scale = compoundShape.getScale(null);
+        Matrix3f tmpRotation = new Matrix3f(); // TODO garbage
+        Vector3f tmpOffset = new Vector3f();
+        ChildCollisionShape[] children = compoundShape.listChildren();
+        for (ChildCollisionShape child : children) {
+            CollisionShape baseShape = child.getShape();
+            Geometry geometry = createGeometry(baseShape, normals);
+
+            // apply scaled offset
+            child.copyOffset(tmpOffset);
+            tmpOffset.multLocal(scale);
+            geometry.setLocalTranslation(tmpOffset);
+
+            // apply rotation
+            child.copyRotationMatrix(tmpRotation);
+            geometry.setLocalRotation(tmpRotation);
+
+            node.attachChild(geometry);
+        }
+        node.updateGeometricState();
+
+        return node;
     }
 }
