@@ -28,11 +28,16 @@ package jme3utilities.minie;
 
 import com.github.stephengold.joltjni.enumerate.EMotionQuality;
 import com.jme3.app.state.AppState;
+import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.SolverType;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.collision.shapes.CompoundCollisionShape;
+import com.jme3.bullet.collision.shapes.HeightfieldCollisionShape;
+import com.jme3.bullet.collision.shapes.HullCollisionShape;
+import com.jme3.bullet.collision.shapes.MeshCollisionShape;
+import com.jme3.bullet.collision.shapes.SimplexCollisionShape;
 import com.jme3.bullet.collision.shapes.infos.ChildCollisionShape;
 import com.jme3.bullet.debug.BulletDebugAppState;
 import com.jme3.bullet.objects.PhysicsRigidBody;
@@ -227,6 +232,19 @@ public class PhysicsDumper extends Dumper {
          */
         CollisionShape shape = body.getCollisionShape();
         dump(shape, indent + " ");
+        /*
+         * The next line has the bounding box.
+         */
+        addLine(indent);
+        if (shape instanceof CompoundCollisionShape
+                || shape instanceof HeightfieldCollisionShape
+                || shape instanceof HullCollisionShape
+                || shape instanceof MeshCollisionShape
+                || shape instanceof SimplexCollisionShape) {
+            BoundingBox aabb = shape.boundingBox(location, orientation, null);
+            desc = describer.describe(aabb);
+            stream.printf(" aabb[%s]", desc);
+        }
     }
 
     /**
