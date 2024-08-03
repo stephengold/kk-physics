@@ -33,6 +33,7 @@ import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.SolverType;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.collision.shapes.CompoundCollisionShape;
+import com.jme3.bullet.collision.shapes.infos.ChildCollisionShape;
 import com.jme3.bullet.debug.BulletDebugAppState;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Quaternion;
