@@ -1,6 +1,6 @@
 # release log for the KK Physics library
 
-## Version 0.3.0 released on TBD
+## Version 0.3.0 released on 3 August 2024
 
 Pre-release for limited testing.
 

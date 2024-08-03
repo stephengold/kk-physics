@@ -34,10 +34,11 @@ For projects built using [Maven] or [Gradle], it is sufficient to add
 dependencies on the KK Physics library and appropriate jolt-jni native libraries.
 The build tool should automatically resolve the remaining dependencies.
 
-Current jolt-jni releases provide 16 native libraries,
+Current jolt-jni releases provide 24 native libraries,
 each specific to a particular platform, build type, and build flavor.
 In the following buildscript excerpts:
-+ "Linux64" may be replaced by "MacOSX64", "MacOSX_ARM64", or "Windows64".
++ "Linux64" may be replaced by "Linux_ARM32hf", "Linux_ARM64",
+  "MacOSX64", "MacOSX_ARM64", or "Windows64".
 + "DebugSp" may be replaced by "DebugDp", "ReleaseSp", or "ReleaseDp".
 
 ### Gradle-built projects
@@ -48,8 +49,8 @@ Add to the project’s "build.gradle" file:
         mavenCentral()
     }
     dependencies {
-        implementation("com.github.stephengold:kk-physics:0.2.0")
-        runtimeOnly("com.github.stephengold:jolt-jni-Linux64:0.1.10:DebugSp")
+        implementation("com.github.stephengold:kk-physics:0.3.0")
+        runtimeOnly("com.github.stephengold:jolt-jni-Linux64:0.5.0:DebugSp")
     }
 
 For some older versions of Gradle,
@@ -69,12 +70,12 @@ Add to the project’s "pom.xml" file:
     <dependency>
       <groupId>com.github.stephengold</groupId>
       <artifactId>kk-physics</artifactId>
-      <version>0.2.0</version>
+      <version>0.3.0</version>
     </dependency>
     <dependency>
       <groupId>com.github.stephengold</groupId>
       <artifactId>jolt-jni-Linux64</artifactId>
-      <version>0.1.10</version>
+      <version>0.5.0</version>
       <classifier>DebugSp</classifier>
     </dependency>
 
@@ -100,7 +101,7 @@ Add to the project’s "pom.xml" file:
   + using [Git]:
     + `git clone https://github.com/stephengold/kk-physics.git`
     + `cd kk-physics`
-    + `git checkout -b latest 0.2.0`
+    + `git checkout -b latest 0.3.0`
 4. Run the [Gradle] wrapper:
   + using Bash or Fish or PowerShell or Zsh: `./gradlew build`
   + using Windows Command Prompt: `.\gradlew build`
@@ -154,9 +155,10 @@ Like most projects, the KK Physics Project builds on the work of many who
 have gone before.  I therefore acknowledge the following
 software developers:
 
-+ "aecsocket" for creating the [jolt-java] bindings to the Jolt Physics Engine
++ Jorrit Rouwe (aka "jrouwe") for creating the Jolt Physics Engine
 + Normen Hansen (aka "normen") for creating most of the `jme3-bullet` library
   (from which the KK Physics API is derived)
++ "aecsocket" for creating the [JoltJava] bindings to the Jolt Physics Engine
 + plus the creators of (and contributors to) the following software:
     + the [Firefox] web browser
     + the [Git] revision-control system and GitK commit viewer
@@ -194,7 +196,7 @@ correct the situation: sgold@sonic.net
 [java]: https://en.wikipedia.org/wiki/Java_(programming_language) "Java programming language"
 [jme]: https://jmonkeyengine.org "jMonkeyEngine Project"
 [jolt]: https://jrouwe.github.io/JoltPhysics/index.html "the Jolt Physics Engine"
-[jolt-java]: https://github.com/aecsocket/jolt-java?tab=readme-ov-file#readme "Jolt-java Project"
+[joltjava]: https://github.com/aecsocket/jolt-java?tab=readme-ov-file#readme "JoltJava Project"
 [jvm]: https://en.wikipedia.org/wiki/Java_virtual_machine "Java virtual machine"
 [license]: https://github.com/stephengold/kk-physics/blob/master/LICENSE "KK Physics license"
 [log]: https://github.com/stephengold/kk-physics/blob/master/library/release-log.md "release log"
