@@ -2,7 +2,7 @@ The [KK Physics Project][project] is about integrating
 [the Jolt Physics engine][jolt] into
 [the jMonkeyEngine (JME) game engine][jme].
 
-This project is currently a proof of concept
+This project is currently under development
 and is not intended for production use.
 
 It contains 2 subprojects:
@@ -38,7 +38,7 @@ Current jolt-jni releases provide 16 native libraries,
 each specific to a particular platform, build type, and build flavor.
 In the following buildscript excerpts:
 + "Linux64" may be replaced by "MacOSX64", "MacOSX_ARM64", or "Windows64".
-+ "DebugSp" may be replaced by "DebugDp", "ReleaseSp", or "ReleaseDp". 
++ "DebugSp" may be replaced by "DebugDp", "ReleaseSp", or "ReleaseDp".
 
 ### Gradle-built projects
 
