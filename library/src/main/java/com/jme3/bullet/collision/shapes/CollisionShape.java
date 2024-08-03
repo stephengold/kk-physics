@@ -162,6 +162,29 @@ abstract public class CollisionShape {
     }
 
     /**
+     * Calculate an axis-aligned bounding box with the specified translation and
+     * rotation applied. Rotation is applied first. Collision margin is
+     * included.
+     *
+     * @param translation the translation to apply (not null, unaffected)
+     * @param rotation the rotation to apply (not null, not zero, unaffected)
+     * @param storeResult storage for the result (modified if not null)
+     * @return a bounding box (either storeResult or a new instance, not null)
+     */
+    public BoundingBox boundingBox(Vector3f translation, Quaternion rotation,
+            BoundingBox storeResult) {
+        Validate.finite(translation, "translation");
+        Validate.nonZero(rotation, "rotation");
+        BoundingBox result
+                = (storeResult == null) ? new BoundingBox() : storeResult;
+
+        Matrix3f rotMat = rotation.toRotationMatrix();
+        boundingBox(translation, rotMat, result);
+
+        return result;
+    }
+
+    /**
      * Test whether the specified scale factors can be applied to the shape.
      * Subclasses that restrict scaling should override this method.
      *
