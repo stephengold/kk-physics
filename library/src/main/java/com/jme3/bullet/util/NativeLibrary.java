@@ -52,6 +52,10 @@ final public class NativeLibrary {
      */
     final public static Logger logger
             = Logger.getLogger(NativeLibrary.class.getName());
+    /**
+     * expected version string of the native library
+     */
+    final public static String expectedVersion = "0.5.0";
     // *************************************************************************
     // constructors
 
@@ -105,8 +109,14 @@ final public class NativeLibrary {
         if (Jolt.isDoublePrecision()) {
             System.out.print("Dp-");
         }
+        String jjVersion = Jolt.versionString();
         System.out.println(
-                "jolt-jni version " + Jolt.versionString() + " initializing");
+                "jolt-jni version " + jjVersion + " initializing");
+
+        if (!jjVersion.equals(expectedVersion)) {
+            logger.warning("Expected a v" + expectedVersion
+                    + " native library but loaded v" + jjVersion + "!");
+        }
 
         //Jolt.setTraceAllocations(true); // to debug native memory allocation
         JoltPhysicsObject.startCleaner();
