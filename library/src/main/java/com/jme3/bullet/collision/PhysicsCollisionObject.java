@@ -47,7 +47,7 @@ import jme3utilities.Validate;
 /**
  * The abstract base class for collision objects.
  * <p>
- * Subclasses include PhysicsBody.
+ * Subclasses include {@code PhysicsBody}.
  *
  * @author normenhansen
  */

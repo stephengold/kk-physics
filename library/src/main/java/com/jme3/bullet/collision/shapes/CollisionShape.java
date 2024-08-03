@@ -80,7 +80,8 @@ abstract public class CollisionShape {
     // fields
 
     /**
-     * default collision margin for most shapes (in physics-space units, &ge;0)
+     * default collision margin for most convex shapes (in physics-space units,
+     * &ge;0)
      */
     private static float defaultMargin = 0.04f;
     /**
@@ -198,7 +199,7 @@ abstract public class CollisionShape {
     }
 
     /**
-     * Return the default collision margin for most new shapes.
+     * Return the default collision margin for most new convex shapes.
      *
      * @return the margin thickness (in physics-space units, &gt;0)
      */
@@ -276,7 +277,7 @@ abstract public class CollisionShape {
     }
 
     /**
-     * Alter the default margin for new shapes.
+     * Alter the default margin for most new convex shapes.
      *
      * @param margin the desired margin thickness (in physics-space units,
      * &gt;0, default=0.04)
