@@ -1,5 +1,23 @@
 # release log for the KK Physics library
 
+## Version 0.3.0 released on TBD
+
+Pre-release for limited testing.
+
++ Deferred the creation of jolt-jni bodies until the `PhysicsSystem` is stepped.
++ Added a cleaner thread for Jolt physics objects.
++ Implemented kinematic bodies, `CollisionShapeFactory`, `RigidBodyControl`,
+  collision margins, and custom debug materials.
++ Added 3 collision shapes:
+  + `CompoundCollisionShape`
+  + `HeightfieldCollisionShape`
+  + `SimplexCollisionShape`
++ Implemented alternative orientations of capsule and cylinder shapes.
++ Implemented debug visualization for bounding boxes.
++ Replaced `RigidBodySnapshot` with `BodyCreationSettings`.
++ Updated the jolt-jni library to v0.5.0,
+  picking up support for Linux-on-ARM platforms.
+
 ## Version 0.2.0 released on 5 July 2024
 
 This was another proof-of-concept pre-release.
