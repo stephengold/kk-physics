@@ -96,8 +96,8 @@ public class TestStaticBody {
         space.addCollisionObject(capsuleBody);
 
         // CylinderCollisionShape
-        CollisionShape cylinder = new CylinderCollisionShape(
-                new Vector3f(1f, 1f, 1f), PhysicsSpace.AXIS_Y);
+        CollisionShape cylinder
+                = new CylinderCollisionShape(new Vector3f(1f, 1f, 1f));
         PhysicsRigidBody cylinderBody = new PhysicsRigidBody(cylinder, 0f);
         space.addCollisionObject(cylinderBody);
 
