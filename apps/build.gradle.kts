@@ -25,6 +25,7 @@ val btf = "DebugSp"
 val os = DefaultNativePlatform.getCurrentOperatingSystem()
 
 dependencies {
+    implementation(libs.acorus)
     implementation(libs.heart)
     implementation(libs.jme3.core)
     implementation(libs.jme3.desktop)
