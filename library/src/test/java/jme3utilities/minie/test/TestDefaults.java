@@ -37,6 +37,7 @@ import com.jme3.bullet.collision.shapes.CylinderCollisionShape;
 import com.jme3.bullet.collision.shapes.HeightfieldCollisionShape;
 import com.jme3.bullet.collision.shapes.HullCollisionShape;
 import com.jme3.bullet.collision.shapes.MeshCollisionShape;
+import com.jme3.bullet.collision.shapes.PlaneCollisionShape;
 import com.jme3.bullet.collision.shapes.SimplexCollisionShape;
 import com.jme3.bullet.collision.shapes.SphereCollisionShape;
 import com.jme3.bullet.control.RigidBodyControl;
@@ -44,6 +45,7 @@ import com.jme3.bullet.objects.PhysicsBody;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.bullet.util.NativeLibrary;
 import com.jme3.math.Matrix3f;
+import com.jme3.math.Plane;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Mesh;
 import com.jme3.scene.shape.CenterQuad;
@@ -269,6 +271,16 @@ public class TestDefaults {
         Assert.assertEquals(1, mesh2.countSubmeshes());
         Assert.assertFalse(mesh2.isConvex());
         Assert.assertTrue(mesh2.isNonMoving());
+
+        // Plane
+        Plane plane = new Plane(new Vector3f(0f, 1f, 0f), 0f);
+        PlaneCollisionShape pcs = new PlaneCollisionShape(plane);
+        testShape(pcs);
+        Assert.assertEquals(0f, pcs.getMargin(), 0f);
+        Assert.assertEquals(0f, pcs.getPlane().getConstant(), 0f);
+        Utils.assertEquals(0f, 1f, 0f, pcs.getPlane().getNormal(), 0f);
+        Assert.assertFalse(pcs.isConvex());
+        Assert.assertTrue(pcs.isNonMoving());
     }
 
     private static void testShapesConvex1() {

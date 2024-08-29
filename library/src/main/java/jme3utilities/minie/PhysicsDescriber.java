@@ -35,9 +35,11 @@ import com.jme3.bullet.collision.shapes.CylinderCollisionShape;
 import com.jme3.bullet.collision.shapes.HeightfieldCollisionShape;
 import com.jme3.bullet.collision.shapes.HullCollisionShape;
 import com.jme3.bullet.collision.shapes.MeshCollisionShape;
+import com.jme3.bullet.collision.shapes.PlaneCollisionShape;
 import com.jme3.bullet.collision.shapes.SimplexCollisionShape;
 import com.jme3.bullet.collision.shapes.SphereCollisionShape;
 import com.jme3.material.Material;
+import com.jme3.math.Plane;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.Control;
@@ -45,6 +47,7 @@ import java.util.logging.Logger;
 import jme3utilities.MyString;
 import jme3utilities.Validate;
 import jme3utilities.debug.Describer;
+import jme3utilities.math.MyVector3f;
 
 /**
  * Generate compact textual descriptions of physics objects for debugging
@@ -144,6 +147,15 @@ public class PhysicsDescriber extends Describer {
                     numS, numT, numV);
 
             result.append(desc);
+
+        } else if (shape instanceof PlaneCollisionShape) {
+            Plane plane = ((PlaneCollisionShape) shape).getPlane();
+            result.append(" normal[");
+            Vector3f normal = plane.getNormal();
+            result.append(MyVector3f.describe(normal));
+            result.append("] constant=");
+            float constant = plane.getConstant();
+            result.append(MyString.describe(constant));
 
         } else if (shape instanceof SimplexCollisionShape) {
             int numV = ((SimplexCollisionShape) shape).countMeshVertices();
