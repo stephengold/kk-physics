@@ -74,6 +74,9 @@ final public class MyPco {
             result = String.format("Dyn(mass=%s)%s", massText, activeText);
         }
 
+        if (!body.isContactResponse()) {
+            result += "/NOresponse";
+        }
         if (!body.isInWorld()) {
             result += "/NOspace";
         }

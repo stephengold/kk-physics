@@ -246,6 +246,19 @@ public class BulletDebugAppState extends BaseAppState {
     }
 
     /**
+     * Access a Material for visualizing non-responsive collision objects.
+     *
+     * @param numSides 0&rarr;invisible, 1&rarr;single-sided Material,
+     * 2&rarr;double-sided Material
+     * @return the pre-existing Material (not null)
+     */
+    Material getGhostMaterial(int numSides) {
+        Material result = yellows[numSides];
+        assert result != null;
+        return result;
+    }
+
+    /**
      * Access a Material for visualizing inactive rigid bodies.
      *
      * @param numSides 0&rarr;invisible, 1&rarr;single-sided Material,
