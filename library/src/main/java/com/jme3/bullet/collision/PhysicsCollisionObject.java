@@ -286,6 +286,15 @@ abstract public class PhysicsCollisionObject
     abstract public boolean isActive();
 
     /**
+     * Test whether the collision object responds to contact with other objects.
+     * All ghost objects are non-responsive. Other types are responsive by
+     * default.
+     *
+     * @return true if responsive, otherwise false
+     */
+    abstract public boolean isContactResponse();
+
+    /**
      * Test whether the collision object is added to a space.
      *
      * @return true&rarr;added to a space, false&rarr;not added to a space

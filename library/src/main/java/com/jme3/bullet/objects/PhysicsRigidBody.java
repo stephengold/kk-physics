@@ -123,6 +123,7 @@ public class PhysicsRigidBody extends PhysicsBody {
     public PhysicsRigidBody(CollisionShape shape) {
         this(shape, 1f);
 
+        assert isContactResponse();
         assert !isKinematic();
         assert !isStatic();
         assert mass == 1f : mass;
@@ -166,6 +167,8 @@ public class PhysicsRigidBody extends PhysicsBody {
         super.setCollisionShape(shape);
         this.mass = mass;
         newSettings(shape, mass, location, orientation, null);
+
+        assert isContactResponse();
     }
     // *************************************************************************
     // new methods exposed
@@ -772,6 +775,20 @@ public class PhysicsRigidBody extends PhysicsBody {
     }
 
     /**
+     * Enable/disable the body's contact response.
+     *
+     * @param newState true to respond to contacts, false to ignore them
+     * (default=true)
+     */
+    public void setContactResponse(boolean newState) {
+        if (joltBody == null) {
+            settings.setIsSensor(!newState);
+        } else {
+            joltBody.setIsSensor(!newState);
+        }
+    }
+
+    /**
      * Alter the body's damping.
      *
      * @param linearDamping the desired linear damping fraction (&ge;0, &le;1,
@@ -1237,6 +1254,23 @@ public class PhysicsRigidBody extends PhysicsBody {
             result = isDynamic();
         } else {
             result = joltBody.isActive();
+        }
+
+        return result;
+    }
+
+    /**
+     * Test whether the collision object responds to contact with other objects.
+     *
+     * @return true if responsive, otherwise false
+     */
+    @Override
+    public boolean isContactResponse() {
+        boolean result;
+        if (joltBody == null) {
+            result = !settings.getIsSensor();
+        } else {
+            result = !joltBody.isSensor();
         }
 
         return result;
