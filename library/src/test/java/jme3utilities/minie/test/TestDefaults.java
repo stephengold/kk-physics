@@ -26,6 +26,7 @@
  */
 package jme3utilities.minie.test;
 
+import com.github.stephengold.joltjni.enumerate.EMotionQuality;
 import com.jme3.bullet.CollisionSpace;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.collision.PhysicsCollisionObject;
@@ -150,8 +151,11 @@ public class TestDefaults {
      * @param pco the object to test (not null, unaffected)
      */
     private static void testPco(PhysicsCollisionObject pco) {
+        long id = pco.nativeId();
+        Assert.assertNotEquals(0L, id);
         Assert.assertFalse(pco.isInWorld());
 
+        Assert.assertNull(pco.getApplicationData());
         Assert.assertNull(pco.getCollisionSpace());
 
         Assert.assertNull(pco.getDebugMaterial());
@@ -195,7 +199,10 @@ public class TestDefaults {
         testPco(prb);
 
         Assert.assertEquals(0f, prb.getAngularDamping(), 0f);
+        Assert.assertEquals(0f, prb.getGravityFactor(), 1f);
+        Assert.assertEquals(EMotionQuality.Discrete, prb.getMotionQuality());
         Assert.assertEquals(0f, prb.getLinearDamping(), 0f);
+        Assert.assertTrue(prb.isContactResponse());
         Assert.assertFalse(prb.isKinematic());
         Utils.assertEquals(0f, 0f, 0f, prb.totalAppliedForce(null), 0f);
         Utils.assertEquals(0f, 0f, 0f, prb.totalAppliedTorque(null), 0f);
@@ -269,6 +276,7 @@ public class TestDefaults {
         Assert.assertEquals(2, mesh2.countMeshTriangles());
         Assert.assertEquals(4, mesh2.countMeshVertices());
         Assert.assertEquals(1, mesh2.countSubmeshes());
+        Assert.assertEquals(0f, mesh2.getMargin(), 0f);
         Assert.assertFalse(mesh2.isConvex());
         Assert.assertTrue(mesh2.isNonMoving());
 
