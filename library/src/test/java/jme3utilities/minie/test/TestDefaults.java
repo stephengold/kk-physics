@@ -262,7 +262,7 @@ public class TestDefaults {
 
         // MeshCollisionShape:
         Mesh quad = new CenterQuad(1f, 1f);
-        MeshCollisionShape mesh2 = new MeshCollisionShape(quad, false);
+        MeshCollisionShape mesh2 = new MeshCollisionShape(quad);
         testShape(mesh2);
         Assert.assertEquals(2, mesh2.countMeshTriangles());
         Assert.assertEquals(4, mesh2.countMeshVertices());

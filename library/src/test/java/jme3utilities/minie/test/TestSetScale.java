@@ -135,7 +135,7 @@ public class TestSetScale {
         Node model = (Node) assetManager.loadModel(key);
         Geometry geo = (Geometry) model.getChild(0);
         Mesh mesh = geo.getMesh();
-        CollisionShape mcs = new MeshCollisionShape(mesh, false);
+        CollisionShape mcs = new MeshCollisionShape(mesh);
         Utils.assertEquals(ident, mcs.getScale(null), 0f);
         mcs.setScale(uni);
         Utils.assertEquals(uni, mcs.getScale(null), 0f);

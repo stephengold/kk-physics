@@ -212,7 +212,7 @@ final public class CollisionShapeFactory {
         Validate.nonNull(modelRoot, "model root");
 
         Mesh mergedMesh = makeMergedMesh(modelRoot);
-        MeshCollisionShape result = new MeshCollisionShape(mergedMesh, false);
+        MeshCollisionShape result = new MeshCollisionShape(mergedMesh);
 
         return result;
     }
@@ -415,7 +415,7 @@ final public class CollisionShapeFactory {
         Transform transform = relativeTransform(geometry, modelRoot);
         // TODO recognize AbstractBox, Cylinder, Quad,
         // and Sphere from com.jme3.scene.shape package
-        MeshCollisionShape result = new MeshCollisionShape(mesh, false);
+        MeshCollisionShape result = new MeshCollisionShape(mesh);
         result.setScale(transform.getScale());
 
         return result;

@@ -128,7 +128,7 @@ public class TestStaticBody {
         space.addCollisionObject(hullBody);
 
         // MeshCollisionShape without compression
-        CollisionShape uncompressed = new MeshCollisionShape(mesh, false);
+        CollisionShape uncompressed = new MeshCollisionShape(mesh);
         PhysicsRigidBody uncompressedBody
                 = new PhysicsRigidBody(uncompressed, 0f);
         space.addCollisionObject(uncompressedBody);
