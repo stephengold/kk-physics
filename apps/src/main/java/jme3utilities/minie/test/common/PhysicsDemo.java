@@ -33,11 +33,13 @@ import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.collision.shapes.CylinderCollisionShape;
 import com.jme3.bullet.collision.shapes.HullCollisionShape;
+import com.jme3.bullet.collision.shapes.PlaneCollisionShape;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.bullet.objects.PhysicsBody;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.material.Material;
 import com.jme3.math.FastMath;
+import com.jme3.math.Plane;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.queue.RenderQueue;
@@ -222,6 +224,10 @@ abstract public class PhysicsDemo extends AcorusDemo {
 
             case "hull":
                 addHullPlatform(topY, topRadius, thickness);
+                break;
+
+            case "plane":
+                addPlanePlatform(topY);
                 break;
 
             case "triangle":
@@ -620,6 +626,28 @@ abstract public class PhysicsDemo extends AcorusDemo {
         body.setPhysicsLocation(new Vector3f(0f, topY - thickness / 2f, 0f));
 
         addPlatform(body);
+    }
+
+    /**
+     * Add a static plane to the PhysicsSpace, to serve as a platform.
+     *
+     * @param topY the desired Y coordinate of the surface (in physics-space
+     * coordinates)
+     */
+    private void addPlanePlatform(float topY) {
+        Plane plane = new Plane(Vector3f.UNIT_Y, topY);
+        PlaneCollisionShape shape = new PlaneCollisionShape(plane);
+
+        PhysicsRigidBody body
+                = new PhysicsRigidBody(shape, PhysicsBody.massForStatic);
+
+        body.setDebugMeshNormals(MeshNormals.Facet);
+
+        addPlatform(body);
+
+        Material material = findMaterial("greenTile");
+        body.setApplicationData(material);
+        body.setDebugMaterial(material);
     }
 
     /**
