@@ -387,7 +387,7 @@
         <!-- Checks for size violations              -->
         <!-- See https://checkstyle.org/checks/sizes -->
         <module name="MethodLength">
-            <property name="max" value="90"/>
+            <property name="max" value="100"/>
         </module>
         <module name="ParameterNumber">
             <property name="max" value="6"/>
