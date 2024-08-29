@@ -34,7 +34,7 @@ package com.jme3.bullet.collision.shapes;
 import com.github.stephengold.joltjni.MutableCompoundShape;
 import com.github.stephengold.joltjni.MutableCompoundShapeSettings;
 import com.github.stephengold.joltjni.Quat;
-import com.github.stephengold.joltjni.RefShape;
+import com.github.stephengold.joltjni.ShapeRef;
 import com.github.stephengold.joltjni.ShapeRefC;
 import com.github.stephengold.joltjni.Vec3;
 import com.github.stephengold.joltjni.readonly.QuatArg;
@@ -86,7 +86,7 @@ public class CompoundCollisionShape extends CollisionShape {
     /**
      * reference to the undecorated, mutable jolt-jni shape
      */
-    private RefShape mutableShapeRef;
+    private ShapeRef mutableShapeRef;
     // *************************************************************************
     // constructors
 
