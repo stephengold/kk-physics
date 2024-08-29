@@ -129,6 +129,17 @@ public class MeshCollisionShape extends CollisionShape {
 
         createShape();
     }
+
+    /**
+     * Instantiate a shape based on the specified JME mesh, using quantized
+     * AABB compression.
+     *
+     * @param jmeMesh the mesh on which to base the shape (must contain at
+     * least one triangle, unaffected)
+     */
+    public MeshCollisionShape(Mesh jmeMesh) {
+        this(jmeMesh, true);
+    }
     // *************************************************************************
     // new methods exposed
 
