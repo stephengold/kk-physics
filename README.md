@@ -28,7 +28,14 @@ Complete source code (in [Java]) is provided under
 
 ## How to add KK Physics to an existing project
 
-KK Physics comes pre-built as a single JVM library.
+KK Physics comes pre-built as a single JVM library
+that can be downloaded from Maven Central or GitHub.
+
+KK Physics replaces (and is thus incompatible with)
+the jme3-bullet, jme3-jbullet, and Minie libaries.
+Before adding KK Physics to a project,
+you should remove those libraries
+so they won’t interfere with KK Physics.
 
 For projects built using [Maven] or [Gradle], it is sufficient to add
 dependencies on the KK Physics library and appropriate jolt-jni native libraries.
@@ -36,10 +43,24 @@ The build tool should automatically resolve the remaining dependencies.
 
 Current jolt-jni releases provide 24 native libraries,
 each specific to a particular platform, build type, and build flavor.
+
+Six platforms are supported:
++ "Linux64" (Linux on x86_64 CPUs)
++ "Linux_ARM32hf" (Linux on 32-bit ARM CPUs with hardware floating-point)
++ "Linux_ARM64" (Linux on aarch64 CPUs)
++ "MacOSX64" (macOS on Intel CPUs)
++ "MacOSX_ARM64" (macOS on "Apple Silicon")
++ "Windows64" (MS Windows on x86_64 CPUs)
+
+For each platform, 4 native libraries are distributed:
++ "ReleaseSp", a release build using single-precision location vectors
++ "ReleaseDp", a release build using double-precision location vectors
++ "DebugSp", a debug build using single-precision location vectors
++ "DebugSp", a debug build using double-precision location vectors
+
 In the following buildscript excerpts:
-+ "Linux64" may be replaced by "Linux_ARM32hf", "Linux_ARM64",
-  "MacOSX64", "MacOSX_ARM64", or "Windows64".
-+ "DebugSp" may be replaced by "DebugDp", "ReleaseSp", or "ReleaseDp".
++ "Linux64" may be replaced by another platform.
++ "DebugSp" may be replaced by another build type/flavor combination.
 
 ### Gradle-built projects
 
