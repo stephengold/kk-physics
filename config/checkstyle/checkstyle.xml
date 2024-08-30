@@ -289,6 +289,10 @@
                     RECORD_COMPONENT_DEF"/>
         </module>
         <module name="NoWhitespaceBeforeCaseDefaultColon"/>
+        <module name="ConstructorsDeclarationGrouping"/>
+        <module name="VariableDeclarationUsageDistance">
+            <property name="allowedDistance" value="8"/>
+        </module>
         <module name="CustomImportOrder">
             <property name="sortImportsInGroupAlphabetically" value="true"/>
             <property name="separateLineBetweenGroups" value="true"/>
