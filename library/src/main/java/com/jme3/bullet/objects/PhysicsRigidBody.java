@@ -45,6 +45,7 @@ import com.github.stephengold.joltjni.enumerate.EActivation;
 import com.github.stephengold.joltjni.enumerate.EMotionQuality;
 import com.github.stephengold.joltjni.enumerate.EMotionType;
 import com.github.stephengold.joltjni.enumerate.EOverrideMassProperties;
+import com.github.stephengold.joltjni.operator.Op;
 import com.github.stephengold.joltjni.readonly.ConstBodyId;
 import com.github.stephengold.joltjni.readonly.ConstMassProperties;
 import com.github.stephengold.joltjni.readonly.Mat44Arg;
@@ -302,12 +303,12 @@ public class PhysicsRigidBody extends PhysicsBody {
                 // MultiplyWorldSpaceInverseInertiaByVector:
                 QuatArg bodyRotation = settings.getRotation();
                 QuatArg productQuat
-                        = Quat.multiply(bodyRotation, inertiaRotation);
+                        = Op.multiply(bodyRotation, inertiaRotation);
                 Mat44Arg rotation = Mat44.sRotation(productQuat);
                 Vec3Arg rotatedImpulse
                         = rotation.multiply3x3Transposed(angularImpulse);
                 Vec3Arg productVector
-                        = Vec3.multiply(invInertiaDiagonal, rotatedImpulse);
+                        = Op.multiply(invInertiaDiagonal, rotatedImpulse);
                 Vec3Arg dw = rotation.multiply3x3(productVector);
 
                 // Adjust the angular velocity:
