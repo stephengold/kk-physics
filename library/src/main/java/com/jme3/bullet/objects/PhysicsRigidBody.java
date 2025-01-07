@@ -302,13 +302,12 @@ public class PhysicsRigidBody extends PhysicsBody {
 
                 // MultiplyWorldSpaceInverseInertiaByVector:
                 QuatArg bodyRotation = settings.getRotation();
-                QuatArg productQuat
-                        = Op.multiply(bodyRotation, inertiaRotation);
+                QuatArg productQuat = Op.star(bodyRotation, inertiaRotation);
                 Mat44Arg rotation = Mat44.sRotation(productQuat);
                 Vec3Arg rotatedImpulse
                         = rotation.multiply3x3Transposed(angularImpulse);
                 Vec3Arg productVector
-                        = Op.multiply(invInertiaDiagonal, rotatedImpulse);
+                        = Op.star(invInertiaDiagonal, rotatedImpulse);
                 Vec3Arg dw = rotation.multiply3x3(productVector);
 
                 // Adjust the angular velocity:

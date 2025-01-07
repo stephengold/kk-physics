@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2024 jMonkeyEngine
+ * Copyright (c) 2019-2025 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -55,7 +55,7 @@ final public class NativeLibrary {
     /**
      * expected version string of the native library
      */
-    final public static String expectedVersion = "0.7.0";
+    final public static String expectedVersion = "0.9.4";
     // *************************************************************************
     // constructors
 
