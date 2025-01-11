@@ -39,7 +39,6 @@ import com.github.stephengold.joltjni.MapObj2Bp;
 import com.github.stephengold.joltjni.ObjVsBpFilter;
 import com.github.stephengold.joltjni.ObjVsObjFilter;
 import com.github.stephengold.joltjni.PhysicsSettings;
-import com.github.stephengold.joltjni.PhysicsSystem;
 import com.github.stephengold.joltjni.TempAllocator;
 import com.github.stephengold.joltjni.TempAllocatorImpl;
 import com.github.stephengold.joltjni.Vec3;
@@ -66,8 +65,7 @@ import java.util.logging.Logger;
 import jme3utilities.Validate;
 
 /**
- * A CollisionSpace to simulate dynamic physics, with its own
- * {@code PhysicsSystem}.
+ * A CollisionSpace to simulate dynamic physics.
  *
  * @author normenhansen
  */
@@ -163,10 +161,6 @@ public class PhysicsSpace extends CollisionSpace {
     final private Map<Long, PhysicsRigidBody> rigidMap
             = new ConcurrentHashMap<>(64);
     /**
-     * underlying jolt-jni object
-     */
-    private final PhysicsSystem physicsSystem;
-    /**
      * allocate temporary memory for physics simulation
      */
     private final TempAllocator tempAllocator;
@@ -211,8 +205,6 @@ public class PhysicsSpace extends CollisionSpace {
 
         ObjVsObjFilter objVsObjFilter = new ObjVsObjFilter(numObjLayers)
                 .disablePair(OBJ_LAYER_NON_MOVING, BP_LAYER_NON_MOVING);
-
-        this.physicsSystem = new PhysicsSystem();
 
         int maxBodies = 15_000;
         int numBodyMutexes = 0; // 0 means "use the default value"

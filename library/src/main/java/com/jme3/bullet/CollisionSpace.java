@@ -31,6 +31,7 @@
  */
 package com.jme3.bullet;
 
+import com.github.stephengold.joltjni.PhysicsSystem;
 import com.jme3.bullet.collision.PhysicsCollisionObject;
 import java.util.Collection;
 import java.util.TreeSet;
@@ -38,7 +39,7 @@ import java.util.logging.Logger;
 import jme3utilities.Validate;
 
 /**
- * A Jolt-JME collision space.
+ * A Jolt-JME collision space based on {@code PhysicsSystem}.
  *
  * @author normenhansen
  */
@@ -58,6 +59,10 @@ public class CollisionSpace {
      * number of worker threads (&ge;1, &le;64)
      */
     final private int numSolvers;
+    /**
+     * underlying jolt-jni object
+     */
+    final protected PhysicsSystem physicsSystem;
     /**
      * collision-space reference for each thread
      * <p>
@@ -80,6 +85,7 @@ public class CollisionSpace {
     public CollisionSpace(int numSolvers) {
         Validate.inRange(numSolvers, "number of solvers", 1, 64);
         this.numSolvers = numSolvers;
+        this.physicsSystem = new PhysicsSystem();
     }
     // *************************************************************************
     // new methods exposed
