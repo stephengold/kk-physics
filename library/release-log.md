@@ -1,5 +1,16 @@
 # release log for the KK Physics library
 
+## Version 0.3.1 released on TBD
+
+Pre-release for limited testing.
+
++ Updated the jolt-jni library to v0.9.5.
++ Added the `PlaneCollisionShape` class.
++ Made contact response optional for rigid bodies.
++ Added another `MeshCollisionShape` constructor.
++ Moved the `PhysicsSystem` from `PhysicsSpace` to `CollisionSpace`.
++ Added package javadoc.
+
 ## Version 0.3.0 released on 3 August 2024
 
 Pre-release for limited testing.

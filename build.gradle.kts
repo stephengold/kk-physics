@@ -5,5 +5,5 @@ plugins {
 }
 
 ext {
-    set("version", "0.3.1-SNAPSHOT")
+    set("version", "0.3.1")
 }
