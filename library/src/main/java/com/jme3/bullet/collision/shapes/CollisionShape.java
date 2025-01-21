@@ -33,11 +33,13 @@ package com.jme3.bullet.collision.shapes;
 
 import com.github.stephengold.joltjni.ConvexShape;
 import com.github.stephengold.joltjni.Mat44;
+import com.github.stephengold.joltjni.OffsetCenterOfMassShapeSettings;
 import com.github.stephengold.joltjni.Quat;
 import com.github.stephengold.joltjni.RotatedTranslatedShapeSettings;
 import com.github.stephengold.joltjni.ScaledShape;
 import com.github.stephengold.joltjni.ScaledShapeSettings;
 import com.github.stephengold.joltjni.ShapeRefC;
+import com.github.stephengold.joltjni.ShapeResult;
 import com.github.stephengold.joltjni.Vec3;
 import com.github.stephengold.joltjni.readonly.ConstAaBox;
 import com.github.stephengold.joltjni.readonly.ConstShape;
@@ -94,18 +96,27 @@ abstract public class CollisionShape {
     protected Quaternion rotation = new Quaternion();
     /**
      * reference to the rotated-and-scaled jolt-jni shape, which might be the
-     * rotated shape or the undecorated shape
+     * rotated shape, the translated shape, or the undecorated shape
      */
     private ShapeRefC joltShapeRef;
     /**
      * reference to the rotated-but-unscaled jolt-jni shape, which might be the
-     * undecorated shape
+     * translated shape or the undecorated shape
      */
     private ShapeRefC rotatedShapeRef;
+    /**
+     * reference to the translated jolt-jni shape, which might be the
+     * undecorated shape
+     */
+    private ShapeRefC offsetShapeRef;
     /**
      * reference to the undecorated jolt-jni shape
      */
     private ShapeRefC undecoratedShapeRef;
+    /**
+     * copy of the COM translation offsets, one for each local axis
+     */
+    protected Vector3f offsets = new Vector3f();
     /**
      * copy of the scale factors, one for each local axis
      */
@@ -215,6 +226,8 @@ abstract public class CollisionShape {
         FloatBuffer result = BufferUtils.createFloatBuffer(numFloats);
         undecoratedShapeRef.copyDebugTriangles(result);
 
+        Vector3f negOffsets = offsets.negate();
+        MyBuffer.translate(result, 0, numFloats, negOffsets);
         MyBuffer.rotate(result, 0, numFloats, rotation);
         MyBuffer.scale(result, 0, numFloats, scale);
 
@@ -393,15 +406,30 @@ abstract public class CollisionShape {
 
         this.undecoratedShapeRef = undecorated;
 
+        if (MyVector3f.isZero(offsets)) {
+            this.offsetShapeRef = undecoratedShapeRef;
+        } else {
+            Vec3Arg offset = new Vec3(offsets.x, offsets.y, offsets.z);
+            OffsetCenterOfMassShapeSettings settings
+                    = new OffsetCenterOfMassShapeSettings(
+                            offset, undecoratedShapeRef);
+            ShapeResult result = settings.create();
+            if (result.hasError()) {
+                String message = result.getError();
+                throw new IllegalArgumentException(message);
+            }
+            this.offsetShapeRef = result.get();
+        }
+
         if (MyQuaternion.isRotationIdentity(rotation)) {
-            this.rotatedShapeRef = undecoratedShapeRef;
+            this.rotatedShapeRef = offsetShapeRef;
         } else {
             QuatArg quat = new Quat(rotation.getX(), rotation.getY(),
                     rotation.getZ(), rotation.getW());
             Vec3Arg zeroOffset = new Vec3();
             RotatedTranslatedShapeSettings settings
                     = new RotatedTranslatedShapeSettings(
-                            zeroOffset, quat, undecoratedShapeRef);
+                            zeroOffset, quat, offsetShapeRef);
             this.rotatedShapeRef = settings.create().get();
         }
 
