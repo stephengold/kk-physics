@@ -41,10 +41,10 @@ For projects built using [Maven] or [Gradle], it is sufficient to add
 dependencies on the KK Physics library and appropriate jolt-jni native libraries.
 The build tool should automatically resolve the remaining dependencies.
 
-Current jolt-jni releases provide 24 native libraries,
+Current jolt-jni releases provide 24 desktop native libraries,
 each specific to a particular platform, build type, and build flavor.
 
-Six platforms are supported:
+Six desktop platforms are supported:
 + "Linux64" (Linux on x86_64 CPUs)
 + "Linux_ARM32hf" (Linux on 32-bit ARM CPUs with hardware floating-point)
 + "Linux_ARM64" (Linux on aarch64 CPUs)
@@ -52,30 +52,38 @@ Six platforms are supported:
 + "MacOSX_ARM64" (macOS on "Apple Silicon")
 + "Windows64" (MS Windows on x86_64 CPUs)
 
-For each platform, 4 native libraries are distributed:
-+ "ReleaseSp", a release build using single-precision location vectors
-+ "ReleaseDp", a release build using double-precision location vectors
-+ "DebugSp", a debug build using single-precision location vectors
-+ "DebugSp", a debug build using double-precision location vectors
+Your runtime classpath should include
+the JVM library plus 1-to-6 native libraries:
+a native library for each platform on which the code will run.
 
-In the following buildscript excerpts:
-+ "Linux64" may be replaced by another platform.
-+ "DebugSp" may be replaced by another build type/flavor combination.
+Build types:  use "Debug" native libraries for development and troubleshooting,
+then switch to "Release" libraries for performance testing and production.
+
+Build flavors:  use "Dp" to simulate large worlds (>1000 meters in diameter)
+otherwise use "Sp".
 
 ### Gradle-built projects
 
-Add to the project’s "build.gradle" file:
+Add to the project’s "build.gradle" or "build.gradle.kts" file:
 
     repositories {
         mavenCentral()
     }
     dependencies {
-        implementation("com.github.stephengold:kk-physics:0.3.0")
-        runtimeOnly("com.github.stephengold:jolt-jni-Linux64:0.5.0:DebugSp")
+        // JVM library:
+        implementation("com.github.stephengold:kk-physics:0.3.1")
+
+        // native libraries:
+        runtimeOnly("com.github.stephengold:jolt-jni-Linux64:0.9.5:DebugSp")
+        // Native libraries for other platforms could be added.
     }
 
-For some older versions of Gradle,
-it's necessary to replace `implementation` with `compile`.
++ The "Linux64" platform name may be replaced by "Linux_ARM32hf", "Linux_ARM64",
+  "MacOSX64", "MacOSX_ARM64", or "Windows64".
++ The "DebugSp" classifier
+  may be replaced by "DebugDp", "ReleaseSp", or "ReleaseDp".
++ For some older versions of Gradle,
+  it's necessary to replace `implementation` with `compile`.
 
 ### Maven-built projects
 
@@ -91,12 +99,12 @@ Add to the project’s "pom.xml" file:
     <dependency>
       <groupId>com.github.stephengold</groupId>
       <artifactId>kk-physics</artifactId>
-      <version>0.3.0</version>
+      <version>0.3.1</version>
     </dependency>
     <dependency>
       <groupId>com.github.stephengold</groupId>
       <artifactId>jolt-jni-Linux64</artifactId>
-      <version>0.5.0</version>
+      <version>0.9.5</version>
       <classifier>DebugSp</classifier>
     </dependency>
 
@@ -104,6 +112,8 @@ Add to the project’s "pom.xml" file:
 <a name="build"></a>
 
 ## How to build KK Physics from source
+
+### Initial build
 
 1. Install a [Java Development Kit (JDK)][adoptium],
    if you don't already have one.
@@ -122,13 +132,15 @@ Add to the project’s "pom.xml" file:
   + using [Git]:
     + `git clone https://github.com/stephengold/kk-physics.git`
     + `cd kk-physics`
-    + `git checkout -b latest 0.3.0`
+    + `git checkout -b latest 0.3.1`
 4. Run the [Gradle] wrapper:
   + using Bash or Fish or PowerShell or Zsh: `./gradlew build`
   + using Windows Command Prompt: `.\gradlew build`
 
 After a successful build,
 Maven artifacts will be found in "library/build/libs".
+
+### Other tasks
 
 You can install the artifacts to your local Maven repository:
 + using Bash or Fish or PowerShell or Zsh: `./gradlew install`
