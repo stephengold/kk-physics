@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2024 Stephen Gold
+ Copyright (c) 2024-2025 Stephen Gold
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -127,6 +127,7 @@ public class TestManyBoxes extends SimpleApplication {
         //bulletAppState.setWorldMax(new Vector3f(100f, 50f, 100f));
         //bulletAppState.setWorldMin(new Vector3f(-100f, -200f, -100f));
         //bulletAppState.setDebugEnabled(true);
+        //bulletAppState.setNumSolvers(1);
         stateManager.attach(bulletAppState);
         physicsSpace = bulletAppState.getPhysicsSpace();
         physicsSpace.setGravity(new Vector3f(0f, -99f, 0f));
