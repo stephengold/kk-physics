@@ -55,7 +55,7 @@ final public class NativeLibrary {
     /**
      * expected version string of the native library
      */
-    final public static String expectedVersion = "0.9.6";
+    final public static String expectedVersion = "0.9.7";
     // *************************************************************************
     // constructors
 
@@ -124,7 +124,8 @@ final public class NativeLibrary {
         Jolt.registerDefaultAllocator();
         Jolt.installDefaultAssertCallback();
         Jolt.installDefaultTraceCallback();
-        Jolt.newFactory();
+        boolean success = Jolt.newFactory();
+        assert success;
         Jolt.registerTypes();
     }
 

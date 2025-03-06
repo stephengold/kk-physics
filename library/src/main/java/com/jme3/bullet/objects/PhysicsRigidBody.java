@@ -261,7 +261,7 @@ public class PhysicsRigidBody extends PhysicsBody {
         if (isDynamic()) {
             Vec3 force3 = new Vec3(force.x, force.y, force.z);
             RVec3 rvec3 = joltBody.getCenterOfMassPosition();
-            rvec3.addLocal(offset.x, offset.y, offset.z);
+            rvec3.addInPlace(offset.x, offset.y, offset.z);
             joltBody.addForce(force3, rvec3);
         }
     }
@@ -318,7 +318,7 @@ public class PhysicsRigidBody extends PhysicsBody {
             } else {
                 Vec3 imp3 = new Vec3(impulse.x, impulse.y, impulse.z);
                 RVec3 rvec3 = joltBody.getCenterOfMassPosition();
-                rvec3.addLocal(offset.x, offset.y, offset.z);
+                rvec3.addInPlace(offset.x, offset.y, offset.z);
                 joltBody.addImpulse(imp3, rvec3);
             }
         }
