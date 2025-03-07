@@ -37,6 +37,7 @@ dependencies {
     testRuntimeOnly(libs.jme3.testdata)
     if (os.isLinux()) {
         testRuntimeOnly(variantOf(libs.jolt.jni.linux64){ classifier(btf) })
+        testRuntimeOnly(variantOf(libs.jolt.jni.linux64fma){ classifier(btf) })
         testRuntimeOnly(variantOf(libs.jolt.jni.linuxarm32hf){ classifier(btf) })
         testRuntimeOnly(variantOf(libs.jolt.jni.linuxarm64){ classifier(btf) })
     }
@@ -46,6 +47,7 @@ dependencies {
     }
     if (os.isWindows()) {
         testRuntimeOnly(variantOf(libs.jolt.jni.windows64){ classifier(btf) })
+        testRuntimeOnly(variantOf(libs.jolt.jni.windows64avx2){ classifier(btf) })
     }
 }
 
