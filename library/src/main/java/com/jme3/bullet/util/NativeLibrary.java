@@ -33,10 +33,20 @@ package com.jme3.bullet.util;
 
 import com.github.stephengold.joltjni.Jolt;
 import com.github.stephengold.joltjni.JoltPhysicsObject;
+import com.jme3.system.JmeSystem;
 import com.jme3.system.NativeLibraryLoader;
 import com.jme3.system.Platform;
+import java.util.Collection;
+import java.util.List;
+import java.util.Locale;
+import java.util.TreeSet;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import jme3utilities.math.MyMath;
+import oshi.SystemInfo;
+import oshi.hardware.CentralProcessor;
+import oshi.hardware.HardwareAbstractionLayer;
 
 /**
  * Static interface to the jolt-jni native library.
@@ -82,9 +92,14 @@ final public class NativeLibrary {
      * initialize it.
      */
     public static void load() {
-        NativeLibraryLoader.registerNativeLibrary("jolt-jni",
-                Platform.Linux64,
-                "linux/x86-64/com/github/stephengold/libjoltjni.so");
+        Platform platform = JmeSystem.getPlatform();
+        if (platform == Platform.Linux64) {
+            String assetPath = hasFmaFeatures()
+                    ? "linux/x86-64-fma/com/github/stephengold/libjoltjni.so"
+                    : "linux/x86-64/com/github/stephengold/libjoltjni.so";
+            NativeLibraryLoader.registerNativeLibrary(
+                    "jolt-jni", platform, assetPath);
+        }
         NativeLibraryLoader.registerNativeLibrary("jolt-jni",
                 Platform.Linux_ARM32,
                 "linux/armhf/com/github/stephengold/libjoltjni.so");
@@ -97,9 +112,13 @@ final public class NativeLibrary {
         NativeLibraryLoader.registerNativeLibrary("jolt-jni",
                 Platform.MacOSX_ARM64,
                 "osx/aarch64/com/github/stephengold/libjoltjni.dylib");
-        NativeLibraryLoader.registerNativeLibrary("jolt-jni",
-                Platform.Windows64,
-                "windows/x86-64/com/github/stephengold/joltjni.dll");
+        if (platform == Platform.Windows64) {
+            String assetPath = hasAvx2Features()
+                    ? "windows/x86-64-avx2/com/github/stephengold/joltjni.dll"
+                    : "windows/x86-64/com/github/stephengold/joltjni.dll";
+            NativeLibraryLoader.registerNativeLibrary(
+                    "jolt-jni", platform, assetPath);
+        }
 
         NativeLibraryLoader.loadNativeLibrary("jolt-jni", true);
         String buildType = Jolt.buildType();
@@ -149,6 +168,73 @@ final public class NativeLibrary {
      */
     public static String versionNumber() {
         String result = Jolt.versionString();
+        return result;
+    }
+    // *************************************************************************
+    // private methods
+
+    /**
+     * Test for the presence of four x86_64 ISA extensions that Jolt Physics can
+     * exploit, including AVX2.
+     *
+     * @return {@code true} if those ISA extensions are present, otherwise
+     * {@code false}
+     */
+    private static boolean hasAvx2Features() {
+        boolean result = hasCpuFeatures("avx", "avx2", "sse4_1", "sse4_2");
+        return result;
+    }
+
+    /**
+     * Test whether all of the named CPU features are present.
+     *
+     * @param requiredFeatures the names of the features to test for
+     * @return {@code true} if all are present, otherwise {@code false}
+     */
+    private static boolean hasCpuFeatures(String... requiredFeatures) {
+        // Obtain the list of CPU feature strings from OSHI:
+        SystemInfo si = new SystemInfo();
+        HardwareAbstractionLayer hal = si.getHardware();
+        CentralProcessor cpu = hal.getProcessor();
+        List<String> oshiList = cpu.getFeatureFlags();
+
+        Pattern pattern = Pattern.compile("[a-z][a-z0-9_]*");
+
+        // Convert the list to a collection of feature names:
+        Collection<String> presentFeatures = new TreeSet<>();
+        for (String oshiString : oshiList) {
+            String lcString = oshiString.toLowerCase(Locale.ROOT);
+            Matcher matcher = pattern.matcher(lcString);
+            while (matcher.find()) {
+                String featureName = matcher.group();
+                presentFeatures.add(featureName);
+            }
+        }
+
+        // Test for each required CPU feature:
+        for (String featureName : requiredFeatures) {
+            String linuxName = featureName.toLowerCase(Locale.ROOT);
+            String windowsName = "pf_" + linuxName + "_instructions_available";
+            boolean isPresent = presentFeatures.contains(linuxName)
+                    || presentFeatures.contains(windowsName);
+            if (!isPresent) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Test for the presence of seven x86_64 ISA extensions that Jolt Physics
+     * can exploit, including AVX2 and FMA.
+     *
+     * @return {@code true} if those ISA extensions are present, otherwise
+     * {@code false}
+     */
+    private static boolean hasFmaFeatures() {
+        boolean result = hasCpuFeatures(
+                "avx", "avx2", "bmi1", "f16c", "fma", "sse4_1", "sse4_2");
         return result;
     }
 }

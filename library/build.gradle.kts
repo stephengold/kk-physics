@@ -32,8 +32,10 @@ dependencies {
     api(libs.sim.math)
     implementation(libs.heart)
     implementation(libs.jme3.desktop)
+    implementation(libs.oshi.core)
 
     testImplementation(libs.junit4)
+    testImplementation(libs.log4j.impl)
     testRuntimeOnly(libs.jme3.testdata)
     if (os.isLinux()) {
         testRuntimeOnly(variantOf(libs.jolt.jni.linux64){ classifier(btf) })
