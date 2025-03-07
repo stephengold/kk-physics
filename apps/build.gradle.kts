@@ -29,6 +29,7 @@ dependencies {
     implementation(libs.heart)
     implementation(libs.jme3.core)
     implementation(libs.jme3.desktop)
+    implementation(libs.log4j.impl)
 
     if (!os.isMacOsX()) {
         // AWT and GLFW are incompatible on macOS:
