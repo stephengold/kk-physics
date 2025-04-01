@@ -42,7 +42,7 @@ import jme3utilities.math.MyVector3f;
 import jme3utilities.math.MyVolume;
 
 /**
- * A cylindrical collision shape based on jolt-jni's {@code CylinderShape}.
+ * A cylindrical collision shape based on Jolt JNI's {@code CylinderShape}.
  *
  * @author normenhansen
  */

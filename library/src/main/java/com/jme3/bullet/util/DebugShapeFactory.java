@@ -55,7 +55,7 @@ import jme3utilities.Validate;
 import jme3utilities.math.MyBuffer;
 
 /**
- * A utility class to generate debug meshes for jolt-jni collision shapes.
+ * A utility class to generate debug meshes for Jolt-JNI collision shapes.
  *
  * @author CJ Hare, normenhansen
  */

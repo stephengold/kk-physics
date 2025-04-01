@@ -38,7 +38,7 @@ import com.jme3.math.Vector3f;
 import java.util.logging.Logger;
 
 /**
- * A planar collision shape based on jolt-jni's {@code PlaneShape}. Not for use
+ * A planar collision shape based on Jolt JNI's {@code PlaneShape}. Not for use
  * in dynamic bodies.
  *
  * @author normenhansen

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2024 jMonkeyEngine
+ * Copyright (c) 2009-2025 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -60,7 +60,7 @@ public class CollisionSpace {
      */
     final private int numSolvers;
     /**
-     * underlying jolt-jni object
+     * underlying Jolt-JNI object
      */
     final protected PhysicsSystem physicsSystem;
     /**

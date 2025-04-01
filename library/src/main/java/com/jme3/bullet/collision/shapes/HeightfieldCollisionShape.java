@@ -46,7 +46,7 @@ import jme3utilities.Validate;
 
 /**
  * A collision shape for terrain defined by a matrix of height values, based on
- * jolt-jni's {@code HeightFieldShape}. Should be more efficient than an
+ * Jolt JNI's {@code HeightFieldShape}. Should be more efficient than an
  * equivalent {@code MeshCollisionShape}. Not for use in dynamic bodies.
  *
  * @author Brent Owens

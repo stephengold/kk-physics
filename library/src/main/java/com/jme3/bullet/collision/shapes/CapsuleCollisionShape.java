@@ -42,7 +42,7 @@ import jme3utilities.math.MyVector3f;
 import jme3utilities.math.MyVolume;
 
 /**
- * A capsule collision shape based on jolt-jni's {@code CapsuleShape}.
+ * A capsule collision shape based on Jolt JNI's {@code CapsuleShape}.
  *
  * @author normenhansen
  */

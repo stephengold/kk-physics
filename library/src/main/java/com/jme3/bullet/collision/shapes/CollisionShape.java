@@ -60,7 +60,7 @@ import jme3utilities.math.MyQuaternion;
 import jme3utilities.math.MyVector3f;
 
 /**
- * The abstract base class for collision shapes based on jolt-jni's
+ * The abstract base class for collision shapes based on Jolt JNI's
  * {@code Shape} class.
  *
  * @author normenhansen
@@ -95,22 +95,22 @@ abstract public class CollisionShape {
      */
     protected Quaternion rotation = new Quaternion();
     /**
-     * reference to the rotated-and-scaled jolt-jni shape, which might be the
+     * reference to the rotated-and-scaled Jolt-JNI shape, which might be the
      * rotated shape, the translated shape, or the undecorated shape
      */
     private ShapeRefC joltShapeRef;
     /**
-     * reference to the rotated-but-unscaled jolt-jni shape, which might be the
+     * reference to the rotated-but-unscaled Jolt-JNI shape, which might be the
      * translated shape or the undecorated shape
      */
     private ShapeRefC rotatedShapeRef;
     /**
-     * reference to the translated jolt-jni shape, which might be the
+     * reference to the translated Jolt-JNI shape, which might be the
      * undecorated shape
      */
     private ShapeRefC offsetShapeRef;
     /**
-     * reference to the undecorated jolt-jni shape
+     * reference to the undecorated Jolt-JNI shape
      */
     private ShapeRefC undecoratedShapeRef;
     /**
@@ -125,7 +125,7 @@ abstract public class CollisionShape {
     // constructors
 
     /**
-     * Instantiate a collision shape with no underlying jolt-jni objects.
+     * Instantiate a collision shape with no underlying Jolt-JNI objects.
      * <p>
      * This no-arg constructor was made explicit to avoid javadoc warnings from
      * JDK 18+.
@@ -245,7 +245,7 @@ abstract public class CollisionShape {
     }
 
     /**
-     * Access the underlying jolt-jni {@code Shape}.
+     * Access the underlying Jolt-JNI {@code Shape}.
      *
      * @return the pre-existing reference (not null)
      */
@@ -303,12 +303,12 @@ abstract public class CollisionShape {
     }
 
     /**
-     * Return the ID of the assigned jolt-jni object.
+     * Return the ID of the assigned Jolt-JNI object.
      *
      * @return the raw long value associated with the unscaled shape
      */
     public long nativeId() {
-        long result = undecoratedShapeRef.va();
+        long result = undecoratedShapeRef.targetVa();
         return result;
     }
 
@@ -377,7 +377,7 @@ abstract public class CollisionShape {
     // new protected methods
 
     /**
-     * Access the undecorated jolt-jni {@code Shape}.
+     * Access the undecorated Jolt-JNI {@code Shape}.
      *
      * @return the pre-existing reference (not null)
      */
@@ -394,12 +394,12 @@ abstract public class CollisionShape {
     abstract protected float nativeMargin();
 
     /**
-     * Initialize the underlying jolt-jni objects.
+     * Initialize the underlying Jolt-JNI objects.
      *
      * @param undecorated a reference to the undecorated shape to use (not null)
      */
     protected void setNativeObject(ShapeRefC undecorated) {
-        Validate.nonNull(undecorated, "undecorated jolt-jni shape");
+        Validate.nonNull(undecorated, "undecorated Jolt-JNI shape");
         assert joltShapeRef == null : joltShapeRef;
         assert rotatedShapeRef == null : rotatedShapeRef;
         assert undecoratedShapeRef == null : undecoratedShapeRef;
@@ -446,7 +446,7 @@ abstract public class CollisionShape {
     // Java private methods
 
     /**
-     * Compare jolt-jni's scale factors with the local copies.
+     * Compare Jolt-JNI's scale factors with the local copies.
      *
      * @return true if the factors match exactly, otherwise false
      */

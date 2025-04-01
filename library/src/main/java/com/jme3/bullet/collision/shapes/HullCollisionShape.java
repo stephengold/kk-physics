@@ -45,7 +45,7 @@ import java.util.logging.Logger;
 import jme3utilities.Validate;
 
 /**
- * A convex-hull collision shape based on jolt-jni's {@code ConvexHullShape}.
+ * A convex-hull collision shape based on Jolt JNI's {@code ConvexHullShape}.
  */
 public class HullCollisionShape extends CollisionShape {
     // *************************************************************************
@@ -64,7 +64,7 @@ public class HullCollisionShape extends CollisionShape {
     // fields
 
     /**
-     * non-flipped direct buffer for passing vertices to jolt-jni
+     * non-flipped direct buffer for passing vertices to Jolt JNI
      */
     private FloatBuffer directBuffer;
     // *************************************************************************

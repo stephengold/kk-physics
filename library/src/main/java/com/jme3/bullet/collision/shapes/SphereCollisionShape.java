@@ -39,7 +39,7 @@ import jme3utilities.Validate;
 import jme3utilities.math.MyVector3f;
 
 /**
- * A spherical collision shape based on jolt-jni's {@code SphereShape}.
+ * A spherical collision shape based on Jolt JNI's {@code SphereShape}.
  *
  * @author normenhansen
  */

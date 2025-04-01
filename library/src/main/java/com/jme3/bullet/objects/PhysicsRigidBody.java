@@ -64,7 +64,7 @@ import jme3utilities.Validate;
 import jme3utilities.math.MyVector3f;
 
 /**
- * A collision object to simulate a rigid body, based on jolt-jni's {@code Body}
+ * A collision object to simulate a rigid body, based on Jolt JNI's {@code Body}
  * class.
  *
  * @author normenhansen
@@ -82,19 +82,19 @@ public class PhysicsRigidBody extends PhysicsBody {
     // fields
 
     /**
-     * underlying jolt-jni Body, or null if not added to a space
+     * underlying Jolt-JNI {@code Body}, or {@code null} if not added to a space
      */
     private Body joltBody;
     /**
-     * settings to create the jolt-jni Body
+     * settings to create the Jolt-JNI {@code Body}
      */
     private BodyCreationSettings settings;
     /**
-     * jolt-jni interface for modifications, or null if not added to a space
+     * Jolt-JNI interface for modifications, or null if not added to a space
      */
     private BodyInterface bodyInterface;
     /**
-     * jolt-jni body ID, or null if not added to a space
+     * Jolt-JNI body ID, or {@code null} if not added to a space
      */
     private ConstBodyId bodyId;
     /**
@@ -102,7 +102,7 @@ public class PhysicsRigidBody extends PhysicsBody {
      */
     protected float mass = 1f;
     /**
-     * jolt-jni motion properties, or null if not created
+     * Jolt-JNI motion properties, or {@code null} if not created
      */
     private MotionProperties motionProperties;
     // *************************************************************************
@@ -175,7 +175,7 @@ public class PhysicsRigidBody extends PhysicsBody {
     // new methods exposed
 
     /**
-     * Create the jolt-jni Body and add it to the {@code PhysicsSystem}.
+     * Create the Jolt-JNI {@code Body} and add it to the {@code PhysicsSystem}.
      * Internal use only.
      */
     public void addToSystemInternal() {
@@ -633,7 +633,7 @@ public class PhysicsRigidBody extends PhysicsBody {
     }
 
     /**
-     * Rebuild the rigid body with a new jolt-jni object.
+     * Rebuild the rigid body with a new Jolt-JNI object.
      */
     public void rebuildRigidBody() {
         if (joltBody != null) {
@@ -1229,7 +1229,7 @@ public class PhysicsRigidBody extends PhysicsBody {
     }
 
     /**
-     * Test whether a jolt-jni object is assigned to this body.
+     * Test whether a Jolt-JNI object is assigned to this body.
      *
      * @return true if one is assigned, otherwise false
      */
@@ -1292,7 +1292,7 @@ public class PhysicsRigidBody extends PhysicsBody {
     }
 
     /**
-     * Return the address of the assigned jolt-jni object, assuming that one is
+     * Return the address of the assigned Jolt-JNI object, assuming that one is
      * assigned.
      *
      * @return the virtual address (not zero)
@@ -1328,7 +1328,7 @@ public class PhysicsRigidBody extends PhysicsBody {
 
     /**
      * Apply the specified CollisionShape to the body. The body gets rebuilt on
-     * the jolt-jni side.
+     * the Jolt-JNI side.
      *
      * @param desiredShape the shape to apply (not null, alias created)
      */
@@ -1352,7 +1352,7 @@ public class PhysicsRigidBody extends PhysicsBody {
      *
      * @param friction the desired friction value (default=0.5)
      * <p>
-     * Note: the jolt-jni default is 0.2 .
+     * Note: the Jolt-JNI default is 0.2 .
      */
     @Override
     public void setFriction(float friction) {
@@ -1435,7 +1435,7 @@ public class PhysicsRigidBody extends PhysicsBody {
         }
 
         if (oldPrb == null) {
-            // override some jolt-jni defaults with KK Physics defaults:
+            // override some Jolt-JNI defaults with KK Physics defaults:
             newSettings.setAngularDamping(0f);
             newSettings.setFriction(0.5f);
             newSettings.setLinearDamping(0f);

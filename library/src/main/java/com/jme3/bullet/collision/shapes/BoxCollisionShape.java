@@ -42,7 +42,7 @@ import jme3utilities.math.MyVector3f;
 import jme3utilities.math.MyVolume;
 
 /**
- * An axis-aligned, rectangular-solid collision shape based on jolt-jni's
+ * An axis-aligned, rectangular-solid collision shape based on Jolt JNI's
  * {@code BoxShape}.
  *
  * @author normenhansen

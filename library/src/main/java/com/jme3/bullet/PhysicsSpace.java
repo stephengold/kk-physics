@@ -330,7 +330,7 @@ public class PhysicsSpace extends CollisionSpace {
     }
 
     /**
-     * Access the jolt-jni {@code BodyInterface}. Internal use only.
+     * Access the Jolt-JNI {@code BodyInterface}. Internal use only.
      *
      * @return an instance (not null)
      */
@@ -832,7 +832,7 @@ public class PhysicsSpace extends CollisionSpace {
     }
 
     /**
-     * Compare jolt-jni's gravity vector to the local copy.
+     * Compare Jolt JNI's gravity vector to the local copy.
      *
      * @return true if scale factors are exactly equal, otherwise false
      */

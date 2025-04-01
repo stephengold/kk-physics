@@ -271,7 +271,7 @@ abstract public class PhysicsCollisionObject
     }
 
     /**
-     * Test whether a jolt-jni object is assigned to this collision object.
+     * Test whether a Jolt-JNI object is assigned to this collision object.
      *
      * @return true if one is assigned, otherwise false
      */

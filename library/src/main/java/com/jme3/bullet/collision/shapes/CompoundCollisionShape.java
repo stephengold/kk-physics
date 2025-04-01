@@ -50,7 +50,7 @@ import jme3utilities.Validate;
 import jme3utilities.math.MyVector3f;
 
 /**
- * A collision shape formed by combining child shapes, based on jolt-jni's
+ * A collision shape formed by combining child shapes, based on Jolt JNI's
  * {@code MutableCompoundShape}.
  *
  * @author normenhansen
@@ -84,7 +84,7 @@ public class CompoundCollisionShape extends CollisionShape {
      */
     private ArrayList<ChildCollisionShape> children;
     /**
-     * reference to the undecorated, mutable jolt-jni shape
+     * reference to the undecorated, mutable Jolt-JNI shape
      */
     private ShapeRef mutableShapeRef;
     // *************************************************************************

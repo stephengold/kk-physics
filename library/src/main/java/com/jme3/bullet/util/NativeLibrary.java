@@ -49,7 +49,7 @@ import oshi.hardware.CentralProcessor;
 import oshi.hardware.HardwareAbstractionLayer;
 
 /**
- * Static interface to the jolt-jni native library.
+ * Static interface to a Jolt-JNI native library.
  *
  * @author Stephen Gold sgold@sonic.net
  */
@@ -88,7 +88,7 @@ final public class NativeLibrary {
     }
 
     /**
-     * Load the appropriate jolt-jni native library from the classpath and
+     * Load the appropriate Jolt-JNI native library from the classpath and
      * initialize it.
      */
     public static void load() {
@@ -129,8 +129,7 @@ final public class NativeLibrary {
             System.out.print("Dp-");
         }
         String jjVersion = Jolt.versionString();
-        System.out.println(
-                "jolt-jni version " + jjVersion + " initializing");
+        System.out.println(" Jolt JNI v" + jjVersion + " initializing");
 
         if (!jjVersion.equals(expectedVersion)) {
             logger.warning("Expected a v" + expectedVersion

@@ -53,7 +53,7 @@ import jme3utilities.math.MyVolume;
 
 /**
  * A simple point, line-segment, triangle, or tetrahedron collision shape based
- * on jolt-jni's {@code TriangleShape} or {@code ConvexHullShape}.
+ * on Jolt JNI's {@code TriangleShape} or {@code ConvexHullShape}.
  *
  * @author normenhansen
  */

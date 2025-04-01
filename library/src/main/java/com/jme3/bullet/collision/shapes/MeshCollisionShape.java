@@ -47,7 +47,7 @@ import jme3utilities.Validate;
 import jme3utilities.math.MyVector3f;
 
 /**
- * A mesh collision shape based on jolt-jni's {@code MeshShape}. Not for use in
+ * A mesh collision shape based on Jolt JNI's {@code MeshShape}. Not for use in
  * dynamic bodies.
  *
  * @author normenhansen

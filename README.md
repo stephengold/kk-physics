@@ -38,7 +38,7 @@ you should remove those libraries
 so they won’t interfere with KK Physics.
 
 For projects built using [Maven] or [Gradle], it is sufficient to add
-dependencies on the KK Physics library and appropriate jolt-jni native libraries.
+dependencies on the KK Physics library and appropriate Jolt-JNI native libraries.
 The build tool should automatically resolve the remaining dependencies.
 
 Current jolt-jni releases provide 24 desktop native libraries,

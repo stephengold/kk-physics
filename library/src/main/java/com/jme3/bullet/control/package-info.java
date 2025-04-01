@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 jMonkeyEngine
+ * Copyright (c) 2024-2025 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,7 +30,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * Physics controls, used to link jolt-jni collision objects to particular
+ * Physics controls, used to link Jolt-JNI collision objects to particular
  * spatials in a jMonkeyEngine scene graph.
  */
 package com.jme3.bullet.control;

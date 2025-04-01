@@ -4,7 +4,7 @@
 
 Pre-release for limited testing.
 
-+ Updated the jolt-jni library to v0.9.5.
++ Updated the Jolt-JNI library to v0.9.5.
 + Added the `PlaneCollisionShape` class.
 + Made contact response optional for rigid bodies.
 + Added another `MeshCollisionShape` constructor.
@@ -15,7 +15,7 @@ Pre-release for limited testing.
 
 Pre-release for limited testing.
 
-+ Deferred the creation of jolt-jni bodies until the `PhysicsSystem` is stepped.
++ Deferred the creation of Jolt-JNI bodies until the `PhysicsSystem` is stepped.
 + Added a cleaner thread for Jolt physics objects.
 + Implemented kinematic bodies, `CollisionShapeFactory`, `RigidBodyControl`,
   collision margins, and custom debug materials.
@@ -26,14 +26,14 @@ Pre-release for limited testing.
 + Implemented alternative orientations of capsule and cylinder shapes.
 + Implemented debug visualization for bounding boxes.
 + Replaced `RigidBodySnapshot` with `BodyCreationSettings`.
-+ Updated the jolt-jni library to v0.5.0,
++ Updated the Jolt-JNI library to v0.5.0,
   picking up support for Linux-on-ARM platforms.
 
 ## Version 0.2.0 released on 5 July 2024
 
 This was another proof-of-concept pre-release.
 
-+ Switched from the jolt-java JVM bindings to jolt-jni.  This expanded support
++ Switched from the jolt-java bindings to Jolt JNI.  This expanded support
   to include MacOS and Windows platforms and eliminated the dependencies on
   JDK 19 preview features.
 + Added 2 collision shapes:  `HullCollisionShape` and `MeshCollisionShape`.
