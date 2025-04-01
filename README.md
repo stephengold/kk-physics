@@ -41,19 +41,21 @@ For projects built using [Maven] or [Gradle], it is sufficient to add
 dependencies on the KK Physics library and appropriate Jolt-JNI native libraries.
 The build tool should automatically resolve the remaining dependencies.
 
-Current jolt-jni releases provide 24 desktop native libraries,
+Current Jolt-JNI releases provide 32 desktop native libraries,
 each specific to a particular platform, build type, and build flavor.
 
-Six desktop platforms are supported:
+Eight desktop platforms are supported:
 + "Linux64" (Linux on x86_64 CPUs)
++ "Linux64_fma" (Linux on x86_64 CPUs with AVX2 and FMA extensions)
 + "Linux_ARM32hf" (Linux on 32-bit ARM CPUs with hardware floating-point)
 + "Linux_ARM64" (Linux on aarch64 CPUs)
 + "MacOSX64" (macOS on Intel CPUs)
 + "MacOSX_ARM64" (macOS on "Apple Silicon")
 + "Windows64" (MS Windows on x86_64 CPUs)
++ "Windows64_avx2" (MS Windows on x86_64 CPUs with AVX2 extensions)
 
 Your runtime classpath should include
-the JVM library plus 1-to-6 native libraries:
+the JVM library plus 1-to-8 native libraries:
 a native library for each platform on which the code will run.
 
 Build types:  use "Debug" native libraries for development and troubleshooting,
@@ -78,8 +80,8 @@ Add to the project’s "build.gradle" or "build.gradle.kts" file:
         // Native libraries for other platforms could be added.
     }
 
-+ The "Linux64" platform name may be replaced by "Linux_ARM32hf", "Linux_ARM64",
-  "MacOSX64", "MacOSX_ARM64", or "Windows64".
++ The "Linux64" platform name may be replaced
+  with the name of another desktop platform.
 + The "DebugSp" classifier
   may be replaced by "DebugDp", "ReleaseSp", or "ReleaseDp".
 + For some older versions of Gradle,
