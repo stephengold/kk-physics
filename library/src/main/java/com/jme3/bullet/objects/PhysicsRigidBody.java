@@ -46,7 +46,6 @@ import com.github.stephengold.joltjni.enumerate.EMotionQuality;
 import com.github.stephengold.joltjni.enumerate.EMotionType;
 import com.github.stephengold.joltjni.enumerate.EOverrideMassProperties;
 import com.github.stephengold.joltjni.operator.Op;
-import com.github.stephengold.joltjni.readonly.ConstBodyId;
 import com.github.stephengold.joltjni.readonly.ConstMassProperties;
 import com.github.stephengold.joltjni.readonly.Mat44Arg;
 import com.github.stephengold.joltjni.readonly.QuatArg;
@@ -96,7 +95,7 @@ public class PhysicsRigidBody extends PhysicsBody {
     /**
      * Jolt-JNI body ID, or {@code null} if not added to a space
      */
-    private ConstBodyId bodyId;
+    private Integer bodyId;
     /**
      * copy of the mass (&gt;0) of a dynamic body, or 0 for a static body
      */
@@ -369,9 +368,9 @@ public class PhysicsRigidBody extends PhysicsBody {
     /**
      * Return the body's Jolt ID.
      *
-     * @return the pre-existing instance, or null if none
+     * @return the ID value, or null if none
      */
-    public ConstBodyId findBodyId() {
+    public Integer findBodyId() {
         return bodyId;
     }
 

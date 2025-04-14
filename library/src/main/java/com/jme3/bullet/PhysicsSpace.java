@@ -43,7 +43,6 @@ import com.github.stephengold.joltjni.TempAllocator;
 import com.github.stephengold.joltjni.TempAllocatorImpl;
 import com.github.stephengold.joltjni.Vec3;
 import com.github.stephengold.joltjni.enumerate.EBodyType;
-import com.github.stephengold.joltjni.readonly.ConstBodyId;
 import com.github.stephengold.joltjni.readonly.Vec3Arg;
 import com.jme3.bullet.collision.PhysicsCollisionObject;
 import com.jme3.bullet.control.PhysicsControl;
@@ -900,7 +899,7 @@ public class PhysicsSpace extends CollisionSpace {
             }
 
             BodyInterface bodyInterface = getBodyInterface();
-            ConstBodyId bodyId = rigidBody.findBodyId();
+            int bodyId = rigidBody.findBodyId();
             bodyInterface.removeBody(bodyId);
             ++addRemoveCount;
         }
