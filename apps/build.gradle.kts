@@ -77,9 +77,14 @@ tasks.withType<Javadoc>().all { // Javadoc options:
     }
 }
 
+val enableNativeAccess = JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_17)
+
 tasks.withType<JavaExec>().all { // Java runtime options:
     classpath = sourceSets.main.get().getRuntimeClasspath()
     enableAssertions = true
+    if (enableNativeAccess) {
+        jvmArgs("--enable-native-access=ALL-UNNAMED") // suppress System::load() warning
+    }
     if (os.isMacOsX()) {
         jvmArgs("-XstartOnFirstThread") // required for GLFW on macOS
     }
