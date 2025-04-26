@@ -122,11 +122,11 @@ final public class NativeLibrary {
 
         NativeLibraryLoader.loadNativeLibrary("jolt-jni", true);
         String buildType = Jolt.buildType();
-        if (!buildType.equals("Release")) {
-            System.out.print(buildType + "-");
-        }
+        System.out.print(buildType);
         if (Jolt.isDoublePrecision()) {
-            System.out.print("Dp-");
+            System.out.print("Dp");
+        } else {
+            System.out.print("Sp");
         }
         String jjVersion = Jolt.versionString();
         System.out.println(" Jolt JNI v" + jjVersion + " initializing");
