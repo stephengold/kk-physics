@@ -1,4 +1,4 @@
-// Gradle script to build the "apps" subproject of KK Physics
+// Gradle script to build and run the "apps" subproject of KK Physics
 
 import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
 
@@ -27,10 +27,10 @@ val os = DefaultNativePlatform.getCurrentOperatingSystem()
 dependencies {
     implementation(libs.acorus)
     implementation(libs.heart)
+
     implementation(libs.jme3.core)
     implementation(libs.jme3.desktop)
     implementation(libs.log4j.impl)
-
     if (!os.isMacOsX()) {
         // AWT and GLFW are incompatible on macOS:
         runtimeOnly(libs.jme3.awt.dialogs)
@@ -39,19 +39,20 @@ dependencies {
     runtimeOnly(libs.jme3.testdata)
 
     if (os.isLinux()) {
-        runtimeOnly(variantOf(libs.jolt.jni.linux64){ classifier(btf) })
-        runtimeOnly(variantOf(libs.jolt.jni.linux64fma){ classifier(btf) })
-        runtimeOnly(variantOf(libs.jolt.jni.linuxarm32hf){ classifier(btf) })
-        runtimeOnly(variantOf(libs.jolt.jni.linuxarm64){ classifier(btf) })
+        runtimeOnly(variantOf(libs.jolt.jni.linux64){classifier(btf)})
+        runtimeOnly(variantOf(libs.jolt.jni.linux64fma){classifier(btf)})
+        runtimeOnly(variantOf(libs.jolt.jni.linuxarm32hf){classifier(btf)})
+        runtimeOnly(variantOf(libs.jolt.jni.linuxarm64){classifier(btf)})
     }
     if (os.isMacOsX()) {
-        runtimeOnly(variantOf(libs.jolt.jni.macosx64){ classifier(btf) })
-        runtimeOnly(variantOf(libs.jolt.jni.macosxarm64){ classifier(btf) })
+        runtimeOnly(variantOf(libs.jolt.jni.macosx64){classifier(btf)})
+        runtimeOnly(variantOf(libs.jolt.jni.macosxarm64){classifier(btf)})
     }
     if (os.isWindows()) {
-        runtimeOnly(variantOf(libs.jolt.jni.windows64){ classifier(btf) })
-        runtimeOnly(variantOf(libs.jolt.jni.windows64avx2){ classifier(btf) })
+        runtimeOnly(variantOf(libs.jolt.jni.windows64){classifier(btf)})
+        runtimeOnly(variantOf(libs.jolt.jni.windows64avx2){classifier(btf)})
     }
+
 
     implementation(project(":library")) // for latest sourcecode
 }
@@ -88,6 +89,7 @@ tasks.withType<JavaExec>().all { // Java runtime options:
     if (os.isMacOsX()) {
         jvmArgs("-XstartOnFirstThread") // required for GLFW on macOS
     }
+    //jvmArgs("-XX:+UseG1GC", "-XX:MaxGCPauseMillis=10")
 }
 
 // Register cleanup tasks:
