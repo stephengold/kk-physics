@@ -32,10 +32,11 @@
 package com.jme3.bullet;
 
 import com.github.stephengold.joltjni.BodyInterface;
+import com.github.stephengold.joltjni.BroadPhaseLayerInterface;
+import com.github.stephengold.joltjni.BroadPhaseLayerInterfaceTable;
 import com.github.stephengold.joltjni.JobSystem;
 import com.github.stephengold.joltjni.JobSystemThreadPool;
 import com.github.stephengold.joltjni.Jolt;
-import com.github.stephengold.joltjni.MapObj2Bp;
 import com.github.stephengold.joltjni.ObjVsBpFilter;
 import com.github.stephengold.joltjni.ObjVsObjFilter;
 import com.github.stephengold.joltjni.PhysicsSettings;
@@ -194,9 +195,12 @@ public class PhysicsSpace extends CollisionSpace {
 
         int numObjLayers = 2;
         int numBpLayers = 2;
-        MapObj2Bp mapObj2Bp = new MapObj2Bp(numObjLayers, numBpLayers)
-                .add(OBJ_LAYER_NON_MOVING, BP_LAYER_NON_MOVING)
-                .add(OBJ_LAYER_MOVING, BP_LAYER_MOVING);
+        BroadPhaseLayerInterface mapObj2Bp
+                = new BroadPhaseLayerInterfaceTable(numObjLayers, numBpLayers)
+                        .mapObjectToBroadPhaseLayer(
+                                OBJ_LAYER_NON_MOVING, BP_LAYER_NON_MOVING)
+                        .mapObjectToBroadPhaseLayer(
+                                OBJ_LAYER_MOVING, BP_LAYER_MOVING);
 
         ObjVsBpFilter objVsBpFilter
                 = new ObjVsBpFilter(numObjLayers, numBpLayers)
