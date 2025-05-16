@@ -30,7 +30,6 @@ dependencies {
 
     implementation(libs.jme3.core)
     implementation(libs.jme3.desktop)
-    implementation(libs.log4j.impl)
     if (!os.isMacOsX()) {
         // AWT and GLFW are incompatible on macOS:
         runtimeOnly(libs.jme3.awt.dialogs)
@@ -53,6 +52,7 @@ dependencies {
         runtimeOnly(variantOf(libs.jolt.jni.windows64avx2){classifier(btf)})
     }
 
+    implementation(libs.log4j.impl)
 
     implementation(project(":library")) // for latest sourcecode
 }
