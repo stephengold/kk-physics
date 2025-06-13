@@ -146,6 +146,7 @@ publishing {
                 developers {
                     developer {
                         email = "sgold@sonic.net"
+                        id = "stephengold"
                         name = "Stephen Gold"
                     }
                 }
