@@ -136,7 +136,7 @@ final public class NativeLibrary {
                     + " native library but loaded v" + jjVersion + "!");
         }
 
-        //Jolt.setTraceAllocations(true); // to debug native memory allocation
+        //Jolt.setTraceAllocations(true); // to debug native-memory allocation
         JoltPhysicsObject.startCleaner();
 
         Jolt.registerDefaultAllocator();

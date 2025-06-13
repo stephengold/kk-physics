@@ -1,4 +1,4 @@
-// Gradle script to build the "library" subproject of KK Physics
+// Gradle script to build and publish the "library" subproject of KK Physics
 
 import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
 
@@ -190,7 +190,7 @@ tasks.named("publishMavenPublicationToMavenLocal") {
 }
 tasks.named("publishMavenPublicationToCentralRepository") { dependsOn("assemble") }
 
-// Register signing tasks:
+// Register tasks to sign artifacts for publication:
 
 // Signing relies on the existence of 3 properties
 // (signing.keyId, signing.password, and signing.secretKeyRingFile)
