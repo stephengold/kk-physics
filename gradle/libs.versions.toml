@@ -1,9 +1,9 @@
-## catalog of libraries and plugins used to build and run the KK Physics project
+## catalog of libraries and plugins used to build the KK Physics project
 
 [versions]
 
 checkstyle = "10.26.1"
-jme = "3.8.1-stable"
+jme = "3.9.0-alpha2"
 jolt-jni = "1.0.0"
 
 [libraries]
