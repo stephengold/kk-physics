@@ -3,7 +3,7 @@
 [versions]
 
 checkstyle = "12.0.0"
-jme = "3.9.0-alpha3"
+jme = "3.9.0-beta1"
 jolt-jni = "3.5.2"
 
 [libraries]
