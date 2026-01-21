@@ -55,14 +55,14 @@ jobs:
       - run: ./gradlew build --console=plain --stacktrace
         shell: bash
 
-  Java24-Linux:
+  Java25-Linux:
     if: contains(toJson(github.event.commits), '[ci skip] ') == false
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
       - uses: actions/setup-java@v5
         with:
-          distribution: 'zulu'
-          java-version: 24
+          distribution: 'liberica'
+          java-version: 25
       - uses: actions/checkout@v6
       - run: ./gradlew build --console=plain --stacktrace
