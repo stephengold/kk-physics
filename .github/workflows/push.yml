@@ -20,7 +20,7 @@ jobs:
 
   Java17-MacOS:
     if: contains(toJson(github.event.commits), '[ci skip] ') == false
-    runs-on: macOS-15-intel
+    runs-on: macos-26-intel
     timeout-minutes: 5
     steps:
       - uses: actions/setup-java@v5
@@ -32,7 +32,7 @@ jobs:
 
   Java21-MacOS:
     if: contains(toJson(github.event.commits), '[ci skip] ') == false
-    runs-on: macOS-15
+    runs-on: macos-26
     timeout-minutes: 5
     steps:
       - uses: actions/setup-java@v5
