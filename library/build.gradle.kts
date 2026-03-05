@@ -53,7 +53,7 @@ dependencies {
     }
 }
 
-configurations.all {
+configurations.configureEach {
     resolutionStrategy.cacheChangingModulesFor(0, "seconds") // to disable caching of snapshots
 }
 
@@ -61,7 +61,7 @@ checkstyle {
     toolVersion = libs.versions.checkstyle.get()
 }
 
-tasks.withType<JavaCompile>().all { // Java compile-time options:
+tasks.withType<JavaCompile>().configureEach { // Java compile-time options:
     options.compilerArgs.add("-Xdiags:verbose")
     options.compilerArgs.add("-Xlint:unchecked")
     options.encoding = "UTF-8"
@@ -69,7 +69,7 @@ tasks.withType<JavaCompile>().all { // Java compile-time options:
     //options.setDeprecation(true) // to provide detailed deprecation warnings
 }
 
-tasks.withType<Javadoc>().all { // Javadoc runtime options:
+tasks.withType<Javadoc>().configureEach { // Javadoc runtime options:
     (options as CoreJavadocOptions).apply {
     }
 }
@@ -200,7 +200,7 @@ tasks.named("publishMavenPublicationToCentralRepository") { dependsOn("assemble"
 signing {
     sign(publishing.publications["maven"])
 }
-tasks.withType<Sign>().all {
+tasks.withType<Sign>().configureEach {
     onlyIf { project.hasProperty("signing.keyId") }
 }
 tasks.named("signMavenPublication") { dependsOn("module") }

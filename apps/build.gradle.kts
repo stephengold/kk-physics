@@ -57,7 +57,7 @@ dependencies {
     implementation(project(":library")) // for latest sourcecode
 }
 
-configurations.all {
+configurations.configureEach {
     resolutionStrategy.cacheChangingModulesFor(0, "seconds") // to disable caching of snapshots
 }
 
@@ -65,7 +65,7 @@ checkstyle {
     toolVersion = libs.versions.checkstyle.get()
 }
 
-tasks.withType<JavaCompile>().all { // Java compile-time options:
+tasks.withType<JavaCompile>().configureEach { // Java compile-time options:
     options.compilerArgs.add("-Xdiags:verbose")
     options.compilerArgs.add("-Xlint:unchecked")
     options.encoding = "UTF-8"
@@ -73,14 +73,14 @@ tasks.withType<JavaCompile>().all { // Java compile-time options:
     options.setDeprecation(true) // to provide detailed deprecation warnings
 }
 
-tasks.withType<Javadoc>().all { // Javadoc options:
+tasks.withType<Javadoc>().configureEach { // Javadoc options:
     (options as CoreJavadocOptions).apply {
     }
 }
 
 val enableNativeAccess = JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_17)
 
-tasks.withType<JavaExec>().all { // Java runtime options:
+tasks.withType<JavaExec>().configureEach { // Java runtime options:
     classpath = sourceSets.main.get().getRuntimeClasspath()
     enableAssertions = true
     if (enableNativeAccess) {
