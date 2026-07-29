@@ -49,6 +49,7 @@ dependencies {
     if (os.isWindows()) {
         runtimeOnly(variantOf(libs.jolt.jni.windows64){classifier(btf)})
         runtimeOnly(variantOf(libs.jolt.jni.windows64avx2){classifier(btf)})
+        runtimeOnly(variantOf(libs.jolt.jni.windowsarm64){classifier(btf)})
     }
 
     implementation(libs.log4j.impl)
