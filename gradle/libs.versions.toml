@@ -9,7 +9,7 @@ jolt-jni = "6.0.0"
 [libraries]
 
 acorus = "com.github.stephengold:Acorus:2.0.2"
-heart = "com.github.stephengold:Heart:9.3.0"
+heart = "com.github.stephengold:Heart:9.4.0-test1"
 
 jme3-awt-dialogs = { module = "org.jmonkeyengine:jme3-awt-dialogs", version.ref = "jme" }
 jme3-core = { module = "org.jmonkeyengine:jme3-core", version.ref = "jme" }
