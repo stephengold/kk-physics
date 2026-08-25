@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-22.04
     timeout-minutes: 5
     steps:
-      - uses: actions/setup-java@v5
+      - uses: actions/setup-java@v6
         with:
           distribution: 'zulu'
           java-version: 17
@@ -23,7 +23,7 @@ jobs:
     runs-on: macos-26-intel
     timeout-minutes: 5
     steps:
-      - uses: actions/setup-java@v5
+      - uses: actions/setup-java@v6
         with:
           distribution: 'zulu'
           java-version: 17
@@ -36,7 +36,7 @@ jobs:
     runs-on: windows-2025
     timeout-minutes: 5
     steps:
-      - uses: actions/setup-java@v5
+      - uses: actions/setup-java@v6
         with:
           distribution: 'zulu'
           java-version: 21
@@ -50,7 +50,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
-      - uses: actions/setup-java@v5
+      - uses: actions/setup-java@v6
         with:
           distribution: 'liberica'
           java-version: 25
@@ -62,7 +62,7 @@ jobs:
     if: contains(toJson(github.event.commits), '[ci skip] ') == false
     runs-on: macos-26
     steps:
-      - uses: actions/setup-java@v5
+      - uses: actions/setup-java@v6
         with:
           distribution: 'liberica'
           java-version: 26
