@@ -376,9 +376,6 @@
                     RECORD_DEF, ANNOTATION_DEF"/>
             <property name="excludeScope" value="nothing"/>
         </module>
-        <module name="JavadocStyle">
-            <property name="checkFirstSentence" value="false"/>
-        </module>
         <module name="JavadocVariable">
             <property name="accessModifiers" value="public, protected, package"/>
         </module>
