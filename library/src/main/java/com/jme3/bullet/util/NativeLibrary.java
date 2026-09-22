@@ -65,7 +65,7 @@ final public class NativeLibrary {
     /**
      * expected version string of the native library
      */
-    final public static String expectedVersion = "6.0.0";
+    final public static String expectedVersion = "6.1.1";
     // *************************************************************************
     // constructors
 
@@ -131,7 +131,7 @@ final public class NativeLibrary {
         String jjVersion = Jolt.versionString();
         System.out.println(" Jolt JNI v" + jjVersion + " initializing");
 
-        if (!jjVersion.equals(expectedVersion) && !jjVersion.equals("6.0.2")) {
+        if (!jjVersion.equals(expectedVersion)) {
             logger.warning("Expected a v" + expectedVersion
                     + " native library but loaded v" + jjVersion + "!");
         }

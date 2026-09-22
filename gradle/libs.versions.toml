@@ -4,7 +4,7 @@
 
 checkstyle = "14.1.0"
 jme = "3.10.0-beta2"
-jolt-jni = "6.0.0"
+jolt-jni = "6.1.1"
 
 [libraries]
 
@@ -20,7 +20,7 @@ jme3-testdata = { module = "org.jmonkeyengine:jme3-testdata", version.ref = "jme
 
 jolt-jni-linux64 = { module = "com.github.stephengold:jolt-jni-Linux64", version.ref = "jolt-jni" }
 jolt-jni-linux64fma = { module = "com.github.stephengold:jolt-jni-Linux64_fma", version.ref = "jolt-jni" }
-jolt-jni-linuxarm64 = { module = "com.github.stephengold:jolt-jni-Linux_ARM64", version = "6.0.2" }
+jolt-jni-linuxarm64 = { module = "com.github.stephengold:jolt-jni-Linux_ARM64", version.ref = "jolt-jni" }
 jolt-jni-macosx64 = { module = "com.github.stephengold:jolt-jni-MacOSX64", version.ref = "jolt-jni" }
 jolt-jni-macosxarm64 = { module = "com.github.stephengold:jolt-jni-MacOSX_ARM64", version.ref = "jolt-jni" }
 jolt-jni-windows64 = { module = "com.github.stephengold:jolt-jni-Windows64", version.ref = "jolt-jni" }
