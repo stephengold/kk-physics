@@ -79,6 +79,14 @@ tasks.withType<Javadoc>().configureEach { // Javadoc runtime options:
     }
 }
 
+val enableNativeAccess = JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_17)
+
+tasks.withType<Test>().configureEach {
+    if (enableNativeAccess) {
+        jvmArgs("--enable-native-access=ALL-UNNAMED") // suppress System::load() warning
+    }
+}
+
 // Register publishing tasks:
 
 tasks.register("install") {
