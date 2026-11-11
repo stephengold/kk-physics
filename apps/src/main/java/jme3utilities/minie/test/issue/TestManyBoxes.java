@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2024-2025 Stephen Gold
+ Copyright (c) 2024-2026 Stephen Gold
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -187,7 +187,7 @@ public class TestManyBoxes extends SimpleApplication {
         if (secondsSinceFpsUpdate >= 1f) {
             // Calculate frames per second over a 1-second interval:
             float fps = framesSinceFpsUpdate / secondsSinceFpsUpdate;
-            if (fps < 30f) {
+            if (numBoxes > 99 && fps < 30f) {
                 // Terminate the application if FPS drops below 30:
                 System.out.println(statusText);
                 stop();
